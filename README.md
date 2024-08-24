@@ -1,0 +1,2 @@
+# MyStockApp
+MyStock Aplicativo Mobile
