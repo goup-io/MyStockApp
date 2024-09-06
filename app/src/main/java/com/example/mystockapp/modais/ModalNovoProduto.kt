@@ -41,11 +41,23 @@ fun NewProductDialog(onDismissRequest: () -> Unit) {
                         onClick = onDismissRequest,
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF233C)),
                         shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier.size(25.dp),
                         elevation = ButtonDefaults.elevatedButtonElevation(15.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.size(28.dp)
                     ) {
-                        Text("X", color = Color.White, fontSize = 15.sp)
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                "X",
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
+
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
