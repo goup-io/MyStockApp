@@ -22,6 +22,7 @@ import androidx.compose.ui.window.Dialog
 // componentes
 import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.FormField
+import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable
 fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
@@ -121,57 +122,17 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    Button(
-                        onClick = { /* Edit action */ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF919191)),
-                        shape = RoundedCornerShape(5.dp),
-                        elevation = ButtonDefaults.elevatedButtonElevation(15.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(25.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            Text(
-                                "Excluir",
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                textAlign = TextAlign.Center,
-                              )
-                        }
-                    }
+                    ButtonComponent(
+                        titulo = "Excluir",
+                        onClick = onDismissRequest,
+                        containerColor = Color(0xFF919191),
+                    )
                     Spacer(modifier = Modifier.width(18.dp))
-                    Button(
-                        onClick = { /* Edit action */ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF355070)),
-                        shape = RoundedCornerShape(5.dp),
-                        elevation = ButtonDefaults.elevatedButtonElevation(15.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(25.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            Text(
-                                "Editar",
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .wrapContentSize()
-                            )
-                        }
-                    }
-
-
+                    ButtonComponent(
+                        titulo = "Salvar",
+                        onClick = onDismissRequest,
+                        containerColor = Color(0xFF355070),
+                    )
                 }
             }
         }

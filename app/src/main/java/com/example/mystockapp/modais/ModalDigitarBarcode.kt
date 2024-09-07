@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.modais.componentes.ButtonComponent
 
 
 @Composable
@@ -68,32 +69,11 @@ fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     Spacer(modifier = Modifier.width(18.dp))
-                    Button(
-                        onClick = { /* Edit action */ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF355070)),
-                        shape = RoundedCornerShape(5.dp),
-                        elevation = ButtonDefaults.elevatedButtonElevation(15.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(25.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            Text(
-                                "Salvar",
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .wrapContentSize()
-                            )
-                        }
-                    }
-
+                    ButtonComponent(
+                        titulo = "Salvar",
+                        onClick = { onDismissRequest() },
+                        containerColor = Color(0xFF355070),
+                    )
                 }
             }
         }
