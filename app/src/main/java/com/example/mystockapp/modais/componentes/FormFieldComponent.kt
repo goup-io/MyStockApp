@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +36,8 @@ fun FormField(
     labelFontSize: TextUnit = 10.sp,
     borderColor: Color = Color(0xFF355070),
     backgroundColor: Color = Color.White,
-    placeholder: String = ""
+    placeholder: String = "",
+    fieldSize: Dp = 20.dp
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -57,7 +59,7 @@ fun FormField(
                 onValueChange = onValueChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(20.dp)
+                    .height(fieldSize)
                     .padding(horizontal = 8.dp),
                 textStyle = textStyle,
                 colors = TextFieldDefaults.textFieldColors(
