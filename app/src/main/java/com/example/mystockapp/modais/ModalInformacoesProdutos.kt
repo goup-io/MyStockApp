@@ -25,8 +25,8 @@ import com.example.mystockapp.components.FormFieldCheck
 
 
 @Composable
-fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
-    var isPromocional by remember { mutableStateOf(false) }
+fun InformacoesProdutoDialog(onDismissRequest: () -> Unit) {
+    var isPromocional by remember { mutableStateOf(true) }
     var codigo by remember { mutableStateOf("") }
     var modelo by remember { mutableStateOf("") }
     var tamanho by remember { mutableStateOf("") }
@@ -45,7 +45,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
 
-        ) {
+            ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -97,52 +97,52 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                             horizontalArrangement = Arrangement.spacedBy(18.dp)
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Codigo:",
                                     textValue = codigo,
                                     onValueChange = { codigo = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Modelo:",
                                     textValue = modelo,
                                     onValueChange = { modelo = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Tamanho:",
                                     textValue = tamanho,
                                     onValueChange = { tamanho = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Loja:",
                                     textValue = loja,
                                     onValueChange = { loja = it }
                                 )
-                                com.example.mystockapp.components.FormFieldCheck(
+                                FormFieldCheck(
                                     label = "Item Promocional",
                                     isChecked = isPromocional,
                                     onCheckedChange = { isPromocional = it }
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Nome:",
                                     textValue = nome,
                                     onValueChange = { nome = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Preço:",
                                     textValue = preco,
                                     onValueChange = { preco = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "Cor:",
                                     textValue = cor,
                                     onValueChange = { cor = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                FormField(
                                     label = "N. Itens:",
                                     textValue = nItens,
-                                    onValueChange = { nItens = it }
+                                    onValueChange = { nItens = it}
                                 )
                             }
                         }
@@ -175,7 +175,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                                 color = Color.White,
                                 fontSize = 10.sp,
                                 textAlign = TextAlign.Center,
-                              )
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.width(18.dp))
@@ -211,100 +211,10 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FormField(label: String) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Normal
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color(0xFF355070), RoundedCornerShape(5.dp))
-                .background(Color.White, RoundedCornerShape(5.dp))
-        ) {
-            TextField(
-                value = "TESTE",
-                onValueChange = { /* Update value */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-                    .padding(horizontal = 8.dp),
-                textStyle = LocalTextStyle.current.copy(
-                    fontSize = 10.sp
-                ),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-        }
-        Spacer(modifier = Modifier.height(5.dp))
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FormFieldCheck(label: String) {
-    var isChecked by remember { mutableStateOf(true) } // Começa como true
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp)
-            .clipToBounds(),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .height(25.dp)
-                .fillMaxWidth()
-                .padding(start = 0.dp, end = 0.dp)
-                .clipToBounds()
-        ) {
-            Checkbox(
-                checked = isChecked,
-                onCheckedChange = { isChecked = !isChecked }, //,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = Color(0xFF355070),
-                    uncheckedColor = Color(Color.White.value)
-                ),
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(20.dp)
-                    .clipToBounds()
-            )
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier
-                    .padding(0.dp)
-                    .width(100.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(2.dp))
-    }
-}
-
-
-
-
 
 @Preview
 @Composable
-fun NovoProdutoDialogPreview() {
+fun InformacoesProdutoDialogPreview() {
     // Simulando o comportamento de dismiss para visualização no preview
     NovoProdutoDialog(onDismissRequest = {})
 }
