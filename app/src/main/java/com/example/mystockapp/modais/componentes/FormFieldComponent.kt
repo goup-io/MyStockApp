@@ -37,7 +37,8 @@ fun FormField(
     borderColor: Color = Color(0xFF355070),
     backgroundColor: Color = Color.White,
     placeholder: String = "",
-    fieldSize: Dp = 20.dp
+    fieldSize: Dp = 20.dp,
+    disabled: Boolean = false
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -56,7 +57,8 @@ fun FormField(
         ) {
             TextField(
                 value = textValue,
-                onValueChange = onValueChange,
+                onValueChange = { if (!disabled) onValueChange(it) },
+                enabled = !disabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(fieldSize)
@@ -66,7 +68,10 @@ fun FormField(
                     containerColor = Color.Transparent,
                     focusedTextColor = Color.Black,
                     unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
+                    focusedIndicatorColor = Color.Transparent,
+                    disabledTextColor = Color.Gray,
+                    disabledIndicatorColor = Color.Transparent,
+                    disabledPlaceholderColor = Color.Gray
                 ),
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
