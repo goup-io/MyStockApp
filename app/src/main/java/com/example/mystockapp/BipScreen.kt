@@ -235,17 +235,22 @@ fun Screen(modifier: Modifier = Modifier) {
                 onClick = { /* Ação de ler código */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .height(35.dp),
                 shape = RoundedCornerShape(5.dp),
             ) {
                 Text(text = "Ler Referência")
             }
+
+            Spacer(modifier = Modifier.height(5.dp))
+
             // Botão para digitar o código
             Button(
                 onClick = { /* Ação de digitar código */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .height(35.dp),
                 shape = RoundedCornerShape(5.dp),
             ) {
 //                Text(text = "Digitar Referência")
@@ -315,7 +320,8 @@ fun Screen(modifier: Modifier = Modifier) {
                 onClick = { /* Ação de adicionar produto */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .height(35.dp),
                 shape = RoundedCornerShape(5.dp),
             ) {
                 Text(text = "Adicionar Produto")
