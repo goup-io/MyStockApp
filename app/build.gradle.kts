@@ -82,6 +82,11 @@ dependencies {
     implementation ("androidx.camera:camera-lifecycle:1.1.0")
     implementation ("androidx.camera:camera-view:1.1.0")
 
+    // Material Icons
+    implementation( libs.androidx.material.icons.extended)
+
+
+
     // ML Kit - Leitura de código de barras
     implementation ("com.google.mlkit:barcode-scanning:17.0.2")
 }
