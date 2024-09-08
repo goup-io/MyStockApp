@@ -36,7 +36,7 @@ class Login : ComponentActivity() {
     }
 
     private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, BipScreen::class.java)
         startActivity(intent)
         finish()
     }
