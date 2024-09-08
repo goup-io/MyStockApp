@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera.any" />
 
     <application
@@ -16,11 +17,15 @@
         android:theme="@style/Theme.MyStockApp"
         tools:targetApi="31">
         <activity
+            android:name=".TermsLgpdActivity"
+            android:exported="false"
+            android:label="@string/title_activity_terms_lgpd"
+            android:theme="@style/Theme.MyStockApp" />
+        <activity
             android:name=".BipScreen"
             android:exported="false"
             android:label="@string/title_activity_bip_screen"
-            android:theme="@style/Theme.MyStockApp" />
-        <!-- <activity -->
+            android:theme="@style/Theme.MyStockApp" /> <!-- <activity -->
         <!-- android:name=".Camera" -->
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_camera" -->
@@ -32,6 +37,7 @@
             android:theme="@style/Theme.MyStockApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
