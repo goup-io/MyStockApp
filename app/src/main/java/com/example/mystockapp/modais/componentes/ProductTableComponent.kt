@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -15,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.dtos.ProdutoTable
 import androidx.compose.ui.text.style.TextOverflow
+
 @Composable
 fun ProductTable(products: List<ProdutoTable>) {
     Box(
@@ -53,11 +56,11 @@ fun TableHeader() {
     ) {
         HeaderText("Nome", Modifier.weight(2f))
         HeaderText("Modelo", Modifier.weight(2f))
-        HeaderText("Preço", Modifier.weight(1f))
-        HeaderText("Tamanho", Modifier.weight(1.5f)) // Aumentar o peso para dar mais espaço
+        HeaderText("Preço", Modifier.weight(1.2f)) // Ajustar o peso para dar mais espaço
+        HeaderText("Tamanho", Modifier.weight(1.5f))
         HeaderText("Cor", Modifier.weight(1f))
         HeaderText("N. Itens", Modifier.weight(1f))
-        HeaderText("Add", Modifier.weight(1f))
+        HeaderText("Add", Modifier.weight(1.3f)) // Ajustar o peso para dar mais espaço
     }
 }
 
@@ -74,7 +77,6 @@ fun HeaderText(text: String, modifier: Modifier) {
         overflow = TextOverflow.Ellipsis
     )
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
@@ -83,66 +85,114 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
             .fillMaxWidth()
             .background(backgroundColor)
             .border(1.dp, Color(0xFF355070))
-            .padding(2.dp, 4.dp),
+            .padding(4.dp, 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(product.name, modifier = Modifier.weight(2f), textAlign = TextAlign.Center, fontSize = 7.sp)
-        Text(product.model, modifier = Modifier.weight(2f), textAlign = TextAlign.Center, fontSize = 7.sp)
-        Text(product.price, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 7.sp)
-        Text(product.size, modifier = Modifier.weight(1.5f), textAlign = TextAlign.Center, fontSize = 7.sp)
-        Text(product.color, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 7.sp)
-        Text(product.quantity, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 7.sp)
+        Text(
+            product.name,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.Center,
+            fontSize = 7.sp
+        )
+        Text(
+            product.model,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.Center,
+            fontSize = 7.sp
+        )
+        Text(
+            product.price,
+            modifier = Modifier.weight(1.2f),
+            textAlign = TextAlign.Center,
+            fontSize = 7.sp
+        )
+        Text(
+            product.size,
+            modifier = Modifier.weight(1.5f),
+            textAlign = TextAlign.Center,
+            fontSize = 7.sp
+        )
+        Text(
+            product.color,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            fontSize = 7.sp
+        )
+        Text(
+            product.quantity,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            fontSize = 7.sp
+        )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(1.1f)
+            horizontalArrangement = Arrangement.spacedBy(1.5.dp),
+            modifier = Modifier.weight(1.3f)
         ) {
             Button(
                 onClick = { /* TODO: Handle button click */ },
-                modifier = Modifier.width(10.dp).height(24.dp),
+                modifier = Modifier
+                    .size(12.dp), // Removed align modifier
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black
                 ),
                 contentPadding = PaddingValues(0.dp)
             ) {
-                Text("-", fontSize = 7.sp, color = Color.Black)
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("-", fontSize = 7.sp, color = Color.Black, lineHeight = 16.sp)
+                }
             }
-            Spacer(modifier = Modifier.width(0.8.dp))
-            TextField(
-                value = "5",
+            BasicTextField(
+                value = "100",
                 onValueChange = { /* TODO: Handle value change */ },
                 modifier = Modifier
-                    .size(width = 11.5.dp, height = 11.5.dp)
-                    .padding(0.dp)
-                    .border(1.dp, Color(0xFF355070), RoundedCornerShape(50)),
+                    .size(16.dp)
+                    .height(12.dp)
+                    .border(1.dp, Color(0xFF355070), RoundedCornerShape(50))
+                    .background(Color.Transparent),
                 textStyle = LocalTextStyle.current.copy(
-                    fontSize = 7.sp,
+                    fontSize = 8.sp,
                     color = Color.Black,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    lineHeight = 16.sp
                 ),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = Color.Black
-                ),
-                singleLine = true
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .clipToBounds()
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        innerTextField()
+                    }
+                }
             )
-            Spacer(modifier = Modifier.width(0.8.dp))
             Button(
                 onClick = { /* TODO: Handle button click */ },
-                modifier = Modifier.width(10.dp).height(24.dp),
+                modifier = Modifier
+                    .size(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black
                 ),
                 contentPadding = PaddingValues(0.dp)
             ) {
-                Text("+", fontSize = 7.sp, color = Color.Black)
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("+", fontSize = 8.sp, color = Color.Black, lineHeight = 16.sp)
+                }
             }
+            Spacer(modifier = Modifier.width(4.dp))
+
         }
     }
 }

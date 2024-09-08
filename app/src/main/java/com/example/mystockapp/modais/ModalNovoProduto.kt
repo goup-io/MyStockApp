@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,7 +20,6 @@ import androidx.compose.ui.window.Dialog
 
 // componentes
 import com.example.mystockapp.modais.ModalHeaderComponent
-import com.example.mystockapp.modais.FormField
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable
@@ -44,7 +42,6 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
-
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -138,95 +135,6 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FormField(label: String) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Normal
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color(0xFF355070), RoundedCornerShape(5.dp))
-                .background(Color.White, RoundedCornerShape(5.dp))
-        ) {
-            TextField(
-                value = "TESTE",
-                onValueChange = { /* Update value */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-                    .padding(horizontal = 8.dp),
-                textStyle = LocalTextStyle.current.copy(
-                    fontSize = 10.sp
-                ),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-        }
-        Spacer(modifier = Modifier.height(5.dp))
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FormFieldCheck(label: String) {
-    var isChecked by remember { mutableStateOf(true) } // Começa como true
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp)
-            .clipToBounds(),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .height(25.dp)
-                .fillMaxWidth()
-                .padding(start = 0.dp, end = 0.dp)
-                .clipToBounds()
-        ) {
-            Checkbox(
-                checked = isChecked,
-                onCheckedChange = { isChecked = !isChecked }, //,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = Color(0xFF355070),
-                    uncheckedColor = Color(Color.White.value)
-                ),
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(20.dp)
-                    .clipToBounds()
-            )
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier
-                    .padding(0.dp)
-                    .width(100.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(2.dp))
-    }
-}
-
-
-
 
 
 @Preview
