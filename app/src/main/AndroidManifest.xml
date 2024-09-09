@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera.any" />
 
@@ -16,11 +15,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyStockApp"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".Camera"-->
-<!--            android:exported="false"-->
-<!--            android:label="@string/title_activity_camera"-->
-<!--            android:theme="@style/Theme.MyStockApp" />-->
+        <activity
+            android:name=".telas.Estoque"
+            android:exported="false"
+            android:label="@string/title_activity_estoque"
+            android:theme="@style/Theme.MyStockApp" />
+        <activity
+            android:name=".modais.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.MyStockApp" /> <!-- <activity -->
+        <!-- android:name=".Camera" -->
+        <!-- android:exported="false" -->
+        <!-- android:label="@string/title_activity_camera" -->
+        <!-- android:theme="@style/Theme.MyStockApp" /> -->
+        <activity
+            android:name=".TermsLgpdActivity"
+            android:exported="false"
+            android:label="@string/title_activity_terms_lgpd"
+            android:theme="@style/Theme.MyStockApp" />
+        <activity
+            android:name=".BipScreen"
+            android:exported="false"
+            android:label="@string/title_activity_bip_screen"
+            android:theme="@style/Theme.MyStockApp" /> <!-- <activity -->
         <activity
             android:name=".SplashScreen"
             android:exported="true"
@@ -28,7 +46,6 @@
             android:theme="@style/Theme.MyStockApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

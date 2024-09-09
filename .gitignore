@@ -1,15 +1,49 @@
+# Build e Outputs do Kotlin
+/build/
+/out/
+
+# Arquivos de configuração do Android Studio
+.idea/
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/.cxx/
+/.externalNativeBuild/
+.cxx/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/shelf/
+.idea/**/vcs.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/modules.xml
+.idea/.name
+.idea/misc.xml
+
+# Diretório do console de execução do Android Studio
+.idea/runConfigurations/
+
+# Arquivos gerados automaticamente
+/build/
+/captures/
+/output.json
+/app/build/
+
+# Arquivos de Log
+*.log
+
+# Cache do Kotlin
+**/*.kotlin_metadata
+
+# Arquivos do sistema operacional
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+Thumbs.db
+
+# Arquivos de sistema
+.classpath
+.project
+.settings/
+
+# Diretório de execução de testes
+/test-results/

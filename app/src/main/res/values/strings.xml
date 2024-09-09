@@ -3,4 +3,8 @@
     <string name="title_activity_splash_screen">SplashScreen</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_camera">Camera</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_bip_screen">BipScreen</string>
+    <string name="title_activity_terms_lgpd">TermsLgpdActivity</string>
+    <string name="title_activity_estoque">Estoque</string>
 </resources>
