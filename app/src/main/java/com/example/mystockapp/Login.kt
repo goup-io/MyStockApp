@@ -1,5 +1,6 @@
 package com.example.mystockapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -28,15 +29,28 @@ import com.example.mystockapp.ui.theme.MyStockAppTheme
 class Login : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MyStockAppTheme {
-                LoginScreen { navigateToMainActivity() }
+
+        // Verificar se o usuário já aceitou os termos
+        val sharedPreferences = getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+        val termsAccepted = sharedPreferences.getBoolean("termsAccepted", false)
+
+        if (!termsAccepted) {
+            // Se os termos não foram aceitos, redirecionar para a tela de termos
+            val intent = Intent(this, TermsLgpdActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            // Caso já tenha aceitado os termos, prosseguir para a tela de login
+            setContent {
+                MyStockAppTheme {
+                    LoginScreen { navigateToMainActivity() }
+                }
             }
         }
     }
 
     private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, BipScreen::class.java)
         startActivity(intent)
         finish()
     }
