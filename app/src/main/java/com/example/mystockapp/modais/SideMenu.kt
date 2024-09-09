@@ -99,7 +99,7 @@ fun UserSection() {
             modifier = Modifier.fillMaxWidth().padding(top = 2.dp)
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(fraction = 0.9f),
                 text = "Gerente",
                 fontSize = 18.sp, // Texto maior para o subtítulo
                 color = Color.White,
