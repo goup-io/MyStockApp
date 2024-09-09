@@ -6,4 +6,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_bip_screen">BipScreen</string>
     <string name="title_activity_terms_lgpd">TermsLgpdActivity</string>
+    <string name="title_activity_estoque">Estoque</string>
 </resources>
