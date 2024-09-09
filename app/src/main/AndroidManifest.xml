@@ -17,11 +17,15 @@
         android:theme="@style/Theme.MyStockApp"
         tools:targetApi="31">
         <activity
+            android:name=".telas.Estoque"
+            android:exported="false"
+            android:label="@string/title_activity_estoque"
+            android:theme="@style/Theme.MyStockApp" />
+        <activity
             android:name=".modais.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.MyStockApp" />
-        <!-- <activity -->
+            android:theme="@style/Theme.MyStockApp" /> <!-- <activity -->
         <!-- android:name=".Camera" -->
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_camera" -->
