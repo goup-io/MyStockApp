@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,24 +83,37 @@ fun PreVendaScreen() {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(16.dp),
+                .fillMaxWidth(0.95f)
+                .height(52.dp)
+                .padding(16.dp)
+                .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Botão de menu com tamanho ajustado
+            // Botão de menu o
             Button(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .size(50.dp) // Aumentei o tamanho do botão para 50.dp
+                    .width(30.dp)
+                    .height(55.dp)
+                    .clip(RoundedCornerShape(5.dp)),
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent, // Botão com cor transparente
+                    contentColor = Color.White // Cor do texto e ícones dentro do botão
+                ),
+                contentPadding = PaddingValues(0.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.mipmap.menu),
                     contentDescription = "menu",
-                    modifier = Modifier.run { size(30.dp) } // Aumentei o tamanho da imagem
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
                 )
             }
+
+
 
             // Título no centro
             Text(
@@ -127,7 +141,7 @@ fun PreVendaScreen() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
-                    .height(165.dp)
+                    .height(172.dp)
                     .shadow(8.dp, RoundedCornerShape(8.dp))
                     .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
             ) {
@@ -152,9 +166,9 @@ fun PreVendaScreen() {
                                 onClick = { /* Ação do botão 1 */ },
                                 modifier = Modifier
                                     .padding(end = 8.dp)
-                                    .width(60.dp)
-                                    .height(30.dp)
-                                    .clip(RoundedCornerShape(8.dp)), // Borda arredondada
+                                    .width(65.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
                                 contentPadding = PaddingValues(0.dp) // Ajusta o padding
                             ) {
                                 Text(text = "AddDisc", fontSize = 12.sp)
@@ -163,13 +177,17 @@ fun PreVendaScreen() {
                             Button(
                                 onClick = { /* Ação do botão 2 */ },
                                 modifier = Modifier
-                                    .width(35.dp)
-                                    .height(30.dp)
-                                    .clip(RoundedCornerShape(8.dp)), // Borda arredondada
-                                contentPadding = PaddingValues(0.dp) // Ajusta o padding
+                                    .width(25.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF96BDCE) // Definindo a cor de fundo
+                                ),
+                                contentPadding = PaddingValues(0.dp)
                             ) {
-                                Text(text = "+", fontSize = 12.sp)
+                                Text(text = "+", fontSize = 22.sp, color = Color.White) // Define a cor do texto
                             }
+
                         }
                     }
 
@@ -227,6 +245,7 @@ fun PreVendaScreen() {
                     .fillMaxWidth(0.95f)
                     .height(365.dp)
                     .background(Color.White, RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
             ) {
                 Column {
                     // Header da caixa grande
@@ -243,15 +262,15 @@ fun PreVendaScreen() {
                             Button(
                                 onClick = { /* Ação do botão 1 */ },
                                 modifier = Modifier
-                                    .width(50.dp)
-                                    .height(30.dp)
-                                    .clip(RoundedCornerShape(8.dp)), // Borda arredondada
+                                    .width(65.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF355070)
                                 )
                             ) {
-                                Text(text = "Editar", color = Color.White, fontSize = 12.sp)
+                                Text(text = "Código", color = Color.White, fontSize = 12.sp)
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -259,15 +278,15 @@ fun PreVendaScreen() {
                             Button(
                                 onClick = { /* Ação do botão 2 */ },
                                 modifier = Modifier
-                                    .width(50.dp)
-                                    .height(30.dp)
-                                    .clip(RoundedCornerShape(8.dp)), // Borda arredondada
+                                    .width(70.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF355070)
                                 )
                             ) {
-                                Text(text = "Remover", color = Color.White, fontSize = 12.sp)
+                                Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
                             }
                         }
                     }
@@ -275,29 +294,35 @@ fun PreVendaScreen() {
                     // Tabela dentro da caixa grande
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(0.9f) // Centraliza a tabela ajustando a largura
+                            .fillMaxWidth(0.95f)
                             .background(Color(0xFF355070))
                             .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                        .align(Alignment.CenterHorizontally)
                     ) {
                         // Cabeçalho da tabela
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceAround
                         ) {
-                            Text(text = "Código", color = Color.White)
-                            Text(text = "Nome", color = Color.White)
-                            Text(text = "Preço", color = Color.White)
-                            Text(text = "Qtd", color = Color.White)
-                            Text(text = "Ver Mais", color = Color.White)
+                            Text(text = "Código", color = Color.White, fontSize = 14.sp)
+                            Text(text = "Nome", color = Color.White, fontSize = 14.sp)
+                            Text(text = "Preço", color = Color.White, fontSize = 14.sp)
+                            Text(text = "Qtd", color = Color.White, fontSize = 14.sp)
+                            Text(text = "Ver Mais", color = Color.White, fontSize = 14.sp)
                         }
+
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         // Dados da tabela mockados
                         val items = listOf(
-                            Item("001", "Produto A", "R$ 10,00", "2", "Ver Mais"),
-                            Item("002", "Produto B", "R$ 20,00", "1", "Ver Mais"),
-                            Item("003", "Produto C", "R$ 30,00", "5", "Ver Mais"),
+                            Item("001", "Produto A", "R$ 10,00", "2", R.mipmap.vermais),
+                            Item("002", "Produto B", "R$ 20,00", "1", R.mipmap.vermais),
+                            Item("003", "Produto C", "R$ 30,00", "5", R.mipmap.vermais),
+                            Item("004", "Produto A", "R$ 10,00", "2", R.mipmap.vermais),
+                            Item("005", "Produto B", "R$ 20,00", "1", R.mipmap.vermais),
+                            Item("006", "Produto C", "R$ 30,00", "5", R.mipmap.vermais),
                         )
 
                         items.forEachIndexed { index, item ->
@@ -308,14 +333,21 @@ fun PreVendaScreen() {
                                     .padding(8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text = item.codigo, color = Color.Black)
-                                Text(text = item.nome, color = Color.Black)
-                                Text(text = item.preco, color = Color.Black)
-                                Text(text = item.quantidade, color = Color.Black)
-                                Text(text = item.verMais, color = Color.Black)
+                                Text(text = item.codigo, color = Color.Black, fontSize = 14.sp)
+                                Text(text = item.nome, color = Color.Black, fontSize = 14.sp)
+                                Text(text = item.preco, color = Color.Black, fontSize = 14.sp)
+                                Text(text = item.quantidade, color = Color.Black, fontSize = 14.sp)
+                                Image(
+                                    painter = painterResource(id = item.verMaisResId),
+                                    contentDescription = "Ver Mais",
+                                    modifier = Modifier
+                                        .size(24.dp) // Ajuste o tamanho da imagem conforme necessário
+                                        .clickable { /* Ação ao clicar na imagem */ }
+                                )
                             }
 
-                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Spacer(modifier = Modifier.height(3.dp))
                         }
                     }
                 }
@@ -325,7 +357,7 @@ fun PreVendaScreen() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
-                    .height(50.dp)
+                    .height(52.dp)
                     .background(Color.White, RoundedCornerShape(8.dp))
             ) {
                 Row(
@@ -336,6 +368,16 @@ fun PreVendaScreen() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "Código", fontSize = 14.sp)
+
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(10.dp),
+                        value = codigo,
+                        onValueChange = { codigo = it }
+                    )
+
+                    Text(text = "Tipo Venda", fontSize = 14.sp)
 
                     OutlinedTextField(
                         modifier = Modifier.width(80.dp),
@@ -350,8 +392,8 @@ fun PreVendaScreen() {
                 onClick = { /* Ação do botão */ },
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
-                    .height(50.dp)
-                    .clip(RoundedCornerShape(8.dp)), // Borda arredondada
+                    .height(50.dp),
+                shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF355070)
                 )
@@ -367,8 +409,9 @@ data class Item(
     val nome: String,
     val preco: String,
     val quantidade: String,
-    val verMais: String
+    val verMaisResId: Int // Referência ao recurso da imagem
 )
+
 
 
 @Preview(showBackground = true, showSystemUi = true)
