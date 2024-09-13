@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mystockapp.ui.theme.MyStockAppTheme
+import com.example.mystockapp.telas.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.mystockapp.dtos.ProdutoTable
+import com.example.mystockapp.models.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 class ModalAdicionaProdCarrinho : ComponentActivity() {

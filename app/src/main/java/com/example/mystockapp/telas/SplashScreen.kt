@@ -1,4 +1,4 @@
-package com.example.mystockapp
+package com.example.mystockapp.telas
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mystockapp.telas.Estoque
-import com.example.mystockapp.ui.theme.MyStockAppTheme
+import com.example.mystockapp.R
+import com.example.mystockapp.telas.ui.theme.MyStockAppTheme
 
 class SplashScreen : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

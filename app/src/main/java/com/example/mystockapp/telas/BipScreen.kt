@@ -1,4 +1,4 @@
-package com.example.mystockapp
+package com.example.mystockapp.telas
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -21,15 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.example.mystock.BarcodeScannerView
-import com.example.mystockapp.ui.theme.MyStockAppTheme
+import com.example.mystockapp.R
+import com.example.mystockapp.telas.ui.theme.MyStockAppTheme
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -382,7 +381,7 @@ fun InfoTextField(label: String, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview() {
+fun BipScreenPreview() {
     MyStockAppTheme {
         Screen()
     }

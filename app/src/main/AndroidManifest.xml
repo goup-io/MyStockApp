@@ -30,17 +30,17 @@
         <!-- android:label="@string/title_activity_camera" -->
         <!-- android:theme="@style/Theme.MyStockApp" /> -->
         <activity
-            android:name=".TermsLgpdActivity"
+            android:name=".telas.TermsLgpdActivity"
             android:exported="false"
             android:label="@string/title_activity_terms_lgpd"
             android:theme="@style/Theme.MyStockApp" />
         <activity
-            android:name=".BipScreen"
+            android:name=".telas.BipScreen"
             android:exported="false"
             android:label="@string/title_activity_bip_screen"
             android:theme="@style/Theme.MyStockApp" /> <!-- <activity -->
         <activity
-            android:name=".SplashScreen"
+            android:name=".telas.SplashScreen"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyStockApp">
@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Login"
+            android:name=".telas.Login"
             android:exported="false"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.MyStockApp" />
@@ -60,7 +60,7 @@
             android:label="@string/title_activity_estoque"
             android:theme="@style/Theme.MyStockApp" />
         <activity
-            android:name=".MainActivity"
+            android:name=".telas.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyStockApp">

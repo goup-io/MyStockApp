@@ -1,4 +1,4 @@
-package com.example.mystockapp.dtos
+package com.example.mystockapp.models
 
 data class ProdutoTable(
     val name: String,
