@@ -55,6 +55,11 @@
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.MyStockApp" />
         <activity
+            android:name=".telas.PreVenda"
+            android:exported="false"
+            android:label="@string/title_activity_estoque"
+            android:theme="@style/Theme.MyStockApp" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
