@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
-import com.example.mystockapp.telas.ui.theme.MyStockAppTheme
+import com.example.mystockapp.ui.theme.MyStockAppTheme
 
 class Login : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.example.mystockapp.telas.ui.theme
+package com.example.mystockapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

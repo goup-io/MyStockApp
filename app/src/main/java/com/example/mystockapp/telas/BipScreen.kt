@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.mystockapp.R
-import com.example.mystockapp.telas.ui.theme.MyStockAppTheme
+import com.example.mystockapp.ui.theme.MyStockAppTheme
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(

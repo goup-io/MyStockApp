@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
-import com.example.mystockapp.telas.ui.theme.Cores
+import com.example.mystockapp.ui.theme.Cores
 
 @Composable
 fun Header(
