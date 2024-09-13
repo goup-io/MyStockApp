@@ -90,37 +90,37 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            product.name,
+            product.nome,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.Center,
             fontSize = 7.sp
         )
         Text(
-            product.model,
+            product.modelo,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.Center,
             fontSize = 7.sp
         )
         Text(
-            product.price,
+            product.preco.toString(),
             modifier = Modifier.weight(1.2f),
             textAlign = TextAlign.Center,
             fontSize = 7.sp
         )
         Text(
-            product.size,
+            product.tamanho.toString(),
             modifier = Modifier.weight(1.5f),
             textAlign = TextAlign.Center,
             fontSize = 7.sp
         )
         Text(
-            product.color,
+            product.cor,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             fontSize = 7.sp
         )
         Text(
-            product.quantity,
+            product.quantidade,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             fontSize = 7.sp

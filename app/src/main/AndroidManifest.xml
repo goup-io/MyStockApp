@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera.any" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyStockApp"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
         <activity
             android:name=".telas.Estoque"
@@ -57,7 +61,7 @@
         <activity
             android:name=".telas.PreVenda"
             android:exported="false"
-            android:label="@string/title_activity_estoque"
+            android:label="@string/title_activity_pre_venda"
             android:theme="@style/Theme.MyStockApp" />
         <activity
             android:name=".telas.MainActivity"

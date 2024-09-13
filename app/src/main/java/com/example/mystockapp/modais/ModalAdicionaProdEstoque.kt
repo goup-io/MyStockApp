@@ -14,38 +14,31 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MyStockAppTheme() {
-                AddProductToStock(onDismissRequest = {})
-            }
-        }
-    }
-}
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddProductToStock(onDismissRequest: () -> Unit) {
 
-    val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", "300,00", "37", "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15")
-    )
+    var products = listOf<ProdutoTable>()
+
+    LaunchedEffect(Unit) {
+        // Coroutine launched within LaunchedEffect
+        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+        products = produtoService.fetchProdutosTabela()
+        // Atualizar a UI ou manipular os dados
+    }
+
+
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
             modifier = Modifier

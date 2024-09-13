@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.shadow
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.modalAddProdCarrinho
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -285,7 +286,9 @@ fun PreVendaScreen() {
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(
-                                onClick = { /* Ação do botão 2 */ },
+                                onClick = { 
+                                    isModalAddProdCarrinho = true
+                                },
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(25.dp),
@@ -298,6 +301,9 @@ fun PreVendaScreen() {
                                 Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
                             }
 
+                            if (isModalAddProdCarrinho) {
+                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
+                            }
 
 
                         }

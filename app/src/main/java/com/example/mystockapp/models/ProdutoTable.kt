@@ -1,10 +1,10 @@
 package com.example.mystockapp.models
 
 data class ProdutoTable(
-    val name: String,
-    val model: String,
-    val price: String,
-    val size: String,
-    val color: String,
-    val quantity: String
+    val nome: String,
+    val modelo: String,
+    val preco: Double,
+    val tamanho: Int,
+    val cor: String,
+    val quantidade: String
 )
