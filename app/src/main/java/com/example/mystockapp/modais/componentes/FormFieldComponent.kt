@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -23,6 +25,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -40,11 +43,13 @@ fun FormField(
     borderColor: Color = Color(0xFF355070),
     backgroundColor: Color = Color.White,
     placeholder: String = "",
-    fieldSize: Dp = 20.dp,
-    disabled: Boolean = false
+    width: Dp = 200.dp,
+    height: Dp = 20.dp,
+    disabled: Boolean = false,
+    fieldType: KeyboardType = KeyboardType.Text
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.width(width),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Text(
@@ -54,9 +59,9 @@ fun FormField(
         )
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(width)
                 .clipToBounds()
-                .height(fieldSize)
+                .height(height)
                 .padding(0.dp, 0.dp, 0.dp, 0.dp)
                 .border(1.dp, borderColor, RoundedCornerShape(5.dp))
                 .background(backgroundColor, RoundedCornerShape(5.dp))
@@ -71,6 +76,7 @@ fun FormField(
                 textStyle = TextStyle(fontSize = 12.sp, lineHeight = TextUnit.Unspecified),
                 singleLine = true,
                 maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = fieldType),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier

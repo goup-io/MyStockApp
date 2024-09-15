@@ -10,27 +10,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
 // componentes
-import com.example.mystockapp.modais.FormField
-import com.example.mystockapp.components.FormFieldCheck
-import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 
 @Composable
 fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
-    var codigo by remember { mutableStateOf("") }
     var nome by remember { mutableStateOf("") }
     var tipo by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
@@ -39,7 +31,7 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
@@ -63,19 +55,6 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Codigo:",
-                                    textValue = codigo,
-                                    onValueChange = { codigo = it }
-                                )
-                                FormField(
-                                    label = "Categoria:",
-                                    textValue = categoria,
-                                    onValueChange = { categoria = it }
-                                )
-
-                            }
-                            Column(modifier = Modifier.weight(1f)) {
-                                FormField(
                                     label = "Nome:",
                                     textValue = nome,
                                     onValueChange = { nome = it }
@@ -84,6 +63,13 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                                     label = "Tipo:",
                                     textValue = tipo,
                                     onValueChange = { tipo = it }
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                FormField(
+                                    label = "Categoria:",
+                                    textValue = categoria,
+                                    onValueChange = { categoria = it }
                                 )
                             }
                         }
@@ -97,13 +83,13 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Excluir",
+                        titulo = "Limpar",
                         onClick = { /* Salvar action */ },
                         containerColor = Color(0xFF919191),
                     )
                     Spacer(modifier = Modifier.width(18.dp))
                     ButtonComponent(
-                        titulo = "Editar",
+                        titulo = "Salvar",
                         onClick = onDismissRequest,
                         containerColor = Color(0xFF355070),
                     )

@@ -38,7 +38,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
@@ -120,7 +120,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Excluir",
+                        titulo = "Limpar",
                         onClick = onDismissRequest,
                         containerColor = Color(0xFF919191),
                     )
