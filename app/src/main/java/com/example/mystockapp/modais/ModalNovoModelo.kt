@@ -6,40 +6,63 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
+import com.example.mystockapp.api.exceptions.NetworkException
+import com.example.mystockapp.api.produtoApi.CategoriaService
+import com.example.mystockapp.api.produtoApi.CorService
+import com.example.mystockapp.api.produtoApi.ModeloService
+import com.example.mystockapp.api.produtoApi.TamanhoService
+import com.example.mystockapp.api.produtoApi.TipoService
 
 // componentes
-import com.example.mystockapp.modais.FormField
-import com.example.mystockapp.components.FormFieldCheck
-import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.componentes.ButtonComponent
+import com.example.mystockapp.modais.componentes.SelectField
 
 
 @Composable
 fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
-    var codigo by remember { mutableStateOf("") }
     var nome by remember { mutableStateOf("") }
     var tipo by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
+
+    var tiposOptions by remember { mutableStateOf(listOf("")) }
+    var categoriasOptions by remember { mutableStateOf(listOf("")) }
+
+    var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val categoriaService = CategoriaService(RetrofitInstance.categoriaApi)
+        val tipoService = TipoService(RetrofitInstance.tipoApi)
+        try {
+            categoriasOptions = categoriaService.fetchCategorias().map { it.nome }
+            tiposOptions = tipoService.fetchTipos().map { it.nome }
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+        }
+    }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
@@ -63,27 +86,23 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Codigo:",
-                                    textValue = codigo,
-                                    onValueChange = { codigo = it }
-                                )
-                                FormField(
-                                    label = "Categoria:",
-                                    textValue = categoria,
-                                    onValueChange = { categoria = it }
-                                )
-
-                            }
-                            Column(modifier = Modifier.weight(1f)) {
-                                FormField(
                                     label = "Nome:",
                                     textValue = nome,
                                     onValueChange = { nome = it }
                                 )
-                                FormField(
+                                SelectField(
                                     label = "Tipo:",
-                                    textValue = tipo,
-                                    onValueChange = { tipo = it }
+                                    selectedOption = tipo,
+                                    onOptionSelected = { tipo = it },
+                                    options = tiposOptions
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                SelectField(
+                                    label = "Categoria:",
+                                    selectedOption = categoria,
+                                    onOptionSelected = { categoria = it },
+                                    options = categoriasOptions
                                 )
                             }
                         }
@@ -97,13 +116,13 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Excluir",
+                        titulo = "Limpar",
                         onClick = { /* Salvar action */ },
                         containerColor = Color(0xFF919191),
                     )
                     Spacer(modifier = Modifier.width(18.dp))
                     ButtonComponent(
-                        titulo = "Editar",
+                        titulo = "Salvar",
                         onClick = onDismissRequest,
                         containerColor = Color(0xFF355070),
                     )

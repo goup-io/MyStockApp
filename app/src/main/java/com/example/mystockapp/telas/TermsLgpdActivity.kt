@@ -1,4 +1,4 @@
-package com.example.mystockapp
+package com.example.mystockapp.telas
 
 import android.content.Context
 import android.content.Intent

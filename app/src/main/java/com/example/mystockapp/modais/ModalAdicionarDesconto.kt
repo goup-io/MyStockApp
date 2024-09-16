@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -23,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,11 +63,10 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
-
             ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -91,6 +90,8 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
                                 FormField(
                                     label = "Porcentagem %:",
                                     textValue = porcentagem,
+                                    width = 300.dp,
+                                    fieldType = KeyboardType.Number,
                                     onValueChange = {
                                         porcentagem = it
                                         calcularValorComDesconto() // Atualiza o valor calculado sempre que a porcentagem muda
@@ -108,8 +109,9 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
                                 FormField(
                                     label = "Valor Calculado:",
                                     textValue = valorCalculado,
+                                    width = 300.dp,
                                     onValueChange = { valorCalculado = it },
-                                    disabled = true // Desabilita o campo para evitar edição manual
+                                    disabled = true
                                 )
                             }
                         }

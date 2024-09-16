@@ -1,4 +1,4 @@
-package com.example.mystockapp
+package com.example.mystockapp.telas
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.example.mystock.BarcodeScannerView
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 
 class MainActivity : ComponentActivity() {

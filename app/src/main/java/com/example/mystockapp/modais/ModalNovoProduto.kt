@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,10 +18,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
+import com.example.mystockapp.api.exceptions.NetworkException
+import com.example.mystockapp.api.produtoApi.CorService
+import com.example.mystockapp.api.produtoApi.ModeloService
+import com.example.mystockapp.api.produtoApi.TamanhoService
 
 // componentes
 import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.componentes.ButtonComponent
+import com.example.mystockapp.modais.componentes.SelectField
 
 @Composable
 fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
@@ -34,11 +43,34 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
     var cor by remember { mutableStateOf("") }
     var nItens by remember { mutableStateOf("") }
 
+    var modelosOptions by remember { mutableStateOf(listOf("")) }
+    var coresOptions by remember { mutableStateOf(listOf("")) }
+    var tamanhosOptions by remember { mutableStateOf(listOf(0)) }
+
+    var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val modeloSerivce = ModeloService(RetrofitInstance.modeloApi)
+        val tamanhoService = TamanhoService(RetrofitInstance.tamanhoApi)
+        val corService = CorService(RetrofitInstance.corApi)
+        try {
+            modelosOptions = modeloSerivce.fetchModelos().map { it.nome }
+            tamanhosOptions = tamanhoService.fetchTamanhos().map { it.numero }
+            coresOptions = corService.fetchCores().map { it.nome }
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+        }
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
@@ -66,15 +98,17 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                                     textValue = codigo,
                                     onValueChange = { codigo = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                SelectField(
                                     label = "Modelo:",
-                                    textValue = modelo,
-                                    onValueChange = { modelo = it }
+                                    selectedOption = modelo,
+                                    options = modelosOptions,
+                                    onOptionSelected = { modelo = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                SelectField(
                                     label = "Tamanho:",
-                                    textValue = tamanho,
-                                    onValueChange = { tamanho = it }
+                                    selectedOption = tamanho,
+                                    options = tamanhosOptions.map { it.toString() },
+                                    onOptionSelected = { tamanho = it }
                                 )
                                 com.example.mystockapp.modais.FormField(
                                     label = "Loja:",
@@ -98,10 +132,11 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                                     textValue = preco,
                                     onValueChange = { preco = it }
                                 )
-                                com.example.mystockapp.modais.FormField(
+                                SelectField(
                                     label = "Cor:",
-                                    textValue = cor,
-                                    onValueChange = { cor = it }
+                                    selectedOption = cor,
+                                    options = coresOptions,
+                                    onOptionSelected = { cor = it }
                                 )
                                 com.example.mystockapp.modais.FormField(
                                     label = "N. Itens:",
@@ -120,7 +155,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Excluir",
+                        titulo = "Limpar",
                         onClick = onDismissRequest,
                         containerColor = Color(0xFF919191),
                     )
