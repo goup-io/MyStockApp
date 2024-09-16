@@ -7,5 +7,5 @@
     <string name="title_activity_bip_screen">BipScreen</string>
     <string name="title_activity_terms_lgpd">TermsLgpdActivity</string>
     <string name="title_activity_estoque">Estoque</string>
-    <string name="title_activity_pre_venda">title_activity_pre_venda</string>
+    <string name="title_activity_pre_venda">Pré-Venda</string>
 </resources>

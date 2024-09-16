@@ -36,7 +36,7 @@ class SplashScreen : ComponentActivity() {
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, PreVenda::class.java)
+            val intent = Intent(this, Login::class.java)
             startActivity(intent)
             finish()
         }, 3000) // 3 segundos de atraso
