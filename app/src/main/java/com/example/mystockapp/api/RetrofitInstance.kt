@@ -1,6 +1,11 @@
 package com.example.mystockapp.api
 
+import com.example.mystockapp.api.produtoApi.CategoriaApi
+import com.example.mystockapp.api.produtoApi.CorApi
+import com.example.mystockapp.api.produtoApi.ModeloApi
 import com.example.mystockapp.api.produtoApi.ProdutoApi
+import com.example.mystockapp.api.produtoApi.TamanhoApi
+import com.example.mystockapp.api.produtoApi.TipoApi
 import okhttp3.Interceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -39,5 +44,11 @@ object RetrofitInstance {
             .build()
     }
 
+    // produtos
     val produtoApi: ProdutoApi = retrofit.create(ProdutoApi::class.java)
+    val modeloApi: ModeloApi = retrofit.create(ModeloApi::class.java)
+    val tamanhoApi: TamanhoApi = retrofit.create(TamanhoApi::class.java)
+    val corApi: CorApi = retrofit.create(CorApi::class.java)
+    val categoriaApi: CategoriaApi = retrofit.create(CategoriaApi::class.java)
+    val tipoApi: TipoApi = retrofit.create(TipoApi::class.java)
 }

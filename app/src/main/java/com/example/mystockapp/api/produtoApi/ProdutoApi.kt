@@ -1,6 +1,6 @@
 package com.example.mystockapp.api.produtoApi
 
-import com.example.mystockapp.models.ProdutoTable
+import com.example.mystockapp.models.produtos.ProdutoTable
 import retrofit2.Response
 import retrofit2.http.GET
 

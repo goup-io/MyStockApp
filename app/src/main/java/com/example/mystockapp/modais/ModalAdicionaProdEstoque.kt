@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.produtoApi.ProdutoService
-import com.example.mystockapp.models.ProdutoTable
+import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable

@@ -1,5 +1,7 @@
 package com.example.mystockapp.telas
 
+import InformacoesProdutoDialog
+import NovoProdutoDialog
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,6 +54,7 @@ import androidx.compose.ui.draw.shadow
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
 
 class PreVenda : ComponentActivity() {
@@ -302,7 +305,7 @@ fun PreVendaScreen() {
                             }
 
                             if (isModalAddProdCarrinho) {
-                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
+                                InformacoesProdutoDialog(onDismissRequest = { isModalAddProdCarrinho = false })
                             }
 
 

@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mystockapp.models.Produto
+import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.Spinner
 import com.example.mystockapp.telas.componentes.Table

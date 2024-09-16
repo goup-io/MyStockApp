@@ -1,4 +1,4 @@
-package com.example.mystockapp.models
+package com.example.mystockapp.models.produtos
 
 data class Produto (
     val codigo : String,

@@ -2,6 +2,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -12,6 +13,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
+import com.example.mystockapp.api.exceptions.NetworkException
+import com.example.mystockapp.api.produtoApi.CorService
+import com.example.mystockapp.api.produtoApi.ModeloService
+import com.example.mystockapp.api.produtoApi.TamanhoService
 
 // componentes
 import com.example.mystockapp.modais.FormField
@@ -32,6 +40,22 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit) {
     var preco by remember { mutableStateOf("") }
     var cor by remember { mutableStateOf("") }
     var nItens by remember { mutableStateOf("") }
+    var modelosOptions by remember { mutableStateOf(listOf("")) }
+    var coresOptions by remember { mutableStateOf(listOf("")) }
+    var tamanhosOptions by remember { mutableStateOf(listOf(0)) }
+
+    var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        try {
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+        }
+    }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -69,13 +93,17 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit) {
                                 SelectField(
                                     label = "Modelo:",
                                     selectedOption = modelo,
-                                    options = listOf("Modelo 1", "Modelo 2", "Modelo 3"),
+                                    options = modelosOptions,
+                                    disabled = true,
                                     onOptionSelected = { modelo = it }
                                 )
-                                FormField(
+                                SelectField(
                                     label = "Tamanho:",
-                                    textValue = tamanho,
-                                    onValueChange = { tamanho = it }
+                                    selectedOption = tamanho,
+                                    disabled = true,
+                                    options = tamanhosOptions,
+
+                                    onOptionSelected = { tamanho = it }
                                 )
                                 FormField(
                                     label = "Loja:",
@@ -100,10 +128,12 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit) {
                                     fieldType = KeyboardType.Number,
                                     onValueChange = { preco = it }
                                 )
-                                FormField(
+                                SelectField(
                                     label = "Cor:",
-                                    textValue = cor,
-                                    onValueChange = { cor = it }
+                                    selectedOption = cor,
+                                    disabled = true,
+                                    options = coresOptions,
+                                    onOptionSelected = { cor = it }
                                 )
                                 FormField(
                                     label = "N. Itens:",

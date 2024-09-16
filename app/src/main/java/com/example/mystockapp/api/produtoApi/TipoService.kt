@@ -1,15 +1,18 @@
 package com.example.mystockapp.api.produtoApi
 
+
 import android.util.Log
 import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.models.produtos.Tipo
 import retrofit2.HttpException
 import java.io.IOException
-class ProdutoService(private val produtoApi: ProdutoApi) {
-    suspend fun fetchProdutosTabela(): List<ProdutoTable> {
+
+class TipoService(private val tipoApi: TipoApi) {
+    suspend fun fetchTipos(): List<Tipo> {
         return try {
-            val response = produtoApi.getProdutos()
+            val response = tipoApi.getTipos()
 
             if (response.isSuccessful) {
                 Log.d("ProdutoService", "API Response: ${response.body()}")

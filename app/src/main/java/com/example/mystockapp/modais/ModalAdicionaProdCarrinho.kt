@@ -24,7 +24,7 @@ import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
-import com.example.mystockapp.models.ProdutoTable
+import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable
