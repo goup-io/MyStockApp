@@ -53,7 +53,7 @@ import androidx.compose.ui.draw.shadow
 //import androidx.compose.ui.layout.ContentScale
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
-import com.example.mystockapp.modais.AddProductToStock
+import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
@@ -306,7 +306,7 @@ fun PreVendaScreen() {
                             }
 
                             if (isModalAddProdCarrinho) {
-                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
+                                AddProdutoEstoque(onDismissRequest = { isModalAddProdCarrinho = false })
                             }
 
 
