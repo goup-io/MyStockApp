@@ -43,7 +43,7 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
             ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
             Spacer(modifier = Modifier.height(6.dp))
 
-            ProductTable(products)
+         //   ProductTable(products)
 
             Row(
                 modifier = Modifier

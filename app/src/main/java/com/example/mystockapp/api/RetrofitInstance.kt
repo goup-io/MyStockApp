@@ -22,7 +22,7 @@ object RetrofitInstance {
         val originalRequest: Request = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWNhdGlvbiIsInN1YiI6InRlc3RlIiwiaWQiOjEsImV4cCI6MTcyNjUxODQzNn0.vw11Kg8kvdY_YFEXvQIvQT2cOIsWFaBg3hBNRfIxl3A"
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWNhdGlvbiIsInN1YiI6InRlc3RlIiwiaWQiOjEsImV4cCI6MTcyNjg3NTE0NX0.MOfoSdKakY5iiXRSsdO9M6MB1ZDKcUB-GKduQuyeaMo"
         if (!originalRequest.url.toString().contains("auth")) {
             requestBuilder.header("Authorization", "Bearer $token")
         }
