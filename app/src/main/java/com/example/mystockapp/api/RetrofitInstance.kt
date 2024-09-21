@@ -1,5 +1,6 @@
 package com.example.mystockapp.api
 
+import com.example.mystockapp.api.authApi.AuthApi
 import com.example.mystockapp.api.produtoApi.CategoriaApi
 import com.example.mystockapp.api.produtoApi.CorApi
 import com.example.mystockapp.api.produtoApi.ModeloApi
@@ -18,13 +19,16 @@ object RetrofitInstance {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+    private var token: String? = null
+
     val headerInterceptor = Interceptor { chain ->
         val originalRequest: Request = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWNhdGlvbiIsInN1YiI6InRlc3RlIiwiaWQiOjEsImV4cCI6MTcyNjUxODQzNn0.vw11Kg8kvdY_YFEXvQIvQT2cOIsWFaBg3hBNRfIxl3A"
-        if (!originalRequest.url.toString().contains("auth")) {
-            requestBuilder.header("Authorization", "Bearer $token")
+        token?.let {
+            if (!originalRequest.url.toString().contains("auth")) {
+                requestBuilder.header("Authorization", "Bearer $it")
+            }
         }
 
         val requestWithHeaders: Request = requestBuilder.build()
@@ -38,10 +42,14 @@ object RetrofitInstance {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.0.106:8080/")
+            .baseUrl("http://192.168.1.16:8080/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    fun updateToken(newToken: String) {
+        token = newToken
     }
 
     // produtos
@@ -51,4 +59,6 @@ object RetrofitInstance {
     val corApi: CorApi = retrofit.create(CorApi::class.java)
     val categoriaApi: CategoriaApi = retrofit.create(CategoriaApi::class.java)
     val tipoApi: TipoApi = retrofit.create(TipoApi::class.java)
+
+    val authApi : AuthApi = retrofit.create(AuthApi::class.java)
 }

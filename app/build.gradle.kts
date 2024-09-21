@@ -97,4 +97,7 @@ dependencies {
 
     // ML Kit - Leitura de código de barras
     implementation ("com.google.mlkit:barcode-scanning:17.0.2")
+
+    // Lifecycle ViewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
 }

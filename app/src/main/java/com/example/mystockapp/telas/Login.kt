@@ -25,23 +25,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
+import com.example.mystockapp.api.authApi.AuthViewModel
+import com.example.mystockapp.api.authApi.AuthService
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.authApi.AuthViewModelFactory
 import com.example.mystockapp.ui.theme.MyStockAppTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class Login : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Verificar se o usuário já aceitou os termos
         val sharedPreferences = getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
         val termsAccepted = sharedPreferences.getBoolean("termsAccepted", false)
 
         if (!termsAccepted) {
-            // Se os termos não foram aceitos, redirecionar para a tela de termos
             val intent = Intent(this, TermsLgpdActivity::class.java)
             startActivity(intent)
             finish()
         } else {
-            // Caso já tenha aceitado os termos, prosseguir para a tela de login
             setContent {
                 MyStockAppTheme {
                     LoginScreen { navigateToMainActivity() }
@@ -63,6 +65,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Instanciar AuthService e AuthViewModelFactory
+    val authService = AuthService(RetrofitInstance.authApi)
+    val viewModelFactory = AuthViewModelFactory(authService)
+    val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+    val loginState by viewModel.loginState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -177,24 +186,25 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 )
             )
 
-            if (showError) {
-                Text(
-                    text = "Por favor, preencha todos os campos.",
-                    color = Color(0xFFEF233C),
-                    modifier = Modifier.padding(top = 8.dp),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
+//            if (showError) {
+//                Text(
+//                    text = "Por favor, preencha todos os campos.",
+//                    color = Color(0xFFEF233C),
+//                    modifier = Modifier.padding(top = 8.dp),
+//                    style = TextStyle(
+//                        fontSize = 14.sp,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                )
+//            }
 
             Button(
                 onClick = {
                     if (emailState.isNotEmpty() && passwordState.isNotEmpty()) {
-                        onLoginSuccess()
+                        viewModel.login(emailState, passwordState)
                     } else {
                         showError = true
+                        errorMessage = "Por favor, preencha todos os campos."
                     }
                 },
                 modifier = Modifier
@@ -207,6 +217,32 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 shape = RoundedCornerShape(50.dp)
             ) {
                 Text(text = "Entrar", color = Color(0xFF355070), fontSize = 22.sp)
+            }
+
+            when (loginState) {
+                is AuthViewModel.LoginState.Loading -> {
+                    CircularProgressIndicator()
+                }
+                is AuthViewModel.LoginState.Success -> {
+                    onLoginSuccess()
+                }
+                is AuthViewModel.LoginState.Error -> {
+                    showError = true
+                    errorMessage = (loginState as AuthViewModel.LoginState.Error).message
+                }
+                else -> {}
+            }
+
+            if (showError) {
+                Text(
+                    text = errorMessage,
+                    color = Color(0xFFEF233C),
+                    modifier = Modifier.padding(top = 8.dp),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
