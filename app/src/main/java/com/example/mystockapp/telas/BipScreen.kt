@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.mystockapp.R
+import com.example.mystockapp.telas.componentes.Header
+import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 
 class BipScreen : ComponentActivity() {
@@ -47,8 +49,10 @@ class BipScreen : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyStockAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Screen(modifier = Modifier.padding(innerPadding))
+                MenuDrawer(titulo = "Busca") {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        Screen(modifier = Modifier.padding(innerPadding))
+                    }
                 }
             }
         }
@@ -100,37 +104,6 @@ fun Screen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(modifier = Modifier
-                .background(Color(0XFF355070))
-                .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Botão Menu 3 Linhas (pode ser substituído por um ícone real)
-                Text(
-                    text = "≡", // Substituir por um ícone de menu
-                    color = Color.White,
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Text(
-                    text = "Busca",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = R.mipmap.ic_logo_mystock),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .size(50.dp)
-                )
-            }
 
             Column(
                 modifier = Modifier
@@ -383,6 +356,8 @@ fun InfoTextField(label: String, modifier: Modifier = Modifier) {
 @Composable
 fun BipScreenPreview() {
     MyStockAppTheme {
-        Screen()
+        MenuDrawer(titulo = "Busca") {
+            Screen()
+        }
     }
 }
