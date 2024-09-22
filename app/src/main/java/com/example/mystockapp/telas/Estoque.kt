@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
+import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.MenuDrawer
@@ -65,14 +67,14 @@ fun EstoqueScreen() {
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
     val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", 300.00, 37, "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 37, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15")
+        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
     MenuDrawer(titulo = "Estoque") {
@@ -318,23 +320,7 @@ fun EstoqueScreen() {
                         )
                     }
 
-                    androidx.compose.material3.Button(
-                        onClick = { /* Ação do segundo botão */ },
-                        modifier = Modifier
-                            .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
-                            .height(50.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF355070)
-                        )
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Novo Produto",
-                            color = Color.White,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
+                        ProductTable(products, { product -> }, { product -> })
 
                 // Dois botões azuis na parte inferior
                 Row(

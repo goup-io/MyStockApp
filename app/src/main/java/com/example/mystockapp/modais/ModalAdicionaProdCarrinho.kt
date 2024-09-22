@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,6 +27,7 @@ import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
+import com.example.mystockapp.models.produtos.ProdutoQuantidadeAdd
 
 @Composable
 fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
@@ -34,16 +36,34 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
 
-    fun alterarProduto(produto: ProdutoTable) {
-        produtosAlterados = produtosAlterados.toMutableList().apply {
-            add(produto)
+
+    fun addProduto(produto: ProdutoTable) {
+        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
+        if (produtoBuscado in produtosAlterados) {
+            produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.plus(1) ?: 1)
+        } else {
+            produto.quantidadeToAdd = 1;
+            produtosAlterados = produtosAlterados.toMutableList().apply { add(produto) }
+        }
+    }
+
+
+    fun removerProduto(produto: ProdutoTable) {
+        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
+
+        if (produtoBuscado in produtosAlterados) {
+            if (produtoBuscado?.quantidadeToAdd?.toInt()!! > 1) {
+                produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
+            } else {
+                produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
+            }
         }
     }
 
     LaunchedEffect(Unit) {
         val produtoService = ProdutoService(RetrofitInstance.produtoApi)
         try {
-            products = produtoService.fetchProdutosTabela()
+            products = produtoService.fetchProdutosTabela(1)
         } catch (e: ApiException) {
             errorMessage = "${e.message}"
         } catch (e: NetworkException) {
@@ -67,7 +87,11 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
             if (errorMessage != null) {
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
-                ProductTable(products)
+                ProductTable(
+                    products = products,
+                    onAddProduto = ::addProduto,
+                    onRemoverProduto = ::removerProduto
+                )
             }
 
             Row(

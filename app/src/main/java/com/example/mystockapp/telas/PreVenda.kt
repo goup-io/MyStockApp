@@ -1,3 +1,7 @@
+package com.example.mystockapp.telas
+
+import InformacoesProdutoDialog
+import NovoProdutoDialog
 import ProductTable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -41,9 +45,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.AddProdutoEstoque
+import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.ModalNovoModeloDialog
+import com.example.mystockapp.modais.modalAddProdCarrinho
 import com.example.mystockapp.models.produtos.ProdutoTable
-import com.example.mystockapp.telas.componentes.Header
-import com.example.mystockapp.telas.componentes.MenuDrawer
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,15 +71,17 @@ class MainActivity : ComponentActivity() {
 fun PreVendaScreen() {
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
+    var isModalAdicionarDesconto by remember { mutableStateOf(false) }
+    var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", 300.00, 37, "Preto", "20"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 37, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15")
+        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
     MenuDrawer(titulo = "Pré Venda") {
@@ -288,7 +296,44 @@ fun PreVendaScreen() {
                             onValueChange = { codigo = it }
                         )
 
-                        Text(text = "Tipo Venda", fontSize = 14.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Button(
+                                onClick = { 
+                                    isModalAddProdCarrinho = true
+                                },
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF355070)
+                                )
+                            ) {
+                                Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
+                            }
+
+                            if (isModalAddProdCarrinho) {
+                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
+                            }
+
+
+                        }
+                    }
+
+                    // Tabela dentro da caixa grande
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(0.95f)
+                            .height(310.dp)
+                            .background(Color(0xFF355070))
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                        .align(Alignment.CenterHorizontally)
+                    ) {
+
+                        ProductTable(products, {}, {})
 
                         OutlinedTextField(
                             modifier = Modifier.width(80.dp),
