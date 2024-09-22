@@ -69,14 +69,14 @@ fun EstoqueScreen() {
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
     val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", 300.00, 37, "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15")
+        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
     Column(
@@ -343,7 +343,7 @@ fun EstoqueScreen() {
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                        ProductTable(products)
+                        ProductTable(products, { product -> }, { product -> })
 
                     }
                 }

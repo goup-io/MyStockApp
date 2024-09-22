@@ -1,6 +1,7 @@
 package com.example.mystockapp.api
 
 import com.example.mystockapp.api.authApi.AuthApi
+import com.example.mystockapp.api.lojaApi.LojaApi
 import com.example.mystockapp.api.produtoApi.CategoriaApi
 import com.example.mystockapp.api.produtoApi.CorApi
 import com.example.mystockapp.api.produtoApi.ModeloApi
@@ -42,7 +43,7 @@ object RetrofitInstance {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.16:8080/")
+            .baseUrl("http://192.168.0.106:8080/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
