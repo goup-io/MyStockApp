@@ -60,7 +60,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
     LaunchedEffect(Unit) {
         val produtoService = ProdutoService(RetrofitInstance.produtoApi)
         try {
-            products = produtoService.fetchProdutosTabela()
+            products = produtoService.fetchProdutosTabela(1)
         } catch (e: ApiException) {
             errorMessage = "${e.message}"
         } catch (e: NetworkException) {

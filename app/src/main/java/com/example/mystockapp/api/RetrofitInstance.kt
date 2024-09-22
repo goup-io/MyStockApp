@@ -1,5 +1,6 @@
 package com.example.mystockapp.api
 
+import com.example.mystockapp.api.lojaApi.LojaApi
 import com.example.mystockapp.api.produtoApi.CategoriaApi
 import com.example.mystockapp.api.produtoApi.CorApi
 import com.example.mystockapp.api.produtoApi.ModeloApi
@@ -22,7 +23,7 @@ object RetrofitInstance {
         val originalRequest: Request = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWNhdGlvbiIsInN1YiI6InRlc3RlIiwiaWQiOjEsImV4cCI6MTcyNjg3NTE0NX0.MOfoSdKakY5iiXRSsdO9M6MB1ZDKcUB-GKduQuyeaMo"
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoZW50aWNhdGlvbiIsInN1YiI6InRlc3RlIiwiaWQiOjEsImV4cCI6MTcyNzA1MzEwOX0.Y6KFyB0HejcX2f563ZmJZQmx8UWSEPt5Rm8usruuOqU"
         if (!originalRequest.url.toString().contains("auth")) {
             requestBuilder.header("Authorization", "Bearer $token")
         }
@@ -51,4 +52,5 @@ object RetrofitInstance {
     val corApi: CorApi = retrofit.create(CorApi::class.java)
     val categoriaApi: CategoriaApi = retrofit.create(CategoriaApi::class.java)
     val tipoApi: TipoApi = retrofit.create(TipoApi::class.java)
+    val lojaApi: LojaApi = retrofit.create(LojaApi::class.java)
 }

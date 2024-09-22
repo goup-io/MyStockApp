@@ -302,11 +302,11 @@ fun PreVendaScreen() {
                                     containerColor = Color(0xFF355070)
                                 )
                             ) {
-                                Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
+                                Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
                             }
 
                             if (isModalAddProdCarrinho) {
-                                AddProdutoEstoque(onDismissRequest = { isModalAddProdCarrinho = false })
+                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
                             }
 
 
