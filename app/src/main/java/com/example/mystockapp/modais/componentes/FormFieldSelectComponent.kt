@@ -54,11 +54,11 @@ fun <T> SelectField(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current.copy(fontSize = 10.sp), // Fonte ajustada para caber em 20.dp
     labelFontSize: TextUnit = 10.sp,
+    disabled: Boolean = false,
     borderColor: Color = Color(0xFF355070),
-    containerColor: Color = Color.White,
+    containerColor: Color = if (disabled) Color(0xFFECECEC) else Color.White,
     fieldHeight: Dp = 20.dp, // Altura fixada em 20.dp
     width: Dp = 200.dp,
-    disabled: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 

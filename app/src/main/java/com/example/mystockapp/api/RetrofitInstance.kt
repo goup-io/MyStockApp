@@ -61,4 +61,5 @@ object RetrofitInstance {
     val tipoApi: TipoApi = retrofit.create(TipoApi::class.java)
 
     val authApi : AuthApi = retrofit.create(AuthApi::class.java)
+    val lojaApi: LojaApi = retrofit.create(LojaApi::class.java)
 }

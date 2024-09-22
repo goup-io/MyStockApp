@@ -54,7 +54,7 @@ import androidx.compose.ui.draw.shadow
 //import androidx.compose.ui.layout.ContentScale
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
-import com.example.mystockapp.modais.AddProductToStock
+import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
@@ -314,7 +314,7 @@ fun PreVendaScreen() {
                                     containerColor = Color(0xFF355070)
                                 )
                             ) {
-                                Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
+                                Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
                             }
 
                             if (isModalAddProdCarrinho) {
