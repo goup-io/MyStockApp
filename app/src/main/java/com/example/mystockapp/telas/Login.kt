@@ -20,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,6 +68,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var passwordState by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     // Instanciar AuthService e AuthViewModelFactory
     val authService = AuthService(RetrofitInstance.authApi)
@@ -168,6 +171,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         if (showError && passwordState.isEmpty()) Color.Red else Color.Transparent,
                         RoundedCornerShape(50.dp)
                     ),
+                // Altera o campo de senha para suportar o modo de visibilidade
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 placeholder = { Text("*****") },
                 leadingIcon = {
@@ -177,6 +182,23 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         modifier = Modifier.size(28.dp)
                     )
                 },
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        painterResource(id = R.mipmap.ic_visibility) // Ícone para senha visível
+                    else
+                        painterResource(id = R.mipmap.ic_visibility_off) // Ícone para senha oculta
+
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible },
+                        modifier = Modifier.size(30.dp)
+                    ) {
+                        Icon(
+                            painter = image,
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                },
                 shape = RoundedCornerShape(50.dp),
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.White,
@@ -185,18 +207,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                     focusedIndicatorColor = Color.Transparent
                 )
             )
-
-//            if (showError) {
-//                Text(
-//                    text = "Por favor, preencha todos os campos.",
-//                    color = Color(0xFFEF233C),
-//                    modifier = Modifier.padding(top = 8.dp),
-//                    style = TextStyle(
-//                        fontSize = 14.sp,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                )
-//            }
 
             Button(
                 onClick = {
