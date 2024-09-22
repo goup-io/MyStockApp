@@ -184,9 +184,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 },
                 trailingIcon = {
                     val image = if (passwordVisible)
-                        painterResource(id = R.mipmap.ic_visibility) // Ícone para senha visível
-                    else
                         painterResource(id = R.mipmap.ic_visibility_off) // Ícone para senha oculta
+                    else
+                        painterResource(id = R.mipmap.ic_visibility) // Ícone para senha visível
 
                     IconButton(
                         onClick = { passwordVisible = !passwordVisible },
