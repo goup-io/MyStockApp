@@ -1,5 +1,6 @@
 package com.example.mystockapp.telas
 
+import ProductTable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -106,8 +107,8 @@ fun EstoqueScreen() {
                         }
                     }
                     Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround){
-                        Column { Button(colors = ButtonDefaults.buttonColors(Cores.PurpleGrey40), onClick = { }) { Text(text = "Limpar", color = Cores.White) } }
-                        Column { Button(colors = ButtonDefaults.buttonColors(Cores.AzulBackground), onClick = {}) { Text(text = "Filtrar", color = Cores.White) } }
+                        Column { Button(colors = androidx.compose.material.ButtonDefaults.buttonColors(Cores.PurpleGrey40), onClick = { }) { Text(text = "Limpar", color = Cores.White) } }
+                        Column { Button(colors = androidx.compose.material.ButtonDefaults.buttonColors(Cores.AzulBackground), onClick = {}) { Text(text = "Filtrar", color = Cores.White) } }
                     }
                 }
             }

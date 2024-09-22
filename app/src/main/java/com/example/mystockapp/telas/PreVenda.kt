@@ -1,7 +1,5 @@
 package com.example.mystockapp.telas
 
-import InformacoesProdutoDialog
-import NovoProdutoDialog
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,10 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-//import androidx.compose.material3.ButtonColors
-//import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-//import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,21 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.layout.ContentScale
-//import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
-import com.example.mystockapp.modais.AddProductToStock
 import com.example.mystockapp.modais.ModalAdicionarDesconto
-import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
+import com.example.mystockapp.models.produtos.ProdutoTable
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +69,16 @@ fun PreVendaScreen() {
 
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
+    val products = listOf(
+        ProdutoTable("Triple Black", "Air Force", 300.00,37, "Preto",  "20"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
+        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15")
+    )
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
 
