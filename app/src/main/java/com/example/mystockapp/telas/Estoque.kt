@@ -159,25 +159,25 @@ fun EstoqueScreen() {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         // Label 1
-                        Text(text = "Modelo:", modifier = Modifier.weight(1f))
+                        Text(text = "Mod. :", modifier = Modifier.weight(1f))
 
                         // Input 1
                         OutlinedTextField(
                             value = "",
                             onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
+                            modifier = Modifier.weight(1.4f).height(10.dp)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
 
                         // Label 2
-                        Text(text = "Cor:", modifier = Modifier.weight(1f))
+                        Text(text = "Cor :", modifier = Modifier.weight(1f))
 
                         // Input 2
                         OutlinedTextField(
                             value = "",
                             onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
+                            modifier = Modifier.weight(1.4f).height(10.dp)
                         )
                     }
 
@@ -189,25 +189,25 @@ fun EstoqueScreen() {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         // Label 3
-                        Text(text = "Tamanho:", modifier = Modifier.weight(1f))
+                        Text(text = "Tam. :", modifier = Modifier.weight(1f))
 
                         // Input 3
                         OutlinedTextField(
                             value = "",
                             onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
+                            modifier = Modifier.weight(1.4f).height(10.dp)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))
 
                         // Label 4
-                        Text(text = "Preço:", modifier = Modifier.weight(1f))
+                        Text(text = "Preço :", modifier = Modifier.weight(1f))
 
                         // Input 4
                         OutlinedTextField(
                             value = "",
                             onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
+                            modifier = Modifier.weight(1.4f).height(10.dp)
                         )
                     }
 
@@ -226,7 +226,7 @@ fun EstoqueScreen() {
                             shape = RoundedCornerShape(5.dp),
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF355070)
+                                containerColor = Color(0xFF919191)
                             )
                         ) {
                             androidx.compose.material3.Text(
@@ -276,7 +276,7 @@ fun EstoqueScreen() {
                     .clip(RoundedCornerShape(8.dp))
             ) {
                 Column {
-                    // Header da caixa grande
+                    // Header da caixa grande com campo de pesquisa
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -284,52 +284,57 @@ fun EstoqueScreen() {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Título "Produtos"
                         androidx.compose.material3.Text(
                             text = "Produtos",
                             fontSize = 20.sp,
                             color = Color.Black
                         )
 
-                        Row {
-                            androidx.compose.material3.Button(
-                                onClick = { /* Ação do botão 1 */ },
+                        // Campo de pesquisa e botão
+                        Row(
+                            modifier = Modifier.padding(0.dp),
+                            verticalAlignment = Alignment.CenterVertically // Alinha o texto e input ao centro
+                        ) {
+                            // Texto "Pesquisar:"
+                            androidx.compose.material3.Text(
+                                text = "Buscar:",
+                                fontSize = 12.sp,
+                                color = Color.Black,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+
+                            // Input para pesquisa
+                            androidx.compose.material3.OutlinedTextField(
+                                value = "TESTES", // Substituir pelo estado da pesquisa
+                                onValueChange = { /* Ação ao mudar o valor */ },
                                 modifier = Modifier
-                                    .width(65.dp)
-                                    .height(25.dp),
+                                    .width(105.dp) // Define a largura do input
+                                    .height(15.dp)
+                                    .padding(0.dp),
+                                singleLine = true,
+                                placeholder = {
+                                    androidx.compose.material3.Text(text = "Digite o código")
+                                }
+                            )
+
+//                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Botão para realizar a pesquisa
+                            androidx.compose.material3.Button(
+                                onClick = { /* Ação ao clicar no botão de pesquisa */ },
+                                modifier = Modifier
+                                    .width(30.dp)
+                                    .height(30.dp),
                                 shape = RoundedCornerShape(5.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF355070)
                                 )
-                            ) {
-                                androidx.compose.material3.Text(
-                                    text = "Código",
-                                    color = Color.White,
-                                    fontSize = 12.sp
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            androidx.compose.material3.Button(
-                                onClick = { /* Ação do botão 2 */ },
-                                modifier = Modifier
-                                    .width(70.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
-                                )
-                            ) {
-                                androidx.compose.material3.Text(
-                                    text = "Add Prod",
-                                    color = Color.White,
-                                    fontSize = 12.sp
-                                )
-                            }
+                            ) {}
                         }
                     }
+
 
                     // Tabela dentro da caixa grande
                     Column(
