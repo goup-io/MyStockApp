@@ -44,7 +44,7 @@
             android:label="@string/title_activity_bip_screen"
             android:theme="@style/Theme.MyStockApp" /> <!-- <activity -->
         <activity
-            android:name=".telas.SplashScreen"
+            android:name=".telas.PreVenda"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyStockApp">
@@ -57,11 +57,6 @@
             android:name=".telas.Login"
             android:exported="false"
             android:label="@string/title_activity_login"
-            android:theme="@style/Theme.MyStockApp" />
-        <activity
-            android:name=".telas.PreVenda"
-            android:exported="false"
-            android:label="@string/title_activity_pre_venda"
             android:theme="@style/Theme.MyStockApp" />
         <activity
             android:name=".telas.MainActivity"

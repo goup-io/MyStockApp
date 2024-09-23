@@ -8,16 +8,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.modais.componentes.ButtonComponent
-
 
 @Composable
 fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
@@ -27,7 +24,7 @@ fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
@@ -54,8 +51,10 @@ fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
                                 FormField(
                                     label = "Codigo:",
                                     textValue = codigo,
+                                    fieldType = KeyboardType.Number,
                                     onValueChange = { codigo = it },
-                                    fieldSize = 30.dp
+                                    height = 25.dp,
+                                    width = 300.dp,
                                 )
                             }
                         }

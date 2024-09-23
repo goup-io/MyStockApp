@@ -1,10 +1,6 @@
 package com.example.mystockapp.modais
 
 import ProductTable
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,17 +32,24 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
 
     var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
+
+    fun alterarProduto(produto: ProdutoTable) {
+        produtosAlterados = produtosAlterados.toMutableList().apply {
+            add(produto)
+        }
+    }
 
     LaunchedEffect(Unit) {
         val produtoService = ProdutoService(RetrofitInstance.produtoApi)
         try {
             products = produtoService.fetchProdutosTabela()
         } catch (e: ApiException) {
-            errorMessage = "API Error: ${e.message}"
+            errorMessage = "${e.message}"
         } catch (e: NetworkException) {
             errorMessage = "Network Error: ${e.message}"
         } catch (e: GeneralException) {
-            errorMessage = "Unexpected Error: ${e.message}"
+            errorMessage = "${e.message}"
         }
     }
 
@@ -55,14 +58,13 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White, RoundedCornerShape(10.dp))
-                .padding(16.dp)
+                .padding(8.dp)
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
 
-            ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
+            ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Carrinho")
             Spacer(modifier = Modifier.height(6.dp))
             if (errorMessage != null) {
-                // Exibir mensagem de erro
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
                 ProductTable(products)
@@ -75,13 +77,13 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
                 horizontalArrangement = Arrangement.End
             ) {
                 ButtonComponent(
-                    titulo = "Excluir",
+                    titulo = "Limpar",
                     onClick = { onDismissRequest() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
                 ButtonComponent(
-                    titulo = "Editar",
+                    titulo = "Adicionar",
                     onClick = {
                        onDismissRequest() },
                     containerColor = Color(0xFF355070),

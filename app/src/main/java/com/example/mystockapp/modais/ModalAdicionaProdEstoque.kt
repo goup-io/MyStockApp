@@ -1,10 +1,6 @@
 package com.example.mystockapp.modais
 
 import ProductTable
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,9 +18,6 @@ import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun AddProductToStock(onDismissRequest: () -> Unit) {
@@ -44,7 +37,7 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White, RoundedCornerShape(10.dp))
-                .padding(16.dp)
+                .padding(8.dp)
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
             ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
@@ -59,13 +52,13 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
                 horizontalArrangement = Arrangement.End
             ) {
                 ButtonComponent(
-                    titulo = "Excluir",
+                    titulo = "Limpar",
                     onClick = { onDismissRequest() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
                 ButtonComponent(
-                    titulo = "Editar",
+                    titulo = "Adicionar",
                     onClick = {
                        onDismissRequest() },
                     containerColor = Color(0xFF355070),

@@ -19,7 +19,8 @@ import com.example.mystockapp.models.ProdutoTable
 import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
-fun ProductTable(products: List<ProdutoTable>) {
+fun ProductTable(
+    products: List<ProdutoTable>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,10 +34,11 @@ fun ProductTable(products: List<ProdutoTable>) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(products.size) { index ->
-                    val product = products[index]
+                    var product = products[index]
                     ProductRow(
                         product = product,
-                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0)
+                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
+                        0
                     )
                 }
             }
@@ -79,7 +81,7 @@ fun HeaderText(text: String, modifier: Modifier) {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
+fun ProductRow(product: ProdutoTable, backgroundColor: Color, quantidadeAdd: Number) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -89,52 +91,86 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            product.nome,
+        Column(
             modifier = Modifier.weight(2f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.modelo,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.nome,
+                textAlign = TextAlign.Center,
+                fontSize = 7.sp
+            )
+        }
+        Column(
             modifier = Modifier.weight(2f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.preco.toString(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.modelo,
+                textAlign = TextAlign.Center,
+                fontSize = 7.sp
+            )
+        }
+        Column(
             modifier = Modifier.weight(1.2f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.tamanho.toString(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.preco.toString(),
+                textAlign = TextAlign.Center,
+                fontSize = 7.sp
+            )
+        }
+        Column(
             modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.cor,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.tamanho.toString(),
+                textAlign = TextAlign.Center,
+                fontSize = 7.sp
+            )
+        }
+        Column(
             modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.quantidade,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.cor,
+                textAlign = TextAlign.Center,
+                fontSize = 7.sp
+            )
+        }
+        Column(
             modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.quantidade,
+                textAlign = TextAlign.Center,
+                fontSize = 7.sp
+            )
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(1.5.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.weight(1.3f)
         ) {
             Button(
-                onClick = { /* TODO: Handle button click */ },
-                modifier = Modifier
-                    .size(12.dp), // Removed align modifier
+                onClick = {
+                    if (quantidadeAdd.toInt() > 0) {
+                        quantidadeAdd.toInt() - 1
+                    } else {
+                        quantidadeAdd.toInt()
+                    }
+                },
+                modifier = Modifier.height(24.dp).width(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black
@@ -145,24 +181,24 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("-", fontSize = 7.sp, color = Color.Black, lineHeight = 16.sp)
+                    Text("-", fontSize = 15.sp, color = Color.Black, lineHeight = 20.sp)
                 }
             }
             BasicTextField(
-                value = "100",
-                onValueChange = { /* TODO: Handle value change */ },
+                value = quantidadeAdd.toString(),
+                onValueChange = { },
                 modifier = Modifier
-                    .size(16.dp)
-                    .height(12.dp)
+                    .size(13.dp) // Ajustar o tamanho do campo de texto
                     .border(1.dp, Color(0xFF355070), RoundedCornerShape(50))
                     .background(Color.Transparent),
                 textStyle = LocalTextStyle.current.copy(
-                    fontSize = 8.sp,
+                    fontSize = 6.sp, // Ajustar o tamanho da fonte
                     color = Color.Black,
                     textAlign = TextAlign.Center,
-                    lineHeight = 16.sp
+                    lineHeight = 10.sp // Ajustar a altura da linha
                 ),
                 singleLine = true,
+                enabled = false,
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier
@@ -175,9 +211,10 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
                 }
             )
             Button(
-                onClick = { /* TODO: Handle button click */ },
-                modifier = Modifier
-                    .size(12.dp),
+                onClick = {
+                    quantidadeAdd.toInt() + 1
+                },
+                modifier = Modifier.height(24.dp).width(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black
@@ -188,11 +225,10 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("+", fontSize = 8.sp, color = Color.Black, lineHeight = 16.sp)
+                    Text("+", fontSize = 15.sp, color = Color.Black, lineHeight = 20.sp)
                 }
             }
             Spacer(modifier = Modifier.width(4.dp))
-
         }
     }
 }
