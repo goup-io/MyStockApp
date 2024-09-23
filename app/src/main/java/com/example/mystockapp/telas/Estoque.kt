@@ -45,7 +45,7 @@ import com.example.mystockapp.models.Produto
 import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.Spinner
 import com.example.mystockapp.telas.componentes.Table
-import com.example.mystockapp.telas.ui.theme.MyStockAppTheme
+import com.example.mystockapp.ui.theme.MyStockAppTheme
 import com.example.mystockapp.ui.theme.Cores
 
 

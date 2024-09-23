@@ -1,4 +1,4 @@
-package com.example.mystock
+package com.example.mystockapp.telas
 
 import android.annotation.SuppressLint
 import android.content.Context

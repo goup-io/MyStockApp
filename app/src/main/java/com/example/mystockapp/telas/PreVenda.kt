@@ -52,9 +52,10 @@ import androidx.compose.ui.draw.shadow
 //import androidx.compose.ui.layout.ContentScale
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
-import com.example.mystockapp.dtos.ProdutoTable
+import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.modalAddProdCarrinho
 
-class MainActivity : ComponentActivity() {
+class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -77,16 +78,8 @@ fun PreVendaScreen() {
 
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
-    val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", "300,00", "37", "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15")
-    )
+    var isModalAdicionarDesconto by remember { mutableStateOf(false) }
+    var isModalAddProdCarrinho by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -175,7 +168,9 @@ fun PreVendaScreen() {
                         Row {
                             // Botões com bordas arredondadas
                             Button(
-                                onClick = { /* Ação do botão 1 */ },
+                                onClick = {
+                                    isModalAdicionarDesconto = true
+                                },
                                 modifier = Modifier
                                     .padding(end = 8.dp)
                                     .width(65.dp)
@@ -184,6 +179,10 @@ fun PreVendaScreen() {
                                 contentPadding = PaddingValues(0.dp) // Ajusta o padding
                             ) {
                                 Text(text = "AddDisc", fontSize = 12.sp)
+                            }
+
+                            if (isModalAdicionarDesconto) {
+                                ModalAdicionarDesconto(onDismissRequest = { isModalAdicionarDesconto = false })
                             }
 
                             Button(
@@ -288,7 +287,9 @@ fun PreVendaScreen() {
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(
-                                onClick = { /* Ação do botão 2 */ },
+                                onClick = { 
+                                    isModalAddProdCarrinho = true
+                                },
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(25.dp),
@@ -300,6 +301,12 @@ fun PreVendaScreen() {
                             ) {
                                 Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
                             }
+
+                            if (isModalAddProdCarrinho) {
+                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
+                            }
+
+
                         }
                     }
 

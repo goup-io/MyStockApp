@@ -14,30 +14,41 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
+import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
-fun AddProductToStock(onDismissRequest: () -> Unit) {
+fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
 
-    var products = listOf<ProdutoTable>()
+    var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        // Coroutine launched within LaunchedEffect
         val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-        products = produtoService.fetchProdutosTabela()
-        // Atualizar a UI ou manipular os dados
+        try {
+            products = produtoService.fetchProdutosTabela()
+        } catch (e: ApiException) {
+            errorMessage = "API Error: ${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "Unexpected Error: ${e.message}"
+        }
     }
-
 
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
@@ -47,10 +58,15 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
                 .padding(16.dp)
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
+
             ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
             Spacer(modifier = Modifier.height(6.dp))
-
-            ProductTable(products)
+            if (errorMessage != null) {
+                // Exibir mensagem de erro
+                Text(text = errorMessage ?: "", color = Color.Red)
+            } else {
+                ProductTable(products)
+            }
 
             Row(
                 modifier = Modifier
@@ -80,8 +96,8 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun modalAddProdCarrinho() {
     MyStockAppTheme() {
-        AddProductToStock(onDismissRequest = {})
+        modalAddProdCarrinho(onDismissRequest = {})
     }
 }
