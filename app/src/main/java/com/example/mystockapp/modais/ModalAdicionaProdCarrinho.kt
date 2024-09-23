@@ -52,7 +52,7 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
         var produtoBuscado = produtosAlterados.find { it.id == produto.id }
 
         if (produtoBuscado in produtosAlterados) {
-            if (produtoBuscado?.quantidadeToAdd?.toInt()!! > 1) {
+            if (produtoBuscado?.quantidadeToAdd?.toInt()!! >= 1) {
                 produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
             } else {
                 produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }

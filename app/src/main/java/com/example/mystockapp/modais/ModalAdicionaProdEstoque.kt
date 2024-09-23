@@ -1,6 +1,7 @@
 package com.example.mystockapp.modais
 
 import ProductTable
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,10 +16,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.R
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
@@ -26,6 +30,9 @@ import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
+import com.example.mystockapp.models.lojas.Loja
+import com.example.mystockapp.models.produtos.AdicionarEstoqueReq
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
@@ -33,6 +40,26 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
 
+    val coroutineScope = rememberCoroutineScope()
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showSucessoDialog by remember { mutableStateOf(false) }
+    var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
+    var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
+    var sucessoDialogTitulo by remember { mutableStateOf<String?>(null) }
+
+    var tituloFinalizacaoDialog by remember { mutableStateOf<String?>(null) }
+
+    fun handleAbrirModalConfirm(
+        titulo: String,
+        action: suspend () -> Unit,
+        confirmarTexto: String,
+        recusarTexto: String,
+        corBtn: Color
+    ) {
+        showConfirmDialog = true
+        actionToPerform = action
+        sucessoDialogTitulo = titulo
+    }
 
     fun addProduto(produto: ProdutoTable) {
         var produtoBuscado = produtosAlterados.find { it.id == produto.id }
@@ -49,12 +76,16 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
         var produtoBuscado = produtosAlterados.find { it.id == produto.id }
 
         if (produtoBuscado in produtosAlterados) {
-            if (produtoBuscado?.quantidadeToAdd?.toInt()!! > 1) {
+            if (produtoBuscado?.quantidadeToAdd?.toInt()!! >= 1) {
                 produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
             } else {
                 produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
             }
         }
+    }
+
+    fun limparProdutos() {
+        produtosAlterados = listOf()
     }
 
     LaunchedEffect(Unit) {
@@ -99,22 +130,93 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
             ) {
                 ButtonComponent(
                     titulo = "Limpar",
-                    onClick = { onDismissRequest() },
+                    onClick = { limparProdutos() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
                 ButtonComponent(
                     titulo = "Adicionar",
                     onClick = {
-                       onDismissRequest() },
+                        handleAbrirModalConfirm(
+                            "Tem certeza que deseja adicionar esses produtos ao estoque?",
+                            { handleAdicionarProdutos(produtosAlterados, 1) },
+                            "Adicionar",
+                            "Cancelar",
+                            Color(0xFF355070)
+                        )
+
+                    },
                     containerColor = Color(0xFF355070),
                 )
             }
         }
+
+    }
+
+    if (showConfirmDialog) {
+        ConfirmacaoDialog(
+            titulo = sucessoDialogTitulo ?: "",
+            confirmarBtnTitulo = "Adicionar",
+            recusarBtnTitulo = "Cancelar",
+            imagem = painterResource(id = R.mipmap.ic_editar),
+            onConfirm = {
+                coroutineScope.launch {
+                    try {
+                        actionToPerform()
+                        showConfirmDialog = false
+                        showSucessoDialog = true
+
+                    } catch (e: Exception) {
+                        Log.e("InformacoesProdutoDialog", "Erro ao executar ação: ${e.message}")
+                        imgCasoDeErro = R.mipmap.ic_excluir
+                        sucessoDialogTitulo = "Erro ao adicionar produtos"
+                        showConfirmDialog = false
+                        showSucessoDialog = true
+                    }
+                }
+            },
+            onDismiss = {
+                showConfirmDialog = false
+            }
+        )
+    }
+
+    if (showSucessoDialog) {
+        SucessoDialog(
+            titulo = tituloFinalizacaoDialog ?: "Produtos adicionados com sucesso!",
+            onDismiss = {
+                showSucessoDialog = false
+                onDismissRequest()
+            },
+            onConfirm = {
+                showSucessoDialog = false
+                onDismissRequest()
+            },
+            btnConfirmColor = Color(0xFF355070),
+            imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+            btnConfirmTitulo = "OK"
+        )
+    }
 }
-
-
-
+suspend fun handleAdicionarProdutos(produtosAlterados: List<ProdutoTable>, idLoja: Int) {
+    val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+    val estoqueReqList = produtosAlterados
+        .filter { produto -> produto.quantidadeToAdd > 0 }
+        .map { produto ->
+            AdicionarEstoqueReq(
+                idEtp = produto.id,
+                quantidade = produto.quantidadeToAdd
+            )
+        }
+    try {
+        produtoService.addProdutosEstoque(estoqueReqList, idLoja)
+    } catch (e: ApiException) {
+        throw e
+    } catch (e: NetworkException) {
+        throw e
+    } catch (e: GeneralException) {
+        throw e
+    }
 }
 
 @Preview(showBackground = true)
