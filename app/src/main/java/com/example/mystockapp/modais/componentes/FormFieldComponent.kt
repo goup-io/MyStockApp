@@ -17,8 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -40,12 +38,12 @@ fun FormField(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
     labelFontSize: TextUnit = 10.sp,
+    disabled: Boolean = false,
     borderColor: Color = Color(0xFF355070),
-    backgroundColor: Color = Color.White,
+    backgroundColor: Color = if (disabled) Color(0xFFECECEC) else Color.White,
     placeholder: String = "",
     width: Dp = 200.dp,
     height: Dp = 20.dp,
-    disabled: Boolean = false,
     fieldType: KeyboardType = KeyboardType.Text
 ) {
     Column(

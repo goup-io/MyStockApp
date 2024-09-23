@@ -1,5 +1,7 @@
 package com.example.mystockapp.telas
 
+import InformacoesProdutoDialog
+import NovoProdutoDialog
 import ProductTable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -52,8 +54,11 @@ import androidx.compose.ui.draw.shadow
 //import androidx.compose.ui.layout.ContentScale
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
+import com.example.mystockapp.models.produtos.ProdutoTable
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +85,16 @@ fun PreVendaScreen() {
     var tipoVenda by remember { mutableStateOf("") }
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
+    val products = listOf(
+        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
+    )
 
     Column(
         modifier = Modifier
@@ -299,7 +314,7 @@ fun PreVendaScreen() {
                                     containerColor = Color(0xFF355070)
                                 )
                             ) {
-                                Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
+                                Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
                             }
 
                             if (isModalAddProdCarrinho) {
@@ -321,7 +336,7 @@ fun PreVendaScreen() {
                         .align(Alignment.CenterHorizontally)
                     ) {
 
-ProductTable(products)
+                        ProductTable(products, {}, {})
 
                     }
                 }

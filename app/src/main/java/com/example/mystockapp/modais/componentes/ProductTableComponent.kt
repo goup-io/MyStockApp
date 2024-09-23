@@ -15,12 +15,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mystockapp.models.ProdutoTable
+import com.example.mystockapp.models.produtos.ProdutoTable
 import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun ProductTable(
-    products: List<ProdutoTable>) {
+    products: List<ProdutoTable>,
+    onAddProduto: (ProdutoTable) -> Unit,
+    onRemoverProduto: (ProdutoTable) -> Unit
+) {
+    var updatedProducts by remember { mutableStateOf(products) }
+
+    LaunchedEffect(products) {
+        updatedProducts = products
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,12 +42,13 @@ fun ProductTable(
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(products.size) { index ->
-                    var product = products[index]
+                items(updatedProducts.size) { index ->
+                    val product = updatedProducts[index]
                     ProductRow(
                         product = product,
-                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
-                        0
+                        addProdutoOpcao = onAddProduto,
+                        removerProdutoOpcao = onRemoverProduto,
+                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0)
                     )
                 }
             }
@@ -58,11 +68,11 @@ fun TableHeader() {
     ) {
         HeaderText("Nome", Modifier.weight(2f))
         HeaderText("Modelo", Modifier.weight(2f))
-        HeaderText("Preço", Modifier.weight(1.2f)) // Ajustar o peso para dar mais espaço
+        HeaderText("Preço", Modifier.weight(1.2f))
         HeaderText("Tamanho", Modifier.weight(1.5f))
         HeaderText("Cor", Modifier.weight(1f))
         HeaderText("N. Itens", Modifier.weight(1f))
-        HeaderText("Add", Modifier.weight(1.3f)) // Ajustar o peso para dar mais espaço
+        HeaderText("Add", Modifier.weight(1.3f))
     }
 }
 
@@ -79,9 +89,17 @@ fun HeaderText(text: String, modifier: Modifier) {
         overflow = TextOverflow.Ellipsis
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductRow(product: ProdutoTable, backgroundColor: Color, quantidadeAdd: Number) {
+fun ProductRow(
+    product: ProdutoTable,
+    addProdutoOpcao: (ProdutoTable) -> Unit,
+    removerProdutoOpcao: (ProdutoTable) -> Unit,
+    backgroundColor: Color
+) {
+    var quantidadeToAdd by remember { mutableStateOf(product.quantidadeToAdd) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -152,7 +170,7 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color, quantidadeAdd: Num
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                product.quantidade,
+                product.quantidade.toString(),
                 textAlign = TextAlign.Center,
                 fontSize = 7.sp
             )
@@ -164,11 +182,8 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color, quantidadeAdd: Num
         ) {
             Button(
                 onClick = {
-                    if (quantidadeAdd.toInt() > 0) {
-                        quantidadeAdd.toInt() - 1
-                    } else {
-                        quantidadeAdd.toInt()
-                    }
+                    removerProdutoOpcao(product)
+                    quantidadeToAdd = product.quantidadeToAdd
                 },
                 modifier = Modifier.height(24.dp).width(10.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -185,17 +200,17 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color, quantidadeAdd: Num
                 }
             }
             BasicTextField(
-                value = quantidadeAdd.toString(),
+                value = quantidadeToAdd.toString(),
                 onValueChange = { },
                 modifier = Modifier
-                    .size(13.dp) // Ajustar o tamanho do campo de texto
+                    .size(13.dp)
                     .border(1.dp, Color(0xFF355070), RoundedCornerShape(50))
                     .background(Color.Transparent),
                 textStyle = LocalTextStyle.current.copy(
-                    fontSize = 6.sp, // Ajustar o tamanho da fonte
+                    fontSize = 6.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Center,
-                    lineHeight = 10.sp // Ajustar a altura da linha
+                    lineHeight = 10.sp
                 ),
                 singleLine = true,
                 enabled = false,
@@ -212,7 +227,8 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color, quantidadeAdd: Num
             )
             Button(
                 onClick = {
-                    quantidadeAdd.toInt() + 1
+                    addProdutoOpcao(product)
+                    quantidadeToAdd = product.quantidadeToAdd
                 },
                 modifier = Modifier.height(24.dp).width(10.dp),
                 colors = ButtonDefaults.buttonColors(
