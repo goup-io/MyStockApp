@@ -1,5 +1,3 @@
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -8,15 +6,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.exceptions.ApiException
@@ -30,33 +25,61 @@ import com.example.mystockapp.api.produtoApi.TamanhoService
 import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.models.produtos.Categoria
+import com.example.mystockapp.models.produtos.Cor
+import com.example.mystockapp.models.produtos.Modelo
+import com.example.mystockapp.models.produtos.Tamanho
 
 @Composable
 fun NovoProdutoDialog(onDismissRequest: () -> Unit) {
     var isPromocional by remember { mutableStateOf(false) }
     var codigo by remember { mutableStateOf("") }
-    var modelo by remember { mutableStateOf("") }
-    var tamanho by remember { mutableStateOf("") }
+    var modelo by remember { mutableStateOf(Modelo(-1, "", "", "")) }
+    var tamanho by remember { mutableStateOf(Tamanho(-1, -1)) }
     var loja by remember { mutableStateOf("") }
     var nome by remember { mutableStateOf("") }
     var preco by remember { mutableStateOf("") }
-    var cor by remember { mutableStateOf("") }
+    var cor by remember { mutableStateOf(Cor(-1, "")) }
     var nItens by remember { mutableStateOf("") }
 
-    var modelosOptions by remember { mutableStateOf(listOf("")) }
-    var coresOptions by remember { mutableStateOf(listOf("")) }
-    var tamanhosOptions by remember { mutableStateOf(listOf(0)) }
+    var modelosOptions by remember { mutableStateOf<List<Modelo>>(emptyList())}
+    var coresOptions by remember { mutableStateOf<List<Cor>>(emptyList())}
+    var tamanhosOptions by remember { mutableStateOf<List<Tamanho>>(emptyList()) }
 
     var errorMessage by remember { mutableStateOf("") }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var showSucessDialog by remember { mutableStateOf(false) }
+    var confirmarTitulo by remember { mutableStateOf("") }
+    var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
+    var confirmarBtnTitulo by remember { mutableStateOf("") }
+    var recusarBtnTitulo by remember { mutableStateOf("") }
+    var bgCorBtn by remember { mutableStateOf(Color(0xFF355070)) }
+    var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
+
+    fun handleAbrirModalConfirm(
+        titulo: String,
+        action: suspend () -> Unit,
+        confirmarTexto: String,
+        recusarTexto: String,
+        corBtn: Color
+    ) {
+        confirmarTitulo = titulo
+        actionToPerform = action
+        confirmarBtnTitulo = confirmarTexto
+        recusarBtnTitulo = recusarTexto
+        bgCorBtn = corBtn
+    }
 
     LaunchedEffect(Unit) {
         val modeloSerivce = ModeloService(RetrofitInstance.modeloApi)
         val tamanhoService = TamanhoService(RetrofitInstance.tamanhoApi)
         val corService = CorService(RetrofitInstance.corApi)
         try {
-            modelosOptions = modeloSerivce.fetchModelos().map { it.nome }
-            tamanhosOptions = tamanhoService.fetchTamanhos().map { it.numero }
-            coresOptions = corService.fetchCores().map { it.nome }
+            modelosOptions = modeloSerivce.fetchModelos()
+            tamanhosOptions = tamanhoService.fetchTamanhos()
+            coresOptions = corService.fetchCores()
         } catch (e: ApiException) {
             errorMessage = "${e.message}"
         } catch (e: NetworkException) {
