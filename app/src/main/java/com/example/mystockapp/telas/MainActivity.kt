@@ -1,6 +1,7 @@
 package com.example.mystockapp.telas
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyStockAppTheme {
-                MainScreen()
+                MainScreen(context = this)
             }
         }
 
@@ -53,9 +54,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(context: Context) {
     var scannedValue by remember { mutableStateOf("") }
     var isScanning by remember { mutableStateOf(false) }
+
+    // Recupera o idLoja armazenado
+    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1) // -1 é o valor padrão caso não encontre
 
     if (isScanning) {
         Column(
@@ -85,14 +90,17 @@ fun MainScreen() {
             Button(onClick = { isScanning = true }) {
                 Text("Escanear Código")
             }
+
+            // Exibe o ID da loja
+            Text(text = "ID Loja: $idLoja")
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainScreenPreview() {
-    MyStockAppTheme {
-        MainScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun MainScreenPreview() {
+//    MyStockAppTheme {
+//        MainScreen(context = this)
+//    }
+//}

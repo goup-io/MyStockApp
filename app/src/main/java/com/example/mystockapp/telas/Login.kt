@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -72,7 +73,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
     // Instanciar AuthService e AuthViewModelFactory
     val authService = AuthService(RetrofitInstance.authApi)
-    val viewModelFactory = AuthViewModelFactory(authService)
+    val viewModelFactory = AuthViewModelFactory(authService, LocalContext.current)
     val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val loginState by viewModel.loginState.collectAsState()
 
@@ -229,6 +230,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 Text(text = "Entrar", color = Color(0xFF355070), fontSize = 22.sp)
             }
 
+            // Observa o estado do login
             when (loginState) {
                 is AuthViewModel.LoginState.Loading -> {
                     CircularProgressIndicator()
