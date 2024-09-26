@@ -1,5 +1,8 @@
 package com.example.mystockapp.telas
 
+import InformacoesProdutoDialog
+import NovoProdutoDialog
+import ProductTable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,7 +22,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+//import androidx.compose.material3.ButtonColors
+//import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+//import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,12 +43,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.layout.*
+//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+//import androidx.compose.ui.Alignment
+//import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+//import androidx.compose.ui.graphics.Color
+//import androidx.compose.ui.layout.ContentScale
+//import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
 import com.example.mystockapp.models.produtos.ProdutoTable
 
@@ -69,18 +83,18 @@ fun PreVendaScreen() {
 
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
-    val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", 300.00,37, "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", 400.00, 38, "Branco", "15")
-    )
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
+    val products = listOf(
+        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
+    )
 
     Column(
         modifier = Modifier
@@ -300,7 +314,7 @@ fun PreVendaScreen() {
                                     containerColor = Color(0xFF355070)
                                 )
                             ) {
-                                Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
+                                Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
                             }
 
                             if (isModalAddProdCarrinho) {
@@ -315,60 +329,15 @@ fun PreVendaScreen() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.95f)
+                            .height(310.dp)
                             .background(Color(0xFF355070))
                             .padding(4.dp)
                             .clip(RoundedCornerShape(8.dp))
                         .align(Alignment.CenterHorizontally)
                     ) {
-                        // Cabeçalho da tabela
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Text(text = "Código", color = Color.White, fontSize = 14.sp)
-                            Text(text = "Nome", color = Color.White, fontSize = 14.sp)
-                            Text(text = "Preço", color = Color.White, fontSize = 14.sp)
-                            Text(text = "Qtd", color = Color.White, fontSize = 14.sp)
-                            Text(text = "Ver Mais", color = Color.White, fontSize = 14.sp)
-                        }
 
+                        ProductTable(products, {}, {})
 
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Dados da tabela mockados
-                        val items = listOf(
-                            Item("001", "Produto A", "R$ 10,00", "2", R.mipmap.vermais),
-                            Item("002", "Produto B", "R$ 20,00", "1", R.mipmap.vermais),
-                            Item("003", "Produto C", "R$ 30,00", "5", R.mipmap.vermais),
-                            Item("004", "Produto A", "R$ 10,00", "2", R.mipmap.vermais),
-                            Item("005", "Produto B", "R$ 20,00", "1", R.mipmap.vermais),
-                            Item("006", "Produto C", "R$ 30,00", "5", R.mipmap.vermais),
-                        )
-
-                        items.forEachIndexed { index, item ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0))
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = item.codigo, color = Color.Black, fontSize = 14.sp)
-                                Text(text = item.nome, color = Color.Black, fontSize = 14.sp)
-                                Text(text = item.preco, color = Color.Black, fontSize = 14.sp)
-                                Text(text = item.quantidade, color = Color.Black, fontSize = 14.sp)
-                                Image(
-                                    painter = painterResource(id = item.verMaisResId),
-                                    contentDescription = "Ver Mais",
-                                    modifier = Modifier
-                                        .size(24.dp) // Ajuste o tamanho da imagem conforme necessário
-                                        .clickable { /* Ação ao clicar na imagem */ }
-                                )
-                            }
-
-
-                            Spacer(modifier = Modifier.height(3.dp))
-                        }
                     }
                 }
             }

@@ -10,27 +10,65 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
+import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable
-fun AddProductToStock(onDismissRequest: () -> Unit) {
+fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
+    var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
 
-    var products = listOf<ProdutoTable>()
 
-    LaunchedEffect(Unit) {
-        // Coroutine launched within LaunchedEffect
-        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-        products = produtoService.fetchProdutosTabela()
-        // Atualizar a UI ou manipular os dados
+    fun addProduto(produto: ProdutoTable) {
+        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
+        if (produtoBuscado in produtosAlterados) {
+            produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.plus(1) ?: 1)
+        } else {
+            produto.quantidadeToAdd = 1;
+            produtosAlterados = produtosAlterados.toMutableList().apply { add(produto) }
+        }
     }
 
+
+    fun removerProduto(produto: ProdutoTable) {
+        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
+
+        if (produtoBuscado in produtosAlterados) {
+            if (produtoBuscado?.quantidadeToAdd?.toInt()!! > 1) {
+                produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
+            } else {
+                produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+        try {
+            products = produtoService.fetchProdutosTabela(1)
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+        }
+    }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
@@ -43,7 +81,15 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
             ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
             Spacer(modifier = Modifier.height(6.dp))
 
-            ProductTable(products)
+            if (errorMessage != null) {
+                Text(text = errorMessage ?: "", color = Color.Red)
+            } else {
+                ProductTable(
+                    products = products,
+                    onAddProduto = ::addProduto,
+                    onRemoverProduto = ::removerProduto
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -75,6 +121,6 @@ fun AddProductToStock(onDismissRequest: () -> Unit) {
 @Composable
 fun GreetingPreview() {
     MyStockAppTheme() {
-        AddProductToStock(onDismissRequest = {})
+        AddProdutoEstoque(onDismissRequest = {})
     }
 }
