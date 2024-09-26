@@ -1,5 +1,6 @@
 package com.example.mystockapp.api.authApi
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mystockapp.api.RetrofitInstance
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val authService: AuthService) : ViewModel() {
+class AuthViewModel(private val authService: AuthService, private val context: Context) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
@@ -20,6 +21,11 @@ class AuthViewModel(private val authService: AuthService) : ViewModel() {
             if (result.isSuccess) {
                 result.getOrNull()?.let { response ->
                     RetrofitInstance.updateToken(response.token)
+
+                    // Salvar o idLoja no SharedPreferences
+                    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().putInt("idLoja", response.idLoja).apply()
+
                     _loginState.value = LoginState.Success(response)
                 }
             } else {
