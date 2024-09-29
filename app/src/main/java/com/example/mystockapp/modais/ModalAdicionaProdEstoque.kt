@@ -23,34 +23,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.R
-import com.example.mystockapp.api.RetrofitInstance
-import com.example.mystockapp.api.exceptions.ApiException
-import com.example.mystockapp.api.exceptions.GeneralException
-import com.example.mystockapp.api.exceptions.NetworkException
-import com.example.mystockapp.api.produtoApi.ProdutoService
-import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
-import com.example.mystockapp.models.lojas.Loja
-import com.example.mystockapp.models.produtos.AdicionarEstoqueReq
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
-    var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
-    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
-    val idLoja = sharedPreferences.getInt("idLoja", -1)
-    val coroutineScope = rememberCoroutineScope()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showSucessoDialog by remember { mutableStateOf(false) }
     var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
     var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
     var sucessoDialogTitulo by remember { mutableStateOf<String?>(null) }
-
     var tituloFinalizacaoDialog by remember { mutableStateOf<String?>(null) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1)
+
+    val viewModel: AddProdEstoqueViewModel = viewModel(
+        factory = AddProdEstoqueViewModelFactory(idLoja = idLoja)
+    )
 
     fun handleAbrirModalConfirm(
         titulo: String,
@@ -64,44 +61,8 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
         sucessoDialogTitulo = titulo
     }
 
-    fun addProduto(produto: ProdutoTable) {
-        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-        if (produtoBuscado in produtosAlterados) {
-            produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.plus(1) ?: 1)
-        } else {
-            produto.quantidadeToAdd = 1;
-            produtosAlterados = produtosAlterados.toMutableList().apply { add(produto) }
-        }
-    }
-
-
-    fun removerProduto(produto: ProdutoTable) {
-        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-
-        if (produtoBuscado in produtosAlterados) {
-            if (produtoBuscado?.quantidadeToAdd?.toInt()!! >= 1) {
-                produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
-            } else {
-                produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
-            }
-        }
-    }
-
-    fun limparProdutos() {
-        produtosAlterados = listOf()
-    }
-
     LaunchedEffect(Unit) {
-        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-        try {
-            products = produtoService.fetchProdutosTabela(1)
-        } catch (e: ApiException) {
-            errorMessage = "${e.message}"
-        } catch (e: NetworkException) {
-            errorMessage = "Network Error: ${e.message}"
-        } catch (e: GeneralException) {
-            errorMessage = "${e.message}"
-        }
+        viewModel.fetchProdutos()
     }
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -119,9 +80,9 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
                 ProductTable(
-                    products = products,
-                    onAddProduto = ::addProduto,
-                    onRemoverProduto = ::removerProduto
+                    products = viewModel.produtos,
+                    onAddProduto = { produto -> viewModel.addProduto(produto) },
+                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) },
                 )
             }
 
@@ -133,7 +94,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
             ) {
                 ButtonComponent(
                     titulo = "Limpar",
-                    onClick = { limparProdutos() },
+                    onClick = { viewModel.limparProdutos() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
@@ -142,18 +103,16 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                     onClick = {
                         handleAbrirModalConfirm(
                             "Tem certeza que deseja adicionar esses produtos ao estoque?",
-                            { handleAdicionarProdutos(produtosAlterados, idLoja) },
+                            { viewModel.handleAdicionarProdutos() },
                             "Adicionar",
                             "Cancelar",
                             Color(0xFF355070)
                         )
-
                     },
                     containerColor = Color(0xFF355070),
                 )
             }
         }
-
     }
 
     if (showConfirmDialog) {
@@ -164,18 +123,9 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
             imagem = painterResource(id = R.mipmap.ic_editar),
             onConfirm = {
                 coroutineScope.launch {
-                    try {
-                        actionToPerform()
-                        showConfirmDialog = false
-                        showSucessoDialog = true
-
-                    } catch (e: Exception) {
-                        Log.e("InformacoesProdutoDialog", "Erro ao executar ação: ${e.message}")
-                        imgCasoDeErro = R.mipmap.ic_excluir
-                        sucessoDialogTitulo = "Erro ao adicionar produtos"
-                        showConfirmDialog = false
-                        showSucessoDialog = true
-                    }
+                    viewModel.handleAdicionarProdutos()
+                    showConfirmDialog = false
+                    showSucessoDialog = true
                 }
             },
             onDismiss = {
@@ -199,26 +149,6 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
             imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
             btnConfirmTitulo = "OK"
         )
-    }
-}
-suspend fun handleAdicionarProdutos(produtosAlterados: List<ProdutoTable>, idLoja: Int) {
-    val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-    val estoqueReqList = produtosAlterados
-        .filter { produto -> produto.quantidadeToAdd > 0 }
-        .map { produto ->
-            AdicionarEstoqueReq(
-                idEtp = produto.id,
-                quantidade = produto.quantidadeToAdd
-            )
-        }
-    try {
-        produtoService.addProdutosEstoque(estoqueReqList, idLoja)
-    } catch (e: ApiException) {
-        throw e
-    } catch (e: NetworkException) {
-        throw e
-    } catch (e: GeneralException) {
-        throw e
     }
 }
 

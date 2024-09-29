@@ -24,12 +24,6 @@ fun ProductTable(
     onAddProduto: (ProdutoTable) -> Unit,
     onRemoverProduto: (ProdutoTable) -> Unit
 ) {
-    var updatedProducts by remember { mutableStateOf(products) }
-
-    LaunchedEffect(products) {
-        updatedProducts = products
-    }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,8 +36,8 @@ fun ProductTable(
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(updatedProducts.size) { index ->
-                    val product = updatedProducts[index]
+                items(products.size) { index ->
+                    val product = products[index]
                     ProductRow(
                         product = product,
                         addProdutoOpcao = onAddProduto,
@@ -185,7 +179,9 @@ fun ProductRow(
                     removerProdutoOpcao(product)
                     quantidadeToAdd = product.quantidadeToAdd
                 },
-                modifier = Modifier.height(24.dp).width(10.dp),
+                modifier = Modifier
+                    .height(24.dp)
+                    .width(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black
@@ -199,6 +195,7 @@ fun ProductRow(
                     Text("-", fontSize = 15.sp, color = Color.Black, lineHeight = 20.sp)
                 }
             }
+
             BasicTextField(
                 value = quantidadeToAdd.toString(),
                 onValueChange = { },
@@ -225,12 +222,15 @@ fun ProductRow(
                     }
                 }
             )
+
             Button(
                 onClick = {
                     addProdutoOpcao(product)
                     quantidadeToAdd = product.quantidadeToAdd
                 },
-                modifier = Modifier.height(24.dp).width(10.dp),
+                modifier = Modifier
+                    .height(24.dp)
+                    .width(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black
@@ -244,7 +244,6 @@ fun ProductRow(
                     Text("+", fontSize = 15.sp, color = Color.Black, lineHeight = 20.sp)
                 }
             }
-            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }
