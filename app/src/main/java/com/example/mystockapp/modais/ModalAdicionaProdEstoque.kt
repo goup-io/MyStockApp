@@ -1,6 +1,7 @@
 package com.example.mystockapp.modais
 
 import ProductTable
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -34,12 +35,14 @@ import com.example.mystockapp.models.lojas.Loja
 import com.example.mystockapp.models.produtos.AdicionarEstoqueReq
 import kotlinx.coroutines.launch
 
+
 @Composable
-fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
+fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
     var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
-
+    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1)
     val coroutineScope = rememberCoroutineScope()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showSucessoDialog by remember { mutableStateOf(false) }
@@ -139,7 +142,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
                     onClick = {
                         handleAbrirModalConfirm(
                             "Tem certeza que deseja adicionar esses produtos ao estoque?",
-                            { handleAdicionarProdutos(produtosAlterados, 1) },
+                            { handleAdicionarProdutos(produtosAlterados, idLoja) },
                             "Adicionar",
                             "Cancelar",
                             Color(0xFF355070)

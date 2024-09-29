@@ -44,7 +44,8 @@ fun FormField(
     placeholder: String = "",
     width: Dp = 200.dp,
     height: Dp = 20.dp,
-    fieldType: KeyboardType = KeyboardType.Text
+    fieldType: KeyboardType = KeyboardType.Text,
+    error: Boolean = false
 ) {
     Column(
         modifier = modifier.width(width),
@@ -61,7 +62,7 @@ fun FormField(
                 .clipToBounds()
                 .height(height)
                 .padding(0.dp, 0.dp, 0.dp, 0.dp)
-                .border(1.dp, borderColor, RoundedCornerShape(5.dp))
+                .border(1.dp, if(error )Color.Red else borderColor, RoundedCornerShape(5.dp))
                 .background(backgroundColor, RoundedCornerShape(5.dp))
         ) {
             BasicTextField(

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mystockapp.models.produtos.ItemPromocional
 import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.ui.theme.Cores
 
@@ -53,6 +54,6 @@ fun Table(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewTable(){
-    val lista = listOf(Produto("codigo", "nome", "cor", 10.0, "modelo", 1, 40 ))
+    val lista = listOf(Produto(0, "codigo", "nome", "cor", 10.0, "modelo", 1, 40, "Loja 1", ItemPromocional.NAO, 0 ))
     Table(lista)
 }
