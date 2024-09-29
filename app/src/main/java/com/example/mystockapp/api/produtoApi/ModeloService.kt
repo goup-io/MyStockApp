@@ -5,6 +5,7 @@ import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.models.produtos.Modelo
 import com.example.mystockapp.models.produtos.ModeloReq
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
 
 class ModeloService(private val modeloApi: ModeloApi) {
@@ -30,19 +31,18 @@ class ModeloService(private val modeloApi: ModeloApi) {
         }
     }
 
-    suspend fun createModelo(modeloReq: ModeloReq): Modelo {
+    suspend fun createModelo(modeloReq: ModeloReq): Response<Modelo> {
         return try {
             val response = modeloApi.createModelo(modeloReq)
 
             if (response.isSuccessful) {
-                response.body() ?: Modelo(
-                    id = 0,
-                    nome = "",
-                    tipo = "",
-                    categoria = "")
+                response
             } else {
                 val errorMessage = response.errorBody()?.string() ?: response.message() ?: "Erro desconhecido"
-                throw ApiException(response.code(), errorMessage)
+                if (response.code() == 500){
+                    throw ApiException(response.code(), errorMessage)
+                }
+                response
             }
         } catch (e: IOException) {
             throw NetworkException("Network error occurred", e)

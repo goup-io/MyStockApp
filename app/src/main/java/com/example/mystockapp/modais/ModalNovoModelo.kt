@@ -1,8 +1,6 @@
 package com.example.mystockapp.modais
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -16,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -26,9 +23,7 @@ import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.CategoriaService
-import com.example.mystockapp.api.produtoApi.CorService
 import com.example.mystockapp.api.produtoApi.ModeloService
-import com.example.mystockapp.api.produtoApi.TamanhoService
 import com.example.mystockapp.api.produtoApi.TipoService
 
 // componentes
@@ -53,6 +48,7 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     var showSucessDialog by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
     var confirmarTitulo by remember { mutableStateOf("") }
     var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
     var confirmarBtnTitulo by remember { mutableStateOf("") }
@@ -89,6 +85,58 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
         }
     }
 
+    suspend fun handleSaveModelo(
+        nome: String,
+        tipo: Tipo,
+        categoria: Categoria,
+    ) {
+        val modeloService = ModeloService(RetrofitInstance.modeloApi)
+        try {
+            val response = modeloService.createModelo(ModeloReq(nome, tipo.id, categoria.id))
+            when(response.code()){
+                201 -> {
+                    Log.d("InformacoesProdutoDialog", "Modelo salvo com sucesso!")
+                    confirmarTitulo = "Modelo salvo com sucesso!"
+                    imgCasoDeErro = R.mipmap.ic_sucesso
+                }
+                400 -> {
+                    Log.e("InformacoesProdutoDialog", "Erro ao salvar modelo: ${response.errorBody()?.string()}")
+                    confirmarTitulo = "Dados não preenchidos corretamente"
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+                409 -> {
+                    Log.e("InformacoesProdutoDialog", "Modelo duplicado: ${response.errorBody()?.string()}")
+                    confirmarTitulo = "Modelo já cadastrado"
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+                500 -> {
+                    Log.e("InformacoesProdutoDialog", "Erro ao salvar modelo: ${response.errorBody()?.string()}")
+                    confirmarTitulo = "Erro inesperado ao salvar modelo"
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+                else -> {
+                    Log.e("InformacoesProdutoDialog", "Erro ao salvar modelo: ${response.errorBody()?.string()}")
+                }
+            }
+
+            handleAbrirModalConfirm(
+                titulo = confirmarTitulo,
+                action = { showSucessDialog = true },
+                confirmarTexto = "Ok",
+                recusarTexto = "",
+                corBtn = Color(0xFF355070)
+            )
+        } catch (e: ApiException) {
+            Log.e("InformacoesProdutoDialog", "ApiException: ${e.message}")
+        } catch (e: NetworkException) {
+            Log.e("InformacoesProdutoDialog", "NetworkException: ${e.message}")
+        } catch (e: GeneralException) {
+            Log.e("InformacoesProdutoDialog", "GeneralException: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("InformacoesProdutoDialog", "Exception: ${e.message}")
+        }
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
@@ -118,7 +166,8 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                                 FormField(
                                     label = "Nome:",
                                     textValue = nome,
-                                    onValueChange = { nome = it }
+                                    onValueChange = { nome = it },
+                                    error = showError && nome.isEmpty()
                                 )
                                 SelectField(
                                     label = "Tipo:",
@@ -129,7 +178,8 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                                             tipo = selectedTipo
                                         }
                                     },
-                                    options = tiposOptions.map { it.nome }
+                                    options = tiposOptions.map { it.nome },
+                                    error = showError && tipo.id <= 0
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
@@ -142,6 +192,7 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                                             categoria = selectedCategoria
                                         }
                                     },
+                                    error = showError && categoria.id <= 0,
                                     options = categoriasOptions.map { it.nome }
                                 )
                             }
@@ -170,24 +221,13 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                         onClick = {
                             if (nome.isNotEmpty() && tipo.nome.isNotEmpty() && categoria.nome.isNotEmpty()) {
                                 coroutineScope.launch {
-                                    try {
                                         handleSaveModelo(nome, tipo, categoria)
-                                        handleAbrirModalConfirm(
-                                            "Modelo salvo com sucesso!",
-                                            action = { showSucessDialog = true },
-                                            confirmarTexto = "Ok",
-                                            recusarTexto = "",
-                                            corBtn = Color(0xFF355070)
-                                        )
                                         showSucessDialog = true
-                                    } catch (e: Exception) {
-                                        errorMessage = "Erro ao salvar modelo"
-                                        imgCasoDeErro = R.mipmap.ic_excluir
-                                        Log.e("ModalNovoModeloDialog", "Erro ao salvar modelo: ${e.message}")
                                     }
-                                }
+                                } else {
+                                    showError = true
                             }
-                        },
+                            },
                         containerColor = Color(0xFF355070),
                     )
                 }
@@ -210,25 +250,6 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
             imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
             btnConfirmTitulo = "OK"
         )
-    }
-}
-
-suspend fun handleSaveModelo(
-    nome: String,
-    tipo: Tipo,
-    categoria: Categoria,
-) {
-    val modeloService = ModeloService(RetrofitInstance.modeloApi)
-    try {
-        modeloService.createModelo(ModeloReq(nome, tipo.id, categoria.id))
-    } catch (e: ApiException) {
-        Log.e("InformacoesProdutoDialog", "ApiException: ${e.message}")
-    } catch (e: NetworkException) {
-        Log.e("InformacoesProdutoDialog", "NetworkException: ${e.message}")
-    } catch (e: GeneralException) {
-        Log.e("InformacoesProdutoDialog", "GeneralException: ${e.message}")
-    } catch (e: Exception) {
-        Log.e("InformacoesProdutoDialog", "Exception: ${e.message}")
     }
 }
 

@@ -34,9 +34,7 @@ import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.componentes.SelectField
-import com.example.mystockapp.modais.handleSaveModelo
 import com.example.mystockapp.models.lojas.Loja
-import com.example.mystockapp.models.produtos.Categoria
 import com.example.mystockapp.models.produtos.Cor
 import com.example.mystockapp.models.produtos.ItemPromocional
 import com.example.mystockapp.models.produtos.Modelo
