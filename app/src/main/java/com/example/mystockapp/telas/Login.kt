@@ -56,7 +56,7 @@ class Login : ComponentActivity() {
     }
 
     private fun navigateToMainActivity() {
-        val intent = Intent(this, Estoque::class.java)
+        val intent = Intent(this, PreVenda::class.java)
         startActivity(intent)
         finish()
     }

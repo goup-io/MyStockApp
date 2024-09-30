@@ -1,6 +1,5 @@
 package com.example.mystockapp.modais.viewModels
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +25,6 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel() {
     var produtos by mutableStateOf(listOf<ProdutoTable>())
         private set
 
-    var produtosAlterados by mutableStateOf(listOf<ProdutoTable>())
-        private set
-
-
     fun fetchProdutos() {
         viewModelScope.launch {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
@@ -49,14 +44,6 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel() {
 
     fun addProduto(produto: ProdutoTable) {
         produto.quantidadeToAdd = (produto.quantidadeToAdd.plus(1))
-
-//        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-//        if (produtoBuscado in produtosAlterados) {
-//            produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.plus(1) ?: 1)
-//        } else {
-//            produto.quantidadeToAdd = 1;
-//            produtosAlterados = produtosAlterados.toMutableList().apply { add(produto) }
-//        }
     }
 
 
@@ -64,15 +51,6 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel() {
         if (produto.quantidadeToAdd > 0){
             produto.quantidadeToAdd = (produto.quantidadeToAdd.minus(1))
         }
-//        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-//
-//        if (produtoBuscado in produtosAlterados) {
-//            if (produtoBuscado?.quantidadeToAdd?.toInt()!! >= 1) {
-//                produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
-//            } else {
-//                produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
-//            }
-//        }
     }
 
     fun limparProdutos() {

@@ -1,14 +1,13 @@
 package com.example.mystockapp.telas
 
-import InformacoesProdutoDialog
-import NovoProdutoDialog
 import ProductTable
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,10 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-//import androidx.compose.material3.ButtonColors
-//import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-//import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,10 +42,13 @@ import androidx.compose.foundation.layout.*
 //import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 //import androidx.compose.ui.Alignment
 //import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.lifecycle.viewmodel.compose.viewModel
 //import androidx.compose.ui.graphics.Color
 //import androidx.compose.ui.layout.ContentScale
 //import androidx.compose.ui.text.font.FontWeight
@@ -58,7 +57,11 @@ import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
 import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.telas.viewModels.PreVendaViewModel
+import com.google.gson.Gson
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,22 +82,23 @@ class PreVenda : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreVendaScreen() {
+fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.current) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1)
+
+    val viewModel: PreVendaViewModel = viewModel(
+        factory = PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja = idLoja)
+    )
+
+    val gson = Gson()
 
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
-    val products = listOf(
-        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
-    )
 
     Column(
         modifier = Modifier
@@ -318,9 +322,8 @@ fun PreVendaScreen() {
                             }
 
                             if (isModalAddProdCarrinho) {
-                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false })
+                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false }, viewModel, idLoja)
                             }
-
 
                         }
                     }
@@ -336,8 +339,12 @@ fun PreVendaScreen() {
                         .align(Alignment.CenterHorizontally)
                     ) {
 
-                        ProductTable(products, {}, {})
-
+                        Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")
+                        ProductTable(
+                            products = viewModel.carrinho.itensCarrinho,
+                            onAddProduto = { produto -> viewModel.addProduto(produto) },
+                            onRemoverProduto = { produto -> viewModel.removerProduto(produto) }
+                        )
                     }
                 }
             }

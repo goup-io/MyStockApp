@@ -1,6 +1,9 @@
 package com.example.mystockapp.models.vendas
 
+import com.example.mystockapp.models.produtos.ProdutoTable
+
 data class Carrinho(
-    var vendasInfo: VendasInfo,
-    var itensCarrinho: MutableList<ItemCarrinho> = mutableListOf(),
-) : ListaItensModal
+    val vendasInfo: VendasInfo,
+    val itensCarrinho: List<ProdutoTable>
+)
+
