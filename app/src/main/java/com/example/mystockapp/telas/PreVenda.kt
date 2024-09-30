@@ -50,8 +50,10 @@ import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.modalAddProdCarrinho
 import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.telas.componentes.Header
+import com.example.mystockapp.telas.componentes.MenuDrawer
 
-class MainActivity : ComponentActivity() {
+class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -84,7 +86,7 @@ fun PreVendaScreen() {
         ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
-    MenuDrawer(titulo = "Pré Venda") {
+    MenuDrawer (titulo = "Pré Venda") {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -204,7 +206,6 @@ fun PreVendaScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Header("Pré Venda") { }
 
                 Box(
                     modifier = Modifier
@@ -267,7 +268,7 @@ fun PreVendaScreen() {
                                 .clip(RoundedCornerShape(8.dp))
                                 .align(Alignment.CenterHorizontally)
                         ) {
-                            ProductTable(products)
+                            ProductTable(products, {}, {})
                         }
                     }
                 }
@@ -359,7 +360,7 @@ fun PreVendaScreen() {
             }
         }
     }
-}
+
 
 data class Item(
     val codigo: String,

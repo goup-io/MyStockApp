@@ -291,7 +291,7 @@ fun EstoqueScreen() {
                                 .clip(RoundedCornerShape(8.dp))
                                 .align(Alignment.CenterHorizontally)
                         ) {
-                            ProductTable(products)
+                            ProductTable(products, { product -> }, { product -> })
                         }
                     }
                 }
@@ -361,13 +361,13 @@ fun EstoqueScreen() {
                             color = Color.White,
                             fontSize = 16.sp
                         )
+                        }
                     }
                 }
             }
         }
     }
 }
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewEstoqueScreen() {
@@ -375,3 +375,4 @@ fun PreviewEstoqueScreen() {
         EstoqueScreen()
     }
 }
+
