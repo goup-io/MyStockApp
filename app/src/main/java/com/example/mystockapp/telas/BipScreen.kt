@@ -134,7 +134,151 @@ fun Screen(modifier: Modifier = Modifier) {
 
             Column(
                 modifier = Modifier
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Color(0xFFE7E7E7),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Column(
+                        modifier = modifier
+                            .fillMaxWidth(0.75f)
+                            .height(150.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceAround
+                    ) {
+                        // Container que simula o scanner com as bordas "arredondadas"
+                        Box(
+                            modifier = Modifier
+                                .size(250.dp)
+                                .background(Color.Transparent),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            // Canvas para desenhar as bordas arredondadas
+                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                val strokeWidth = 4.dp.toPx()
+                                val cornerLength = 40.dp.toPx()
+
+                                // Desenhando cantos superiores
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                                    end = androidx.compose.ui.geometry.Offset(cornerLength, 0f),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                                    end = androidx.compose.ui.geometry.Offset(0f, cornerLength),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(size.width, 0f),
+                                    end = androidx.compose.ui.geometry.Offset(
+                                        size.width - cornerLength,
+                                        0f
+                                    ),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(size.width, 0f),
+                                    end = androidx.compose.ui.geometry.Offset(
+                                        size.width,
+                                        cornerLength
+                                    ),
+                                    strokeWidth = strokeWidth
+                                )
+
+                                // Desenhando cantos inferiores
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(0f, size.height),
+                                    end = androidx.compose.ui.geometry.Offset(
+                                        cornerLength,
+                                        size.height
+                                    ),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(0f, size.height),
+                                    end = androidx.compose.ui.geometry.Offset(
+                                        0f,
+                                        size.height - cornerLength
+                                    ),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(
+                                        size.width,
+                                        size.height
+                                    ),
+                                    end = androidx.compose.ui.geometry.Offset(
+                                        size.width - cornerLength,
+                                        size.height
+                                    ),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = Color(0xFF355070),
+                                    start = androidx.compose.ui.geometry.Offset(
+                                        size.width,
+                                        size.height
+                                    ),
+                                    end = androidx.compose.ui.geometry.Offset(
+                                        size.width,
+                                        size.height - cornerLength
+                                    ),
+                                    strokeWidth = strokeWidth
+                                )
+                            }
+
+                            // Imagem do código de barras dentro das bordas arredondadas
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.mipmap.barcode_image),
+                                    contentDescription = "Código de Barras",
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(100.dp)
+                                )
+
+                                Text(
+                                    text = barcodeNumber,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .background(Color.White)
+                                        .width(200.dp)
+                                        .padding(3.dp)
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight()
                     .background(
                         Color(0xFFE7E7E7),
                         shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
@@ -142,144 +286,6 @@ fun Screen(modifier: Modifier = Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.height(5.dp))
-
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth(0.75f)
-                        .height(180.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-
-                    // Container que simula o scanner com as bordas arredondadas
-                    Box(
-                        modifier = Modifier
-                            .size(250.dp)
-                            .background(Color.Transparent),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Canvas para desenhar as bordas arredondadas
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            val strokeWidth = 4.dp.toPx()
-                            val cornerLength = 40.dp.toPx()
-
-                            // Desenhando cantos superiores
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                                end = androidx.compose.ui.geometry.Offset(cornerLength, 0f),
-                                strokeWidth = strokeWidth
-                            )
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                                end = androidx.compose.ui.geometry.Offset(0f, cornerLength),
-                                strokeWidth = strokeWidth
-                            )
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(size.width, 0f),
-                                end = androidx.compose.ui.geometry.Offset(size.width - cornerLength, 0f),
-                                strokeWidth = strokeWidth
-                            )
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(size.width, 0f),
-                                end = androidx.compose.ui.geometry.Offset(size.width, cornerLength),
-                                strokeWidth = strokeWidth
-                            )
-
-                            // Desenhando cantos inferiores
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(0f, size.height),
-                                end = androidx.compose.ui.geometry.Offset(cornerLength, size.height),
-                                strokeWidth = strokeWidth
-                            )
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(0f, size.height),
-                                end = androidx.compose.ui.geometry.Offset(0f, size.height - cornerLength),
-                                strokeWidth = strokeWidth
-                            )
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(size.width, size.height),
-                                end = androidx.compose.ui.geometry.Offset(size.width - cornerLength, size.height),
-                                strokeWidth = strokeWidth
-                            )
-                            drawLine(
-                                color = Color(0xFF355070),
-                                start = androidx.compose.ui.geometry.Offset(size.width, size.height),
-                                end = androidx.compose.ui.geometry.Offset(size.width, size.height - cornerLength),
-                                strokeWidth = strokeWidth
-                            )
-                        }
-
-                        // Imagem do código de barras dentro das bordas arredondadas
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.mipmap.barcode_image),
-                                contentDescription = "Código de Barras",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp)
-                            )
-
-                            Text(
-                                text = barcodeNumber,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .background(Color.White)
-                                    .width(200.dp)
-                                    .padding(3.dp)
-                                    .align(Alignment.CenterHorizontally)
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                // Botão para ler o código
-                Button(
-                    onClick = { isScanning = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(35.dp),
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                ) {
-                    Text(
-                        text = "Ler Referência",
-                        color = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                // Botão para digitar o código
-                Button(
-                    onClick = { /* Ação de digitar código */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(35.dp),
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                ) {
-                    Text(
-                        text = "Buscar",
-                        color = Color.White
-                    )
-                }
 
                 // Seção de informações
                 Card(
@@ -338,6 +344,44 @@ fun Screen(modifier: Modifier = Modifier) {
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                // Botão para ler o código
+                Button(
+                    onClick = { isScanning = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(35.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                ) {
+                    Text(
+                        text = "Ler Referência",
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                // Botão para digitar o código
+                Button(
+                    onClick = { /* Ação de digitar código */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(35.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                ) {
+                    Text(
+                        text = "Buscar",
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
 
                 // Botão Adicionar Produto
                 Button(
