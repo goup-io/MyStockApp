@@ -4,6 +4,7 @@ import com.example.mystockapp.models.vendas.ListaItensModal
 
 data class ProdutoTable(
     val id: Int,
+    val codigo: String,
     val nome: String,
     val modelo: String,
     val preco: Double,

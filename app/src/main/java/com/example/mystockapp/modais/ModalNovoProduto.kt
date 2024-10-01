@@ -306,7 +306,17 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                 ) {
                     ButtonComponent(
                         titulo = "Limpar",
-                        onClick = onDismissRequest,
+                        onClick ={
+                            codigo = ""
+                            modelo = Modelo(-1, "", "", "")
+                            tamanho = Tamanho(-1, -1)
+                            nome = ""
+                            precoCusto = ""
+                            precoVenda = ""
+                            cor = Cor(-1, "")
+                            nItens = ""
+                            isPromocional = false
+                        },
                         containerColor = Color(0xFF919191),
                     )
                     Spacer(modifier = Modifier.width(18.dp))

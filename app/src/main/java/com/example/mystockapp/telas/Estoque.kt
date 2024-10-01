@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,8 +48,8 @@ import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.componentes.Header
+import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.componentes.Spinner
-import com.example.mystockapp.telas.componentes.Table
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import com.example.mystockapp.ui.theme.Cores
 
@@ -77,14 +78,29 @@ fun EstoqueScreen() {
     var isModalNovoModelo by remember { mutableStateOf(false) }
     
     val products = listOf(
-        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
+        ProdutoTable(0,"166267274711114","Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"1662672747141111111","Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714", "Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
     Column(
@@ -289,7 +305,7 @@ fun EstoqueScreen() {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(20.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -345,19 +361,17 @@ fun EstoqueScreen() {
                         modifier = Modifier
                             .fillMaxWidth(0.95f)
                             .height(310.dp)
-                            .background(Color(0xFF355070))
-                            .padding(4.dp)
+                            .padding(bottom = 8.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                        ProductTable(products, { product -> }, { product -> })
+                        ScreenTable(products, { product -> })
 
                     }
                 }
             }
 
-            // Dois botões azuis na parte inferior
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)

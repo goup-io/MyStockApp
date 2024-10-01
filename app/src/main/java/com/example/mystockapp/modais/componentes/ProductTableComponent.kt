@@ -77,8 +77,8 @@ fun HeaderText(text: String, modifier: Modifier) {
         modifier = modifier,
         textAlign = TextAlign.Center,
         color = Color.White,
-        fontSize = 7.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.Bold,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -110,8 +110,12 @@ fun ProductRow(
         ) {
             Text(
                 product.nome,
-                textAlign = TextAlign.Center,
-                fontSize = 7.sp
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
             )
         }
         Column(
@@ -121,8 +125,12 @@ fun ProductRow(
         ) {
             Text(
                 product.modelo,
-                textAlign = TextAlign.Center,
-                fontSize = 7.sp
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
             )
         }
         Column(
@@ -132,8 +140,12 @@ fun ProductRow(
         ) {
             Text(
                 product.preco.toString(),
-                textAlign = TextAlign.Center,
-                fontSize = 7.sp
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
             )
         }
         Column(
@@ -143,8 +155,12 @@ fun ProductRow(
         ) {
             Text(
                 product.tamanho.toString(),
-                textAlign = TextAlign.Center,
-                fontSize = 7.sp
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
             )
         }
         Column(
@@ -154,8 +170,12 @@ fun ProductRow(
         ) {
             Text(
                 product.cor,
-                textAlign = TextAlign.Center,
-                fontSize = 7.sp
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
             )
         }
         Column(
@@ -165,8 +185,12 @@ fun ProductRow(
         ) {
             Text(
                 product.quantidade.toString(),
-                textAlign = TextAlign.Center,
-                fontSize = 7.sp
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
             )
         }
         Row(
