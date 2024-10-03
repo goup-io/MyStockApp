@@ -94,6 +94,7 @@ dependencies {
     // OkHttp - Logging
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
+    implementation( "androidx.navigation:navigation-compose:2.5.3")
 
     // ML Kit - Leitura de código de barras
     implementation ("com.google.mlkit:barcode-scanning:17.0.2")
