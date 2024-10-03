@@ -36,6 +36,7 @@ import com.example.mystockapp.models.produtos.ProdutoTable
 fun ScreenTable(
     products: List<ProdutoTable>,
     verMaisAction: (ProdutoTable) -> Unit,
+    isPreVenda: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -60,7 +61,8 @@ fun ScreenTable(
                     ProductRow(
                         product = product,
                         verMaisAction = verMaisAction,
-                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0)
+                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
+                        isPreVenda = isPreVenda
                     )
                 }
             }
@@ -106,10 +108,11 @@ fun HeaderText(text: String, modifier: Modifier) {
 fun ProductRow(
     product: ProdutoTable,
     verMaisAction: (ProdutoTable) -> Unit,
-    backgroundColor: Color
+    backgroundColor: Color,
+    isPreVenda: Boolean
 ) {
-    var quantidadeToAdd by remember { mutableStateOf(product.quantidadeToAdd) }
 
+    val quantidade = if (isPreVenda) product.quantidadeToAdd else product.quantidade
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +174,7 @@ fun ProductRow(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                product.quantidade.toString(),
+                 quantidade.toString(),
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
                 fontSize = 10.sp,

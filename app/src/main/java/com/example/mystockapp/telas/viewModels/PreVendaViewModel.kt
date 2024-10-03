@@ -47,9 +47,13 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
     }
 
     fun limparProdutos() {
-        produtos = produtos.map { produto ->
-            produto.copy(quantidadeToAdd = 0)
-        }
+        produtos = produtos
+            .map { it.copy(quantidadeToAdd = 0) }
+            .filter { it.quantidadeToAdd > 0 }
+    }
+
+    fun limparCarrinho(){
+        carrinho = carrinho.copy(itensCarrinho = mutableListOf())
     }
 
     fun adicionar() {
@@ -58,26 +62,27 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
 
         produtos.forEach { produto ->
             if (produto.quantidadeToAdd >= 1) {
-                // Verifique se o produto já está no carrinho
                 val itemCarrinho = novosItensCarrinho.find { it.id == produto.id }
                 if (itemCarrinho != null) {
-                    // Se já está, atualize a quantidade
                     val updatedItem = itemCarrinho.copy(quantidadeToAdd = itemCarrinho.quantidadeToAdd + produto.quantidadeToAdd)
-                    // Atualize a lista com o item modificado
                     novosItensCarrinho[novosItensCarrinho.indexOf(itemCarrinho)] = updatedItem
                 } else {
-                    // Se não está, adicione como um novo item no carrinho
                     novosItensCarrinho.add(produto.copy(quantidadeToAdd = produto.quantidadeToAdd))
                 }
             }
         }
 
-        // Atualize o carrinho com a nova lista de itens
         carrinho = carrinho.copy(itensCarrinho = novosItensCarrinho)
 
-        // Limpe os produtos após a adição
         limparProdutos()
         Log.d("Carrinho", "${gson.toJson(carrinho.itensCarrinho)}")
+    }
+
+    fun finalizarVenda(){
+
+
+        limparCarrinho()
+        limparProdutos()
     }
 
 

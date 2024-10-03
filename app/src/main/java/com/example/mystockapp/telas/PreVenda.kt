@@ -60,6 +60,7 @@ import com.example.mystockapp.modais.modalAddProdCarrinho
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
 import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 
@@ -340,10 +341,10 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                     ) {
 
                         Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")
-                        ProductTable(
+                        ScreenTable(
                             products = viewModel.carrinho.itensCarrinho,
-                            onAddProduto = { produto -> viewModel.addProduto(produto) },
-                            onRemoverProduto = { produto -> viewModel.removerProduto(produto) }
+                            verMaisAction = { },
+                            isPreVenda = true
                         )
                     }
                 }

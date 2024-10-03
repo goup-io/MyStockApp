@@ -366,7 +366,7 @@ fun EstoqueScreen() {
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                        ScreenTable(products, { product -> })
+                        ScreenTable(products, { product -> }, false)
 
                     }
                 }
