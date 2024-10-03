@@ -209,8 +209,6 @@ fun PreVendaScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Header("Pré Venda") { }
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
