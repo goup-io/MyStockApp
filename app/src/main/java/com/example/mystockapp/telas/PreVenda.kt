@@ -56,6 +56,7 @@ import com.example.mystockapp.R
 import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalNovoModeloDialog
+import com.example.mystockapp.modais.ModalResumoVenda
 import com.example.mystockapp.modais.modalAddProdCarrinho
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
@@ -100,6 +101,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
     var tipoVenda by remember { mutableStateOf("") }
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
+    var isModalMaisInfo by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -202,11 +204,17 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             }
 
                             if (isModalAdicionarDesconto) {
-                                ModalAdicionarDesconto(onDismissRequest = { isModalAdicionarDesconto = false })
+                                ModalAdicionarDesconto(
+                                    vendaDetalhes = viewModel.vendaDetalhes,
+                                    isDescontoProduto = false,
+                                    onDismissRequest = { isModalAdicionarDesconto = false },
+                                    onSalvarDesconto = {  desconto, porcentagemDesconto ->
+                                        viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)}
+                                )
                             }
 
                             Button(
-                                onClick = { /* Ação do botão 2 */ },
+                                onClick = { isModalMaisInfo = true },
                                 modifier = Modifier
                                     .width(25.dp)
                                     .height(25.dp),
@@ -218,7 +226,12 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             ) {
                                 Text(text = "+", fontSize = 22.sp, color = Color.White) // Define a cor do texto
                             }
-
+                            if(isModalMaisInfo){
+                                ModalResumoVenda(
+                                    detalhes = viewModel.vendaDetalhes,
+                                    onDismissRequest = { isModalMaisInfo = false }
+                                )
+                            }
                         }
                     }
 
@@ -276,7 +289,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                     .fillMaxWidth(0.95f)
                     .height(365.dp)
                     .background(Color.White, RoundedCornerShape(8.dp))
-                .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
             ) {
                 Column {
                     // Header da caixa grande
@@ -337,7 +350,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             .background(Color(0xFF355070))
                             .padding(4.dp)
                             .clip(RoundedCornerShape(8.dp))
-                        .align(Alignment.CenterHorizontally)
+                            .align(Alignment.CenterHorizontally)
                     ) {
 
                         Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")

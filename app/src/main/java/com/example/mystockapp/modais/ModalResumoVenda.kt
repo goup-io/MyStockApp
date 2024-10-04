@@ -113,5 +113,5 @@ fun ResumoItem(
 @Preview
 @Composable
 fun ModalResumoVendaPreview() {
-    ModalResumoVenda({}, VendaDetalhes(1, 1.0, 1.0, 1.0, 1.0, 1.0))
+    ModalResumoVenda({}, VendaDetalhes(1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0))
 }

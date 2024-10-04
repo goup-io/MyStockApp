@@ -11,5 +11,6 @@ data class ProdutoTable(
     val tamanho: Int,
     val cor: String,
     var quantidade: Int,
-    var quantidadeToAdd: Int = 0
+    var quantidadeToAdd: Int = 0,
+    var valorDesconto: Double = 0.0
 ) : ListaItensModal

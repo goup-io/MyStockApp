@@ -84,7 +84,7 @@ fun FormField(
                             .padding(4.dp)
                     ) {
                         if (textValue.isEmpty() && placeholder.isNotEmpty()) {
-                            Text(text = placeholder, style = textStyle.copy(color = Color.Gray))
+                            Text(text = placeholder, style = TextStyle(fontSize = 12.sp, lineHeight = TextUnit.Unspecified, color = Color.Gray))
                         }
                         innerTextField()
                     }
