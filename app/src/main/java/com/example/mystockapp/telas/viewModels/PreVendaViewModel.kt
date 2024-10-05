@@ -12,10 +12,13 @@ import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
+import com.example.mystockapp.api.vendaApi.VendaService
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.vendas.Carrinho
+import com.example.mystockapp.models.vendas.ProdutoVendaReq
 import com.example.mystockapp.models.vendas.VendaDetalhes
 import com.example.mystockapp.models.vendas.VendaInfo
+import com.example.mystockapp.models.vendas.VendaPost
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
@@ -141,19 +144,40 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
 //        atualizarVendaDetalhes()
     }
 
-    fun finalizarVenda(){
-
-
-        limparCarrinho()
-        limparProdutos()
-    }
-
-
     suspend fun fetchProdutos(){
         viewModelScope.launch {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
             try {
                 produtos = produtoService.fetchProdutosTabela(idLoja = idLoja)
+            } catch (e: ApiException) {
+                errorMessage = "${e.message}"
+            } catch (e: NetworkException) {
+                errorMessage = "Network Error: ${e.message}"
+            } catch (e: GeneralException) {
+                errorMessage = "${e.message}"
+            }
+        }
+    }
+
+    suspend fun realizarVenda(){
+        viewModelScope.launch {
+            val vendaService = VendaService(RetrofitInstance.vendaApi)
+            try {
+                val produtosVendaReq = carrinho.itensCarrinho.map {
+                    ProdutoVendaReq(
+                        etpId = it.id,
+                        quantidade = it.quantidadeToAdd,
+                        desconto = it.valorDesconto
+                    )
+                }
+                val vendaReq = VendaPost(
+                    vendaReq = carrinho.vendaInfo,
+                    produtosVendaReq = produtosVendaReq
+                )
+                val vendaRes = vendaService.createVenda(vendaReq)
+                Log.d("Venda", "Venda realizada com sucesso: ${vendaRes}")
+                limparCarrinho()
+                limparProdutos()
             } catch (e: ApiException) {
                 errorMessage = "${e.message}"
             } catch (e: NetworkException) {
