@@ -42,6 +42,7 @@ import com.example.mystockapp.models.produtos.ProdutoCreate
 import com.example.mystockapp.models.produtos.Tamanho
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @Composable
 fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
@@ -55,8 +56,8 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     var cor by remember { mutableStateOf(Cor(-1, "")) }
     var nItens by remember { mutableStateOf("") }
 
-    var modelosOptions by remember { mutableStateOf<List<Modelo>>(emptyList())}
-    var coresOptions by remember { mutableStateOf<List<Cor>>(emptyList())}
+    var modelosOptions by remember { mutableStateOf<List<Modelo>>(emptyList()) }
+    var coresOptions by remember { mutableStateOf<List<Cor>>(emptyList()) }
     var tamanhosOptions by remember { mutableStateOf<List<Tamanho>>(emptyList()) }
 
     var errorMessage by remember { mutableStateOf("") }
@@ -72,7 +73,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     var bgCorBtn by remember { mutableStateOf(Color(0xFF355070)) }
     var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
 
-    var loja by remember { mutableStateOf(Loja())}
+    var loja by remember { mutableStateOf(Loja()) }
     val gson = Gson()
     val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
     val idLoja = sharedPreferences.getInt("idLoja", -1) // -1 é o valor padrão caso não encontre
@@ -138,36 +139,9 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                 quantidade = quantidade
             )
             Log.e("NovoProdutoDialog", "OBJETO DE INPUT: ${gson.toJson(objeto)}")
-            val response = produtoService.createProduto(objeto
-                )
-            when(response.code()) {
-                201 -> {
-                    Log.d("NovoProdutoDialog", "Produto salvo com sucesso")
-                    confirmarTitulo = "Produto salvo com sucesso"
-                }
-                400 -> {
-                    Log.e("NovoProdutoDialog", "OBJETO DE INPUT: ${gson.toJson(objeto)}")
-                    Log.e("NovoProdutoDialog", "Erro ao salvar produto - dados incorretos: ${response.errorBody()}")
-                    errorMessage = "Dados não preenchidos corretamente"
-                    confirmarTitulo = "Dados não preenchidos corretamente"
-                    imgCasoDeErro = R.mipmap.ic_excluir
-                }
-                500 -> {
-                    Log.e("NovoProdutoDialog", "Erro inesperado, tente novamente: ${response.errorBody()}")
-                    errorMessage = "Erro inesperado, tente novamente"
-                    confirmarTitulo = "Erro inesperado, tente novamente ou entre em contato com o suporte"
-                    imgCasoDeErro = R.mipmap.ic_excluir
-                }
-                409 ->{
-                    Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${response.errorBody()}")
-                    errorMessage = "Produto já cadastrado"
-                    confirmarTitulo = "Produto já cadastrado"
-                    imgCasoDeErro = R.mipmap.ic_excluir
-                }
-                else -> {
-                    Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${response.errorBody()}")
-                }
-            }
+            val response = produtoService.createProduto(objeto)
+
+            confirmarTitulo = "Produto salvo com sucesso"
 
             handleAbrirModalConfirm(
                 confirmarTitulo,
@@ -178,19 +152,96 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
             )
         } catch (e: ApiException) {
             Log.e("NovoProdutoDialog", "ApiException: ${e.message}")
-            handleAbrirModalConfirm(
-                confirmarTitulo,
-                action = { showSucessoDialog = true },
-                confirmarTexto = "Ok",
-                recusarTexto = "",
-                corBtn = Color(0xFF355070)
-            )
-        } catch (e: NetworkException) {
-            Log.e("NovoProdutoDialog", "NetworkException: ${e.message}")
-        } catch (e: GeneralException) {
-            Log.e("NovoProdutoDialog", "GeneralException: ${e.message}")
-        }
+            val errorMessages = mutableListOf<String>()
+
+            Log.d("NovoProdutoDialog", "API Response - TUDOLOGO: ${e.message}")
+
+            val jsonObject = JSONObject(e.message)
+            // Verifique se existe a chave "errors"
+            if (jsonObject.has("errors")) {
+                val errorsObject = jsonObject.getJSONObject("errors")
+
+                // Itere sobre as chaves no objeto "errors" e pegue os valores
+                errorsObject.keys().forEach { key ->
+                    // Tente pegar a mensagem de erro de forma segura
+                    val errorMessage = errorsObject.optString(key, null)
+                    if (errorMessage != null) {
+                        errorMessages.add(errorMessage)
+                    }
+                }
+            }
+            when (e.code) {
+                201 -> {
+                    Log.d("NovoProdutoDialog", "Produto salvo com sucesso")
+                    confirmarTitulo = "Produto salvo com sucesso"
+                }
+
+                400 -> {
+                    errorMessage = errorMessages.joinToString("\n")
+                    confirmarTitulo = errorMessages.joinToString("\n")
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+
+                500 -> {
+                    errorMessage = "Erro inesperado, tente novamente"
+                    confirmarTitulo =
+                        "Erro inesperado, tente novamente ou entre em contato com o suporte"
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+
+                409 -> {
+                    Log.e("NovoProdutoDialog", "ERRO 409 - ${errorMessages.joinToString("\n")}")
+                    errorMessage = errorMessages.joinToString("\n")
+                    confirmarTitulo = errorMessages.joinToString("\n")
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+
+                else -> {
+                    Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${e.message}")
+                }
+            }
+                handleAbrirModalConfirm(
+                    confirmarTitulo,
+                    action = { showSucessoDialog = true },
+                    confirmarTexto = "Ok",
+                    recusarTexto = "",
+                    corBtn = Color(0xFF355070)
+                )
+            }catch (e: NetworkException) {
+                Log.e("NovoProdutoDialog", "NetworkException: ${e.message}")
+            } catch (e: GeneralException) {
+                Log.e("NovoProdutoDialog", "GeneralException: ${e.message}")
+            }
     }
+
+    fun formatarPreco(input: String): String {
+        // Remove todos os caracteres que não sejam números, vírgulas ou pontos
+        var numeros = input.replace(Regex("[^0-9,.]"), "")
+        
+        // caso seja um numero de mil, coloca ponto
+        if (numeros.length > 3) {
+            numeros = input.substring(0, input.length - 3) + "." + input.substring(input.length - 3)
+        }
+
+        // não permitir que digite mais de 1 virgula
+        if (numeros.count { it == ',' } > 1) {
+            numeros = input.substring(0, input.length - 1)
+        }
+
+        // não permitir que digite mais de 1 ponto
+        if (numeros.count { it == '.' } > 1) {
+            numeros = input.substring(0, input.length - 1)
+        }
+
+
+        return numeros
+    }
+
+
+
+
+
+
 
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -240,7 +291,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                 )
                                 SelectField(
                                     label = "Tamanho:",
-                                    selectedOption = tamanho.numero.toString(),
+                                    selectedOption = if(tamanho.numero == -1) "" else tamanho.numero.toString(),
                                     options = tamanhosOptions.map { it.numero.toString() },
                                     onOptionSelected = { tamanhoNome ->
                                         val selectedTamanho = tamanhosOptions.find { it.numero.toString() == tamanhoNome }
@@ -276,9 +327,12 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                     label = "Preço Custo:",
                                     textValue = precoCusto,
                                     fieldType = KeyboardType.Decimal,
-                                    onValueChange = { precoCusto = it },
+                                    onValueChange = { input ->
+                                        precoCusto = formatarPreco(input) // Atualiza com o valor formatado
+                                    },
                                     error = showError && precoCusto.isEmpty()
                                 )
+
                                 com.example.mystockapp.modais.FormField(
                                     label = "Preço Venda:",
                                     textValue = precoVenda,

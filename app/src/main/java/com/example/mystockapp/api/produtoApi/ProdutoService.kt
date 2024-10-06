@@ -143,7 +143,7 @@ class ProdutoService(private val produtoApi: ProdutoApi) {
         }
     }
 
-    suspend fun createProduto(produtoCreateDto : ProdutoCreate) : Response<Produto> {
+    suspend fun createProduto(produtoCreateDto: ProdutoCreate): Response<Produto> {
         return try {
             val response = produtoApi.createEtp(produtoCreateDto)
 
@@ -151,12 +151,12 @@ class ProdutoService(private val produtoApi: ProdutoApi) {
                 Log.d("ProdutoService", "API Response: ${response.body()}")
                 response ?: throw ApiException(500, "Não foi possível criar produto")
             } else {
-                val errorMessage = response.errorBody()?.string() ?: response.message() ?: "Erro desconhecido"
-                Log.e("ProdutoService", "API Error: ${response.code()} - $errorMessage")
-                if (response.code() == 500) {
-                    throw ApiException(response.code(), "ERRO INESPERADO")
-                }
-                response
+                // Obter o corpo de erro como string diretamente
+                val errorBodyString = response.errorBody()?.string() ?: "Erro desconhecido"
+                Log.e("ProdutoService", "API Error: ${response.code()} - $errorBodyString")
+
+                // Lançar uma exceção personalizada com a mensagem de erro
+                throw ApiException(response.code(), errorBodyString)
             }
         } catch (e: IOException) {
             Log.e("ProdutoService", "Network Error: ${e.message}")
@@ -164,6 +164,7 @@ class ProdutoService(private val produtoApi: ProdutoApi) {
         } catch (e: HttpException) {
             val errorMessage = e.response()?.errorBody()?.string() ?: e.message() ?: "Erro desconhecido"
             Log.e("ProdutoService", "HTTP Error: ${e.code()} - $errorMessage")
+
             if (e.code() == 403) {
                 throw ApiException(e.code(), "Acesso negado: Token inválido ou sem permissão.")
             } else {
