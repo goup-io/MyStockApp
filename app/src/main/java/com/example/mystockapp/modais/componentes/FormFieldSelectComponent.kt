@@ -55,6 +55,7 @@ fun <T> SelectField(
     textStyle: TextStyle = LocalTextStyle.current.copy(fontSize = 10.sp), // Fonte ajustada para caber em 20.dp
     labelFontSize: TextUnit = 10.sp,
     disabled: Boolean = false,
+    error: Boolean = false,
     borderColor: Color = Color(0xFF355070),
     containerColor: Color = if (disabled) Color(0xFFECECEC) else Color.White,
     fieldHeight: Dp = 20.dp, // Altura fixada em 20.dp
@@ -80,7 +81,7 @@ fun <T> SelectField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(fieldHeight) // Garantindo a altura de 20.dp
-                    .border(1.dp, borderColor, RoundedCornerShape(5.dp))
+                    .border(1.dp, if (error) Color.Red else borderColor, RoundedCornerShape(5.dp))
                     .background(containerColor, RoundedCornerShape(5.dp))
                     .clickable { if (!disabled) expanded = !expanded }
             ) {
