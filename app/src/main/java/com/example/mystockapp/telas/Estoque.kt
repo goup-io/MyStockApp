@@ -1,5 +1,6 @@
 package com.example.mystockapp.telas
 
+import NovoProdutoDialog
 import ProductTable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,14 +43,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.AddProdutoEstoque
+import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.componentes.Header
+import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.telas.componentes.Spinner
-import com.example.mystockapp.telas.componentes.Table
-import com.example.mystockapp.ui.theme.Cores
 import com.example.mystockapp.ui.theme.MyStockAppTheme
+import com.example.mystockapp.ui.theme.Cores
+
 
 class Estoque : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +62,7 @@ class Estoque : ComponentActivity() {
         setContent {
             MyStockAppTheme {
                 EstoqueScreen()
+
             }
         }
     }
@@ -66,15 +72,35 @@ class Estoque : ComponentActivity() {
 fun EstoqueScreen() {
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
+
+    var isModalAddProd by remember { mutableStateOf(false) }
+    var isModalNovoProd by remember { mutableStateOf(false) }
+    var isModalNovoModelo by remember { mutableStateOf(false) }
+
     val products = listOf(
-        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
+        ProdutoTable(0,"166267274711114","Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"1662672747141111111","Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714", "Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
     MenuDrawer(titulo = "Estoque") {
@@ -209,162 +235,201 @@ fun EstoqueScreen() {
                 }
             }
 
-            // Caixa grande branca (Carrinho)
-            Column(
+
+        // Caixa grande branca (Carrinho)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFE7E7E7))
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFE7E7E7))
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxWidth(0.95f)
+                    .height(365.dp)
+                    .background(Color.White, RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(365.dp)
-                        .background(Color.White, RoundedCornerShape(8.dp))
-                        .clip(RoundedCornerShape(8.dp))
-                ) {
-                    Column {
-                        // Header da caixa grande
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Text(
-                                text = "Produtos",
-                                fontSize = 20.sp,
-                                color = Color.Black
-                            )
+                Column {
+                    // Header da caixa grande
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = "Produtos",
+                            fontSize = 20.sp,
+                            color = Color.Black
+                        )
 
-                            Row {
-                                androidx.compose.material3.Button(
-                                    onClick = { /* Ação do botão 1 */ },
-                                    modifier = Modifier
-                                        .width(65.dp)
-                                        .height(25.dp),
-                                    shape = RoundedCornerShape(5.dp),
-                                    contentPadding = PaddingValues(0.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF355070)
-                                    )
-                                ) {
-                                    androidx.compose.material3.Text(
-                                        text = "Código",
-                                        color = Color.White,
-                                        fontSize = 12.sp
-                                    )
-                                }
+                        Row {
+                            androidx.compose.material3.Button(
+                                onClick = { /* Ação do botão 1 */ },
+                                modifier = Modifier
+                                    .width(65.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF355070)
+                                )
+                            ) {
+                                androidx.compose.material3.Text(
+                                    text = "Código",
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
 
-                                Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
 
-                                androidx.compose.material3.Button(
-                                    onClick = { /* Ação do botão 2 */ },
-                                    modifier = Modifier
-                                        .width(70.dp)
-                                        .height(25.dp),
-                                    shape = RoundedCornerShape(5.dp),
-                                    contentPadding = PaddingValues(0.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF355070)
-                                    )
-                                ) {
-                                    androidx.compose.material3.Text(
-                                        text = "Add Prod",
-                                        color = Color.White,
-                                        fontSize = 12.sp
-                                    )
-                                }
+                            androidx.compose.material3.Button(
+                                onClick = { /* Ação do botão 2 */ },
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF355070)
+                                )
+                            ) {
+                                androidx.compose.material3.Text(
+                                    text = "Add Prod",
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
                             }
                         }
-
-                        // Tabela dentro da caixa grande
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(0.95f)
-                                .height(310.dp)
-                                .background(Color(0xFF355070))
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            ProductTable(products, { product -> }, { product -> })
-                        }
-                    }
-                }
-
-                // Dois botões azuis na parte inferior
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(50.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
-                ) {
-                    androidx.compose.material3.Button(
-                        onClick = { /* Ação do primeiro botão */ },
-                        modifier = Modifier
-                            .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
-                            .height(50.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF355070)
-                        )
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Código",
-                            color = Color.White,
-                            fontSize = 16.sp
-                        )
                     }
 
-                        ProductTable(products, { product -> }, { product -> })
-
-                // Dois botões azuis na parte inferior
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(50.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
-                ) {
-                    androidx.compose.material3.Button(
-                        onClick = { /* Ação do primeiro botão */ },
+                    // Tabela dentro da caixa grande
+                    Column(
                         modifier = Modifier
-                            .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
-                            .height(50.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF355070)
-                        )
+                            .fillMaxWidth(0.95f)
+                            .height(310.dp)
+                            .padding(bottom = 8.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .align(Alignment.CenterHorizontally)
                     ) {
-                        androidx.compose.material3.Text(
-                            text = "ADD Produto",
-                            color = Color.White,
-                            fontSize = 16.sp
-                        )
-                    }
 
-                    androidx.compose.material3.Button(
-                        onClick = { /* Ação do segundo botão */ },
-                        modifier = Modifier
-                            .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
-                            .height(50.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF355070)
-                        )
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Novo Modelo",
-                            color = Color.White,
-                            fontSize = 16.sp
-                        )
-                        }
+                        ScreenTable(products, { product -> }, false)
+
                     }
                 }
             }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.95f)
+                    .height(50.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
+            ) {
+                androidx.compose.material3.Button(
+                    onClick = { /* Ação do primeiro botão */ },
+                    modifier = Modifier
+                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355070)
+                    )
+                ) {
+                    androidx.compose.material3.Text(
+                        text = "Código",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+
+                androidx.compose.material3.Button(
+                    onClick = {
+                        isModalNovoProd = true
+                    },
+                    modifier = Modifier
+                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355070)
+                    )
+                ) {
+                    androidx.compose.material3.Text(
+                        text = "Novo Produto",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+                if (isModalNovoProd) {
+                    NovoProdutoDialog(
+                        onDismissRequest = { isModalNovoProd = false }
+                    )
+                }
+            }
+
+
+            // Dois botões azuis na parte inferior
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.95f)
+                    .height(50.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
+            ) {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        isModalAddProd = true
+                    },
+                    modifier = Modifier
+                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355070)
+                    )
+                ) {
+                    androidx.compose.material3.Text(
+                        text = "ADD Produto",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+
+                if (isModalAddProd) {
+                    AddProdutoEstoque(
+                        onDismissRequest = { isModalAddProd = false }
+                    )
+                }
+
+                androidx.compose.material3.Button(
+                    onClick = {
+                        isModalNovoModelo = true
+                    },
+                    modifier = Modifier
+                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355070)
+                    )
+                ) {
+                    androidx.compose.material3.Text(
+                        text = "Novo Modelo",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+                if (isModalNovoModelo) {
+                    ModalNovoModeloDialog(
+                        onDismissRequest = { isModalNovoModelo = false }
+                    )
+                }
+            }
+        }
         }
     }
 }
@@ -375,4 +440,7 @@ fun PreviewEstoqueScreen() {
         EstoqueScreen()
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/develop

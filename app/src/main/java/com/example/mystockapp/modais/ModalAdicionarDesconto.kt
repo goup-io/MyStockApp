@@ -1,6 +1,7 @@
 package com.example.mystockapp.modais
 
 import DottedLineComponent
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,25 +29,51 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.modais.componentes.ButtonComponent
+import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.models.vendas.VendaDetalhes
 
 @Composable
-fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
+fun ModalAdicionarDesconto(
+    vendaDetalhes: VendaDetalhes = VendaDetalhes(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+    produtoInfo: ProdutoTable = ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0),
+    isDescontoProduto: Boolean,
+    onSalvarDesconto: (Double, Double) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+
+    Log.i("ModalAdicionarDesconto", "vendaDetalhes: $vendaDetalhes")
+
+    // Declare as variáveis fora do bloco if-else
     var porcentagem by remember { mutableStateOf("") }
     var valorCalculado by remember { mutableStateOf("R$ 0,00") } // Valor inicial ajustado
-    var valorAtual by remember { mutableStateOf("R$ 400,00") }
+    var valorAtual by remember { mutableStateOf("R$ 0,00") }
+
+    // Inicialize as variáveis de acordo com a condição
+    if (!isDescontoProduto) {
+        porcentagem = vendaDetalhes.porcentagemDesconto.toString()
+        valorAtual = "R$ %.2f".format(vendaDetalhes.subtotal1)
+        valorCalculado = "R$ %.2f".format(vendaDetalhes.valorDescontoVenda)
+    } else {
+        porcentagem = vendaDetalhes.valorDescontoProdutos.toString()
+        valorAtual = "R$ %.2f".format(produtoInfo.preco)
+    }
 
     // Função para calcular o valor após aplicar a porcentagem
     fun calcularValorComDesconto() {
         // Remove caracteres não numéricos e converte para Float
-        val valorNumericoAtual = valorAtual.replace("[^\\d,]".toRegex(), "").replace(",", ".").toFloatOrNull() ?: 0f
-        val porcentagemNumerica = porcentagem.toFloatOrNull() ?: 0f
+        val valorNumericoAtual = valorAtual
+            .replace("[^\\d,.]".toRegex(), "") // Mantém números, pontos e vírgulas
+            .replace(",", ".") // Substitui vírgula por ponto
+            .toFloatOrNull() ?: 0f
+
+        // Converte a porcentagem para float, usando ponto como separador
+        val porcentagemNumerica = porcentagem.replace(",", ".").toFloatOrNull() ?: 0f
 
         // Calcula o valor do desconto e o valor final
         val desconto = valorNumericoAtual * (porcentagemNumerica / 100)
-        val valorFinal = valorNumericoAtual - desconto
 
         // Atualiza o valor calculado com a formatação correta
-        valorCalculado = "R$ %.2f".format(valorFinal)
+        valorCalculado = "R$ %.2f".format(desconto)
     }
 
     // Atualiza o valor calculado sempre que a porcentagem muda
@@ -89,12 +116,22 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
                                     label = "Porcentagem %:",
-                                    textValue = porcentagem,
+                                    placeholder = "0.0",
+                                    textValue = if (porcentagem == "0.0") "" else porcentagem,
                                     width = 300.dp,
                                     fieldType = KeyboardType.Number,
-                                    onValueChange = {
-                                        porcentagem = it
-                                        calcularValorComDesconto() // Atualiza o valor calculado sempre que a porcentagem muda
+                                    onValueChange = { input ->
+                                        val formattedInput = input.replace(",", ".")
+
+                                        val porcentagemNumerica = formattedInput.toFloatOrNull()
+
+                                        if (porcentagemNumerica != null && porcentagemNumerica <= 100) {
+                                            porcentagem = formattedInput
+                                            calcularValorComDesconto() // Atualiza o valor calculado sempre que a porcentagem muda
+                                        } else if (porcentagemNumerica != null && porcentagemNumerica > 100) {
+                                            porcentagem = "100"
+                                            calcularValorComDesconto()
+                                        }
                                     },
                                 )
                             }
@@ -117,12 +154,31 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
                         }
 
                         Spacer(modifier = Modifier.height(4.dp))
-                        DottedLineComponent() // Linha pontilhada
-                        Spacer(modifier = Modifier.height(4.dp))
 
                         Column(
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            if(isDescontoProduto){
+                                // Linha para o valor unitário produto
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Valor Unitário",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = valorPosDesconto,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            DottedLineComponent() // Linha pontilhada
+                            Spacer(modifier = Modifier.height(3.dp))
+                            }
                             // Linha para o valor atual
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -150,14 +206,14 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Valor após o desconto",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
+                                    text = "Valor Após o Desconto",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = valorPosDesconto,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -170,17 +226,21 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
                             ButtonComponent(
                                 titulo = "Limpar",
                                 onClick = {
+                                    valorCalculado = "R$ 0,00"
                                     porcentagem = ""
-                                    valorCalculado = ""
                                 },
                                 containerColor = Color(0xFF919191),
                             )
                             ButtonComponent(
                                 titulo = "Salvar",
                                 onClick = {
-                                    val porcentagemFloat = porcentagem.toFloatOrNull() ?: 0f
-                                    val valorCalculadoFloat = valorCalculado.toFloatOrNull() ?: 0f
-                                    onDismissRequest() },
+                                    val valorCalculadoDouble = valorCalculado
+                                        .replace("[^\\d,.]".toRegex(), "")
+                                        .replace(",", ".")
+                                        .toDoubleOrNull() ?: 0.0
+                                    onSalvarDesconto(valorCalculadoDouble, porcentagem.toDouble())
+                                    onDismissRequest()
+                                          },
                                 containerColor = Color(0xFF355070),
                             )
                         }
@@ -207,5 +267,11 @@ fun ModalAdicionarDesconto(onDismissRequest: () -> Unit) {
 @Composable
 fun ModalAdicionarDescontoPreview() {
     // Simulando o comportamento de dismiss para visualização no preview
-    ModalAdicionarDesconto(onDismissRequest = {})
+    ModalAdicionarDesconto(
+        vendaDetalhes = VendaDetalhes(0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0),
+        isDescontoProduto = true,
+        onSalvarDesconto = { _, _ -> },
+        onDismissRequest = {},
+
+    )
 }

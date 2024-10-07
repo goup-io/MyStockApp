@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
@@ -28,49 +29,15 @@ import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.models.produtos.ProdutoQuantidadeAdd
+import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 
 @Composable
-fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
+fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewModel, idLoja: Int) {
 
-    var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
-
-
-    fun addProduto(produto: ProdutoTable) {
-        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-        if (produtoBuscado in produtosAlterados) {
-            produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.plus(1) ?: 1)
-        } else {
-            produto.quantidadeToAdd = 1;
-            produtosAlterados = produtosAlterados.toMutableList().apply { add(produto) }
-        }
-    }
-
-
-    fun removerProduto(produto: ProdutoTable) {
-        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-
-        if (produtoBuscado in produtosAlterados) {
-            if (produtoBuscado?.quantidadeToAdd?.toInt()!! > 1) {
-                produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
-            } else {
-                produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
-            }
-        }
-    }
 
     LaunchedEffect(Unit) {
-        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-        try {
-            products = produtoService.fetchProdutosTabela(1)
-        } catch (e: ApiException) {
-            errorMessage = "${e.message}"
-        } catch (e: NetworkException) {
-            errorMessage = "Network Error: ${e.message}"
-        } catch (e: GeneralException) {
-            errorMessage = "${e.message}"
-        }
+        viewModel.fetchProdutos()
     }
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -88,9 +55,9 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
                 ProductTable(
-                    products = products,
-                    onAddProduto = ::addProduto,
-                    onRemoverProduto = ::removerProduto
+                    products = viewModel.produtos,
+                    onAddProduto = { produto -> viewModel.addProduto(produto) },
+                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) }
                 )
             }
 
@@ -102,14 +69,16 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
             ) {
                 ButtonComponent(
                     titulo = "Limpar",
-                    onClick = { onDismissRequest() },
+                    onClick = { viewModel.limparProdutos() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
                 ButtonComponent(
                     titulo = "Adicionar",
                     onClick = {
-                       onDismissRequest() },
+                        viewModel.adicionar()
+                        onDismissRequest()
+                        },
                     containerColor = Color(0xFF355070),
                 )
             }
@@ -124,6 +93,6 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit) {
 @Composable
 fun modalAddProdCarrinho() {
     MyStockAppTheme() {
-        modalAddProdCarrinho(onDismissRequest = {})
+        modalAddProdCarrinho(onDismissRequest = {}, viewModel = PreVendaViewModel(idLoja = 1), idLoja = 1)
     }
 }
