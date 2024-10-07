@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -25,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.telas.BipScreen
 import com.example.mystockapp.telas.Estoque
+import com.example.mystockapp.telas.Login
+import com.example.mystockapp.telas.LoginScreen
 import com.example.mystockapp.telas.PreVenda
 
 @Composable
@@ -38,13 +41,6 @@ fun SideMenu(context: Context) {
         UserSection()
 
         Spacer(modifier = Modifier.height(1.dp))
-
-        // Menu items with Material Icons
-        MenuItem(icon = Icons.Default.Menu, text = "Menu") {
-            // Handle menu item click
-            val intent = Intent(context, Estoque::class.java)
-            context.startActivity(intent)
-        }
 
         MenuItem(icon = Icons.Default.Inventory, text = "Estoque") {
             val intent = Intent(context, Estoque::class.java)
@@ -62,6 +58,15 @@ fun SideMenu(context: Context) {
             val intent = Intent(context, BipScreen::class.java)
             context.startActivity(intent)
         }
+
+        // Menu items with Material Icons
+        MenuItem(icon = Icons.Default.ExitToApp, text = "Sair") {
+            // Handle menu item click
+            val intent = Intent(context, Login::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+        }
+
     }
 }
 
