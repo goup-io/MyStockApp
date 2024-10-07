@@ -1,6 +1,8 @@
 package com.example.mystockapp.modais
 
 import ProductTable
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,59 +17,52 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.mystockapp.api.RetrofitInstance
-import com.example.mystockapp.api.exceptions.ApiException
-import com.example.mystockapp.api.exceptions.GeneralException
-import com.example.mystockapp.api.exceptions.NetworkException
-import com.example.mystockapp.api.produtoApi.ProdutoService
-import com.example.mystockapp.models.produtos.ProdutoTable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.ButtonComponent
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
+import kotlinx.coroutines.launch
 
 @Composable
-fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
-    var products by remember { mutableStateOf(listOf<ProdutoTable>()) }
+fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var produtosAlterados by remember { mutableStateOf(listOf<ProdutoTable>()) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showSucessoDialog by remember { mutableStateOf(false) }
+    var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
+    var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
+    var sucessoDialogTitulo by remember { mutableStateOf<String?>(null) }
+    var tituloFinalizacaoDialog by remember { mutableStateOf<String?>(null) }
 
+    val coroutineScope = rememberCoroutineScope()
 
-    fun addProduto(produto: ProdutoTable) {
-        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-        if (produtoBuscado in produtosAlterados) {
-            produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.plus(1) ?: 1)
-        } else {
-            produto.quantidadeToAdd = 1;
-            produtosAlterados = produtosAlterados.toMutableList().apply { add(produto) }
-        }
-    }
+    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1)
 
+    val viewModel: AddProdEstoqueViewModel = viewModel(
+        factory = AddProdEstoqueViewModelFactory(idLoja = idLoja)
+    )
 
-    fun removerProduto(produto: ProdutoTable) {
-        var produtoBuscado = produtosAlterados.find { it.id == produto.id }
-
-        if (produtoBuscado in produtosAlterados) {
-            if (produtoBuscado?.quantidadeToAdd?.toInt()!! > 1) {
-                produtoBuscado?.quantidadeToAdd = (produtoBuscado?.quantidadeToAdd?.toInt()?.minus(1) ?: 1)
-            } else {
-                produtosAlterados = produtosAlterados.toMutableList().apply { remove(produto) }
-            }
-        }
+    fun handleAbrirModalConfirm(
+        titulo: String,
+        action: suspend () -> Unit,
+        confirmarTexto: String,
+        recusarTexto: String,
+        corBtn: Color
+    ) {
+        showConfirmDialog = true
+        actionToPerform = action
+        sucessoDialogTitulo = titulo
     }
 
     LaunchedEffect(Unit) {
-        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-        try {
-            products = produtoService.fetchProdutosTabela(1)
-        } catch (e: ApiException) {
-            errorMessage = "${e.message}"
-        } catch (e: NetworkException) {
-            errorMessage = "Network Error: ${e.message}"
-        } catch (e: GeneralException) {
-            errorMessage = "${e.message}"
-        }
+        viewModel.fetchProdutos()
     }
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -85,9 +80,9 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
                 ProductTable(
-                    products = products,
-                    onAddProduto = ::addProduto,
-                    onRemoverProduto = ::removerProduto
+                    products = viewModel.produtos,
+                    onAddProduto = { produto -> viewModel.addProduto(produto) },
+                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) },
                 )
             }
 
@@ -99,22 +94,62 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit) {
             ) {
                 ButtonComponent(
                     titulo = "Limpar",
-                    onClick = { onDismissRequest() },
+                    onClick = { viewModel.limparProdutos() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
                 ButtonComponent(
                     titulo = "Adicionar",
                     onClick = {
-                       onDismissRequest() },
+                        handleAbrirModalConfirm(
+                            "Tem certeza que deseja adicionar esses produtos ao estoque?",
+                            { viewModel.handleAdicionarProdutos() },
+                            "Adicionar",
+                            "Cancelar",
+                            Color(0xFF355070)
+                        )
+                    },
                     containerColor = Color(0xFF355070),
                 )
             }
         }
-}
+    }
 
+    if (showConfirmDialog) {
+        ConfirmacaoDialog(
+            titulo = sucessoDialogTitulo ?: "",
+            confirmarBtnTitulo = "Adicionar",
+            recusarBtnTitulo = "Cancelar",
+            imagem = painterResource(id = R.mipmap.ic_editar),
+            onConfirm = {
+                coroutineScope.launch {
+                    viewModel.handleAdicionarProdutos()
+                    showConfirmDialog = false
+                    showSucessoDialog = true
+                }
+            },
+            onDismiss = {
+                showConfirmDialog = false
+            }
+        )
+    }
 
-
+    if (showSucessoDialog) {
+        SucessoDialog(
+            titulo = tituloFinalizacaoDialog ?: "Produtos adicionados com sucesso!",
+            onDismiss = {
+                showSucessoDialog = false
+                onDismissRequest()
+            },
+            onConfirm = {
+                showSucessoDialog = false
+                onDismissRequest()
+            },
+            btnConfirmColor = Color(0xFF355070),
+            imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+            btnConfirmTitulo = "OK"
+        )
+    }
 }
 
 @Preview(showBackground = true)
