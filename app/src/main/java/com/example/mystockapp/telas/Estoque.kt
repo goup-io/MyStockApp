@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ButtonDefaults
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalNovoModeloDialog
+import com.example.mystockapp.modais.componentes.SelectField
 import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.componentes.Header
@@ -159,68 +162,67 @@ fun EstoqueScreen() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(top = 16.dp)
+                        .padding(12.dp)
+//                        .padding(top = 16.dp)
                 ) {
-                    // Primeira linha (label e input)
+
+                    // Primeira linha (SelectField para Mod. e Cor)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Label 1
-                        Text(text = "Mod. :", modifier = Modifier.weight(1f))
-
-                        // Input 1
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1.4f).height(10.dp)
+                        // SelectField para Mod.
+                        SelectField(
+                            label = "Modelo :",
+                            selectedOption = "",
+                            options = listOf("Modelo 1", "Modelo 2", "Modelo 3"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
 
-                        // Label 2
-                        Text(text = "Cor :", modifier = Modifier.weight(1f))
-
-                        // Input 2
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1.4f).height(10.dp)
+                        // SelectField para Cor
+                        SelectField(
+                            label = "Cor :",
+                            selectedOption = "",
+                            options = listOf("Cor 1", "Cor 2", "Cor 3"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(30.dp))
+//                    Spacer(modifier = Modifier.height(5.dp))
 
-                    // Segunda linha (label e input)
+
+                    // Segunda linha (SelectField para Tam. e Preço)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Label 3
-                        Text(text = "Tam. :", modifier = Modifier.weight(1f))
-
-                        // Input 3
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1.4f).height(10.dp)
+                        // SelectField para Tam.
+                        SelectField(
+                            label = "Tamanho :",
+                            selectedOption = "",
+                            options = listOf("P", "M", "G"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
                         )
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
 
-                        // Label 4
-                        Text(text = "Preço :", modifier = Modifier.weight(1f))
-
-                        // Input 4
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1.4f).height(10.dp)
+                        // SelectField para Preço
+                        SelectField(
+                            label = "Preço :",
+                            selectedOption = "",
+                            options = listOf("R$ 50", "R$ 100", "R$ 150"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+
+                    Spacer(modifier = Modifier.height(2.dp))
 
                     // Terceira linha (botões)
                     Row(
@@ -305,7 +307,7 @@ fun EstoqueScreen() {
                             modifier = Modifier.padding(0.dp),
                             verticalAlignment = Alignment.CenterVertically // Alinha o texto e input ao centro
                         ) {
-                            // Texto "Pesquisar:"
+                            // Texto "Buscar:"
                             androidx.compose.material3.Text(
                                 text = "Buscar:",
                                 fontSize = 12.sp,
@@ -313,35 +315,47 @@ fun EstoqueScreen() {
                                 modifier = Modifier.padding(end = 8.dp)
                             )
 
-                            // Input para pesquisa
-                            androidx.compose.material3.OutlinedTextField(
-                                value = "TESTES", // Substituir pelo estado da pesquisa
-                                onValueChange = { /* Ação ao mudar o valor */ },
+                            // Input para pesquisa com borda arredondada apenas à esquerda
+                            Box(
                                 modifier = Modifier
-                                    .width(105.dp) // Define a largura do input
-                                    .height(15.dp)
-                                    .padding(0.dp),
-                                singleLine = true,
-                                placeholder = {
-                                    androidx.compose.material3.Text(text = "Digite o código")
-                                }
-                            )
+                                    .width(105.dp)
+                                    .height(20.dp) // Define a altura personalizada
+                                    .border(1.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                                    .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                            ) {
+                                BasicTextField(
+                                    value = "", // Substituir pelo estado da pesquisa
+                                    onValueChange = { /* Ação ao mudar o valor */ },
+                                    singleLine = true,
+                                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+//                                        .padding(start = 8.dp, vertical = 8.dp) // Adiciona padding interno para o texto
+                                )
+                            }
 
-//                            Spacer(modifier = Modifier.width(8.dp))
-
-                            // Botão para realizar a pesquisa
+                            // Botão com ícone e borda arredondada apenas à direita
                             androidx.compose.material3.Button(
                                 onClick = { /* Ação ao clicar no botão de pesquisa */ },
                                 modifier = Modifier
                                     .width(30.dp)
-                                    .height(30.dp),
-                                shape = RoundedCornerShape(5.dp),
+                                    .height(20.dp), // Altura ajustada
+                                shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp), // Arredonda apenas a direita
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
+                                    containerColor = Color(0xFF355070) // Cor do botão
                                 )
-                            ) {}
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.mipmap.search), // Ícone do mipmap
+                                    contentDescription = "Pesquisar",
+                                    tint = Color.White, // Cor do ícone
+                                    modifier = Modifier.size(16.dp) // Tamanho do ícone
+                                )
+                            }
                         }
+
+
                     }
 
 
