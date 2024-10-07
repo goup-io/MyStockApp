@@ -43,6 +43,7 @@ import com.example.mystockapp.models.produtos.Tamanho
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.math.BigDecimal
 
 @Composable
 fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
@@ -215,34 +216,24 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     }
 
     fun formatarPreco(input: String): String {
-        // Remove todos os caracteres que não sejam números, vírgulas ou pontos
-        var numeros = input.replace(Regex("[^0-9,.]"), "")
-        
-        // caso seja um numero de mil, coloca ponto
-        if (numeros.length > 3) {
-            numeros = input.substring(0, input.length - 3) + "." + input.substring(input.length - 3)
-        }
-
-        // não permitir que digite mais de 1 virgula
+        var numeros = input.replace(Regex("[^0-9,]"), "")
         if (numeros.count { it == ',' } > 1) {
-            numeros = input.substring(0, input.length - 1)
+            numeros = numeros.substring(0, numeros.length - 1)
         }
-
-        // não permitir que digite mais de 1 ponto
-        if (numeros.count { it == '.' } > 1) {
-            numeros = input.substring(0, input.length - 1)
+        val parts = numeros.split(",")
+        var integerPart = parts[0]
+        var decimalPart = if (parts.size > 1) parts[1] else ""
+        if (decimalPart.length > 2) {
+            decimalPart = decimalPart.substring(0, 2)
         }
-
-
-        return numeros
+        integerPart = integerPart.reversed().chunked(3).joinToString(".").reversed()
+        val formattedNumber = if (decimalPart.isNotEmpty() || input.endsWith(",")) {
+            "$integerPart,$decimalPart"
+        } else {
+            integerPart
+        }
+        return formattedNumber
     }
-
-
-
-
-
-
-
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -328,16 +319,17 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                     textValue = precoCusto,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { input ->
-                                        precoCusto = formatarPreco(input) // Atualiza com o valor formatado
+                                        precoCusto = formatarPreco(input)
                                     },
                                     error = showError && precoCusto.isEmpty()
                                 )
-
                                 com.example.mystockapp.modais.FormField(
                                     label = "Preço Venda:",
                                     textValue = precoVenda,
                                     fieldType = KeyboardType.Decimal,
-                                    onValueChange = { precoVenda = it },
+                                    onValueChange = { input ->
+                                        precoVenda = formatarPreco(input)
+                                    },
                                     error = showError && precoVenda.isEmpty()
                                 )
                                 com.example.mystockapp.modais.FormField(
