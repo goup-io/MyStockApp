@@ -29,7 +29,7 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel() {
         viewModelScope.launch {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
             try {
-                    produtos = produtoService.fetchProdutosTabela(1)
+                produtos = produtoService.fetchProdutosTabela(idLoja)
             } catch (e: ApiException) {
                     errorMessage = "${e.message}"
                 } catch (e: NetworkException) {
