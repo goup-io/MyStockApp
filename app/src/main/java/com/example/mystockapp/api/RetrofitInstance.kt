@@ -4,6 +4,7 @@ import com.example.mystockapp.api.authApi.AuthApi
 import com.example.mystockapp.api.lojaApi.LojaApi
 import com.example.mystockapp.api.produtoApi.CategoriaApi
 import com.example.mystockapp.api.produtoApi.CorApi
+import com.example.mystockapp.api.produtoApi.EtpApi
 import com.example.mystockapp.api.produtoApi.ModeloApi
 import com.example.mystockapp.api.produtoApi.ProdutoApi
 import com.example.mystockapp.api.produtoApi.TamanhoApi
@@ -43,7 +44,7 @@ object RetrofitInstance {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.16:8080/")
+            .baseUrl("http://192.168.1.18:8080/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -60,6 +61,7 @@ object RetrofitInstance {
     val corApi: CorApi = retrofit.create(CorApi::class.java)
     val categoriaApi: CategoriaApi = retrofit.create(CategoriaApi::class.java)
     val tipoApi: TipoApi = retrofit.create(TipoApi::class.java)
+    val etpApi: EtpApi = retrofit.create(EtpApi::class.java)
 
     val authApi : AuthApi = retrofit.create(AuthApi::class.java)
     val lojaApi: LojaApi = retrofit.create(LojaApi::class.java)

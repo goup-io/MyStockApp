@@ -7,20 +7,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,27 +34,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.mystockapp.R
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.produtoApi.EtpViewModel
+import com.example.mystockapp.api.produtoApi.EtpViewModelFactory
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permission is granted. Continue the action or workflow in your app.
-        } else {
-            // Explain to the user that the feature is unavailable because the
-            // features requires a permission that the user has denied.
-        }
+        // Handle permission result
+    }
+
+    private val viewModel: EtpViewModel by viewModels {
+        EtpViewModelFactory(RetrofitInstance.etpApi, this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val contextoBusca = intent.getStringExtra("contextoBusca") ?: "pesquisa"
+
         setContent {
             MyStockAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Screen(modifier = Modifier.padding(innerPadding))
+                    Screen(modifier = Modifier.padding(innerPadding), contextoBusca = contextoBusca, viewModel = viewModel)
                 }
             }
         }
@@ -58,10 +69,10 @@ class BipScreen : ComponentActivity() {
                 this,
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
+                // Permission is granted. Continue the action or workflow in your app.
             }
             else -> {
-                // You can directly ask for the permission.
+                // Request the permission.
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
@@ -69,9 +80,48 @@ class BipScreen : ComponentActivity() {
 }
 
 @Composable
-fun Screen(modifier: Modifier = Modifier) {
-    var barcodeNumber by remember { mutableStateOf("AB12345678910") }
+fun Screen(modifier: Modifier = Modifier, contextoBusca: String, viewModel: EtpViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+    var barcodeNumber by remember { mutableStateOf("AB1234567890") }
     var isScanning by remember { mutableStateOf(false) }
+
+    var codigo by remember { mutableStateOf("0") }
+    var nome by remember { mutableStateOf("") }
+    var modelo by remember { mutableStateOf("") }
+    var precoCusto by remember { mutableStateOf(0.0) }
+    var precoRevenda by remember { mutableStateOf(0.0) }
+    var tamanho by remember { mutableStateOf(0) }
+    var cor by remember { mutableStateOf("") }
+    var quantidadeEstoque by remember { mutableStateOf(0) }
+    var itemPromocional by remember { mutableStateOf(false) }
+    var quantidadeVenda by remember { mutableStateOf(0) }
+
+    val etp by viewModel.etp.observeAsState()
+
+    LaunchedEffect(barcodeNumber) {
+        if (barcodeNumber.isNotEmpty()) {
+            println("Buscando ETP por código: $barcodeNumber")
+            viewModel.buscarEtpPorCodigo(barcodeNumber)
+        }
+    }
+
+    LaunchedEffect(etp) {
+        println("ETP atualizado: $etp")
+        etp?.let {
+            codigo = it.codigo
+            nome = it.nome
+            modelo = it.modelo
+            precoCusto = it.valorCusto
+            precoRevenda = it.valorRevenda
+            tamanho = it.tamanho
+            cor = it.cor
+            quantidadeEstoque = it.quantidade
+            itemPromocional = it.itemPromocional
+            println("Dados atualizados: codigo=$codigo, nome=$nome, modelo=$modelo, precoCusto=$precoCusto, precoRevenda=$precoRevenda, tamanho=$tamanho, cor=$cor, quantidadeEstoque=$quantidadeEstoque, itemPromocional=$itemPromocional")
+        } ?: run {
+            println("ETP é nulo")
+            codigo = (barcodeNumber ?: 0).toString()
+        }
+    }
 
     if (isScanning) {
         Column(
@@ -100,9 +150,10 @@ fun Screen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(modifier = Modifier
-                .background(Color(0XFF355070))
-                .fillMaxWidth(),
+            Row(
+                modifier = Modifier
+                    .background(Color(0XFF355070))
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -134,14 +185,16 @@ fun Screen(modifier: Modifier = Modifier) {
 
             Column(
                 modifier = Modifier
-                    .padding(16.dp),
+                    .padding(16.dp)
+//                    .height(180.dp)
+                ,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            Color(0xFFE7E7E7),
+                            Color(0xFFFFFFFF),
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(16.dp),
@@ -159,6 +212,8 @@ fun Screen(modifier: Modifier = Modifier) {
                         Box(
                             modifier = Modifier
                                 .size(250.dp)
+
+                                .height(150.dp)
                                 .background(Color.Transparent),
                             contentAlignment = Alignment.Center
                         ) {
@@ -170,20 +225,20 @@ fun Screen(modifier: Modifier = Modifier) {
                                 // Desenhando cantos superiores
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                                    end = androidx.compose.ui.geometry.Offset(cornerLength, 0f),
+                                    start = Offset(0f, 0f),
+                                    end = Offset(cornerLength, 0f),
                                     strokeWidth = strokeWidth
                                 )
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                                    end = androidx.compose.ui.geometry.Offset(0f, cornerLength),
+                                    start = Offset(0f, 0f),
+                                    end = Offset(0f, cornerLength),
                                     strokeWidth = strokeWidth
                                 )
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(size.width, 0f),
-                                    end = androidx.compose.ui.geometry.Offset(
+                                    start = Offset(size.width, 0f),
+                                    end = Offset(
                                         size.width - cornerLength,
                                         0f
                                     ),
@@ -191,8 +246,8 @@ fun Screen(modifier: Modifier = Modifier) {
                                 )
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(size.width, 0f),
-                                    end = androidx.compose.ui.geometry.Offset(
+                                    start = Offset(size.width, 0f),
+                                    end = Offset(
                                         size.width,
                                         cornerLength
                                     ),
@@ -202,8 +257,8 @@ fun Screen(modifier: Modifier = Modifier) {
                                 // Desenhando cantos inferiores
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(0f, size.height),
-                                    end = androidx.compose.ui.geometry.Offset(
+                                    start = Offset(0f, size.height),
+                                    end = Offset(
                                         cornerLength,
                                         size.height
                                     ),
@@ -211,8 +266,8 @@ fun Screen(modifier: Modifier = Modifier) {
                                 )
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(0f, size.height),
-                                    end = androidx.compose.ui.geometry.Offset(
+                                    start = Offset(0f, size.height),
+                                    end = Offset(
                                         0f,
                                         size.height - cornerLength
                                     ),
@@ -220,11 +275,11 @@ fun Screen(modifier: Modifier = Modifier) {
                                 )
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(
+                                    start = Offset(
                                         size.width,
                                         size.height
                                     ),
-                                    end = androidx.compose.ui.geometry.Offset(
+                                    end = Offset(
                                         size.width - cornerLength,
                                         size.height
                                     ),
@@ -232,11 +287,11 @@ fun Screen(modifier: Modifier = Modifier) {
                                 )
                                 drawLine(
                                     color = Color(0xFF355070),
-                                    start = androidx.compose.ui.geometry.Offset(
+                                    start = Offset(
                                         size.width,
                                         size.height
                                     ),
-                                    end = androidx.compose.ui.geometry.Offset(
+                                    end = Offset(
                                         size.width,
                                         size.height - cornerLength
                                     ),
@@ -257,17 +312,21 @@ fun Screen(modifier: Modifier = Modifier) {
                                         .height(100.dp)
                                 )
 
-                                Text(
-                                    text = barcodeNumber,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black,
-                                    textAlign = TextAlign.Center,
+                                BasicTextField(
+                                    value = barcodeNumber,
+                                    onValueChange = { barcodeNumber = it },
+                                    textStyle = TextStyle(
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black,
+                                        textAlign = TextAlign.Center
+                                    ),
                                     modifier = Modifier
                                         .background(Color.White)
                                         .width(200.dp)
                                         .padding(3.dp)
                                         .align(Alignment.CenterHorizontally)
+                                        .border(1.dp, Color(0xFF355070), RoundedCornerShape(3.dp))
                                 )
                             }
                         }
@@ -282,7 +341,8 @@ fun Screen(modifier: Modifier = Modifier) {
                     .background(
                         Color(0xFFE7E7E7),
                         shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
-                    ),
+                    )
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.height(5.dp))
@@ -307,40 +367,128 @@ fun Screen(modifier: Modifier = Modifier) {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Linha de Inputs - Código e Nome
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp) // espaçamento entre os campos
-                        ) {
-                            InfoTextField(label = "Código", modifier = Modifier.weight(1f))
-                            InfoTextField(label = "Nome", modifier = Modifier.weight(1f))
-                        }
+                        // Exibir campos com base no contexto
+                        if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                InfoTextField(
+                                    label = "Código",
+                                    value = codigo.toString(),
+                                    onValueChange = { codigo = it },
+                                    editable = contextoBusca != "pre-venda",
+                                    modifier = Modifier.weight(1f)
+                                )
+                                InfoTextField(
+                                    label = "Nome",
+                                    value = nome,
+                                    onValueChange = { nome = it },
+                                    editable = contextoBusca != "pre-venda",
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
 
-                        // Linha de Inputs - Modelo e Preço
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            InfoTextField(label = "Modelo", modifier = Modifier.weight(1f))
-                            InfoTextField(label = "Preço", modifier = Modifier.weight(1f))
-                        }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                InfoTextField(
+                                    label = "Modelo",
+                                    value = modelo,
+                                    onValueChange = { modelo = it },
+                                    editable = contextoBusca == "estoque",
+                                    modifier = Modifier.weight(1f)
+                                )
+                                InfoTextField(
+                                    label = "Cor",
+                                    value = cor,
+                                    onValueChange = { cor = it },
+                                    editable = contextoBusca == "estoque",
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
 
-                        // Linha de Inputs - Tamanho e Cor
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            InfoTextField(label = "Tamanho", modifier = Modifier.weight(1f))
-                            InfoTextField(label = "Cor", modifier = Modifier.weight(1f))
-                        }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                InfoTextField(
+                                    label = "Tamanho",
+                                    value = tamanho.toString(),
+                                    onValueChange = { tamanho = it.toInt() },
+                                    editable = contextoBusca == "estoque",
+                                    modifier = Modifier.weight(1f)
+                                )
+                                InfoTextField(
+                                    label = "Quantidade Est.",
+                                    value = quantidadeEstoque.toString(),
+                                    onValueChange = { quantidadeEstoque = it.toInt() },
+                                    editable = contextoBusca != "pre-venda",
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
 
-                        // Linha de Inputs - Loja e Quantidade
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            InfoTextField(label = "Loja", modifier = Modifier.weight(1f))
-                            InfoTextField(label = "Quantidade", modifier = Modifier.weight(1f))
+                            if (contextoBusca == "pre-venda") {
+                                InfoTextField(
+                                    label = "Quantidade venda",
+                                    value = quantidadeVenda.toString(),
+                                    onValueChange = {
+                                        val newValue = it.toIntOrNull() ?: 0
+                                        if (newValue in 0..quantidadeEstoque) {
+                                            quantidadeVenda = newValue
+                                        }
+                                    },
+                                    editable = true,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+
+                            if (contextoBusca != "pre-venda") {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    InfoTextField(
+                                        label = "Preço Custo",
+                                        value = String.format("%.2f", precoCusto),
+                                        onValueChange = { precoCusto = it.toDouble() },
+                                        editable = contextoBusca != "pre-venda",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    InfoTextField(
+                                        label = "Preço Revenda",
+                                        value = String.format("%.2f", precoRevenda),
+                                        onValueChange = { precoRevenda = it.toDouble() },
+                                        editable = contextoBusca != "pre-venda",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth() // Ocupa toda a largura disponível
+                                    .padding(0.dp), // Remove qualquer padding ao redor
+//                                horizontalArrangement = Arrangement.Start // Alinhar os itens à esquerda
+                            ) {
+                                Checkbox(
+                                    checked = itemPromocional,
+                                    onCheckedChange = { itemPromocional = it },
+                                    modifier = Modifier
+                                        .align(Alignment.Top) // Alinha a Checkbox no topo
+                                        .padding(0.dp) // Sem padding adicional
+                                )
+                                Spacer(modifier = Modifier.width(2.dp)) // Adiciona um pequeno espaço entre o Checkbox e o texto (ajustável)
+                                Text(
+                                    text = "Item Promocional",
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically) // Centralizar verticalmente
+                                        .padding(start = 0.dp) // Certifique-se de que não há padding no texto
+                                )
+                            }
                         }
                     }
                 }
@@ -367,7 +515,9 @@ fun Screen(modifier: Modifier = Modifier) {
 
                 // Botão para digitar o código
                 Button(
-                    onClick = { /* Ação de digitar código */ },
+                    onClick = { /* Ação de digitar código */
+                        viewModel.buscarEtpPorCodigo(barcodeNumber)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -376,7 +526,7 @@ fun Screen(modifier: Modifier = Modifier) {
                     colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                 ) {
                     Text(
-                        text = "Buscar",
+                        text = "Buscar Ref. Digitada",
                         color = Color.White
                     )
                 }
@@ -385,7 +535,7 @@ fun Screen(modifier: Modifier = Modifier) {
 
                 // Botão Adicionar Produto
                 Button(
-                    onClick = { /* Ação de adicionar produto */ },
+                    onClick = { /* Ação de adicionar produto */},
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -406,17 +556,28 @@ fun Screen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun InfoTextField(label: String, modifier: Modifier = Modifier) {
+fun InfoTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    editable: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (editable) Color.White else Color(0xFFE7E7E7)
+
     Column(
         modifier = modifier.padding(vertical = 4.dp)
     ) {
         Text(text = label, fontSize = 16.sp, color = Color.Black)
         BasicTextField(
-            value = "",
-            onValueChange = {},
+            value = value,
+            onValueChange = onValueChange,
+            enabled = editable,
+            textStyle = TextStyle(color = if (editable) Color.Black else Color.DarkGray),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(30.dp)
+                .background(backgroundColor)
                 .border(1.dp, Color(0xFF355070), RoundedCornerShape(5.dp))
                 .padding(8.dp)
         )
@@ -427,6 +588,6 @@ fun InfoTextField(label: String, modifier: Modifier = Modifier) {
 @Composable
 fun BipScreenPreview() {
     MyStockAppTheme {
-        Screen()
+        Screen(contextoBusca = "pesquisa")
     }
 }
