@@ -32,9 +32,14 @@ import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.modais.componentes.utils.desformatarPreco
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.models.lojas.Loja
+import com.example.mystockapp.models.produtos.ItemPromocional
+import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoEdit
 import com.example.mystockapp.models.produtos.ProdutoEditarGet
+import com.example.mystockapp.models.produtos.ProdutoTable
 import kotlinx.coroutines.launch
 
 
@@ -51,6 +56,7 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
     var errorMessage by remember { mutableStateOf("") }
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showSucessoDialog by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
     var confirmarTitulo by remember { mutableStateOf("") }
     var confirmarImagem by remember { mutableStateOf<Int?>(null) }
     var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) } // Variável para armazenar a ação
@@ -58,6 +64,9 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
     var recusarBtnTitulo by remember { mutableStateOf("") }
     var bgCorBtn by remember { mutableStateOf(Color(0xFF355070)) }
     var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
+
+    var tempValorCusto by remember { mutableStateOf("") }
+    var tempValorVenda by remember { mutableStateOf("") }
 
     // Função que controla a exibição do modal
     fun handleAbrirModalConfirm(
@@ -84,6 +93,8 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
             val lojaService = LojaService(RetrofitInstance.lojaApi)
             produtoInfo = produtoService.fetchProdutosParaEditarTabela(idProduto)
             isPromocional = produtoInfo.itemPromocional == "SIM"
+            tempValorCusto = formatarPreco(produtoInfo.precoCusto.toString().replace(".", ","))
+            tempValorVenda = formatarPreco(produtoInfo.precoRevenda.toString().replace(".", ","))
             loja = lojaService.fetchLojaById(produtoInfo.idLoja)
         } catch (e: ApiException) {
             errorMessage = "${e.message}"
@@ -130,27 +141,30 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                                     label = "Codigo:",
                                     textValue = produtoInfo.codigo,
                                     onValueChange = { produtoInfo = produtoInfo.copy(codigo = it) },
-                                    fieldType = KeyboardType.Number
+                                    fieldType = KeyboardType.Number,
+                                    error = showError && produtoInfo.codigo.isEmpty()
                                 )
                                 SelectField(
                                     label = "Modelo:",
                                     selectedOption = produtoInfo.modelo,
                                     options = modelosOptions,
                                     disabled = true,
-                                    onOptionSelected = { produtoInfo.modelo = it }
+                                    onOptionSelected = { produtoInfo = produtoInfo.copy(modelo = it) },
+                                    error = showError && produtoInfo.modelo.isEmpty()
                                 )
                                 SelectField(
                                     label = "Tamanho:",
                                     selectedOption = produtoInfo.tamanho.toString(),
                                     disabled = true,
                                     options = tamanhosOptions,
-                                    onOptionSelected = { produtoInfo.tamanho = it.toInt() }
+                                    onOptionSelected = { produtoInfo = produtoInfo.copy(tamanho = it.toInt()) },
                                 )
-                                FormField(
-                                    label = "Loja:",
-                                    textValue = loja.nome,
-                                    onValueChange = { loja.nome = it },
-                                    disabled = true
+                                SelectField(
+                                    label = "Cor:",
+                                    selectedOption = produtoInfo.cor,
+                                    disabled = true,
+                                    options = coresOptions,
+                                    onOptionSelected = { produtoInfo = produtoInfo.copy(cor = it) }
                                 )
                                 FormFieldCheck(
                                     label = "Item Promocional",
@@ -169,25 +183,32 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                                 FormField(
                                     label = "Nome:",
                                     textValue = produtoInfo.nome,
-                                    onValueChange = { produtoInfo = produtoInfo.copy(nome = it) }
+                                    onValueChange = { produtoInfo = produtoInfo.copy(nome = it) },
+                                    error = showError && produtoInfo.nome.isEmpty()
                                 )
                                 FormField(
-                                    label = "Preço:",
-                                    textValue = produtoInfo.precoRevenda.toString(),
+                                    label = "Preço Custo:",
+                                    textValue = tempValorCusto,
+                                    fieldType = KeyboardType.Decimal,
+                                    onValueChange = { input ->
+                                        val precoFormatado = formatarPreco(input)
+                                        tempValorCusto = precoFormatado
+                                        produtoInfo = produtoInfo.copy(precoCusto = desformatarPreco(precoFormatado))
+                                        Log.d("InformacoesProdutoDialog", "Preço Custo: ${produtoInfo.precoCusto}")
+                                    },
+                                    error = showError && produtoInfo.precoCusto <= 0.0
+                                )
+                                FormField(
+                                    label = "Preço Venda:",
+                                    textValue = tempValorVenda,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { newValue ->
-                                        val regex = "^[0-9]*\\.?[0-9]*$".toRegex()
-                                        if (newValue.matches(regex)) {
-                                            produtoInfo = produtoInfo.copy(precoRevenda = if (newValue.isNotEmpty()) newValue.toDouble() else 0.0)
-                                        }
-                                    }
-                                )
-                                SelectField(
-                                    label = "Cor:",
-                                    selectedOption = produtoInfo.cor,
-                                    disabled = true,
-                                    options = coresOptions,
-                                    onOptionSelected = { produtoInfo.cor = it }
+                                        val precoFormatado = formatarPreco(newValue)
+                                        tempValorVenda = precoFormatado
+                                        produtoInfo = produtoInfo.copy(precoRevenda = desformatarPreco(precoFormatado))
+                                        Log.d("InformacoesProdutoDialog", "Preço Venda: ${produtoInfo.precoRevenda}")
+                                    },
+                                    error = showError && produtoInfo.precoRevenda <= 0.0
                                 )
                                 FormField(
                                     label = "N. Itens:",
@@ -198,7 +219,8 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                                         if (newValue.matches(regex)) {
                                             produtoInfo = produtoInfo.copy(quantidade = newValue.toIntOrNull() ?: 0)
                                         }
-                                    }
+                                    },
+                                    error = showError && produtoInfo.quantidade < 0
                                 )
                             }
                         }
@@ -290,6 +312,7 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
 suspend fun handleEditarProd(idProduto: Int, produtoInfo: ProdutoEditarGet) {
     Log.d("InformacoesProdutoDialog", "Editando o produto com id: $idProduto")
     val produtoEditDto = ProdutoEdit(
+        produtoInfo.codigo,
         produtoInfo.nome,
         produtoInfo.precoCusto.toDouble(),
         produtoInfo.precoRevenda.toDouble(),
@@ -338,5 +361,5 @@ suspend fun handleExcluirProd(idProduto: Int){
 @Composable
 fun InformacoesProdutoDialogPreview() {
     // Simulando o comportamento de dismiss para visualização no preview
-    InformacoesProdutoDialog(onDismissRequest = {}, 0)
+    InformacoesProdutoDialog(onDismissRequest = {}, idProduto = 1)
 }

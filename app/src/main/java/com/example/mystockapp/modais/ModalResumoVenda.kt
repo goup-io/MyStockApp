@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -89,7 +90,7 @@ fun ResumoItem(
         ) {
             Text(
                 titulo,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 fontStyle = fontStyle,
                 fontWeight = fontWeight
@@ -101,7 +102,7 @@ fun ResumoItem(
         ) {
             Text(
                 valor,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 fontStyle = fontStyle,
                 fontWeight = fontWeight
@@ -113,5 +114,5 @@ fun ResumoItem(
 @Preview
 @Composable
 fun ModalResumoVendaPreview() {
-    ModalResumoVenda({}, VendaDetalhes(1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0))
+    ModalResumoVenda({}, VendaDetalhes(1, 1111.0, 1.0, 1.0, 1.0, 1.0, 1.0))
 }

@@ -34,6 +34,7 @@ import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.models.lojas.Loja
 import com.example.mystockapp.models.produtos.Cor
 import com.example.mystockapp.models.produtos.ItemPromocional
@@ -213,26 +214,6 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
             } catch (e: GeneralException) {
                 Log.e("NovoProdutoDialog", "GeneralException: ${e.message}")
             }
-    }
-
-    fun formatarPreco(input: String): String {
-        var numeros = input.replace(Regex("[^0-9,]"), "")
-        if (numeros.count { it == ',' } > 1) {
-            numeros = numeros.substring(0, numeros.length - 1)
-        }
-        val parts = numeros.split(",")
-        var integerPart = parts[0]
-        var decimalPart = if (parts.size > 1) parts[1] else ""
-        if (decimalPart.length > 2) {
-            decimalPart = decimalPart.substring(0, 2)
-        }
-        integerPart = integerPart.reversed().chunked(3).joinToString(".").reversed()
-        val formattedNumber = if (decimalPart.isNotEmpty() || input.endsWith(",")) {
-            "$integerPart,$decimalPart"
-        } else {
-            integerPart
-        }
-        return formattedNumber
     }
 
     Dialog(onDismissRequest = onDismissRequest) {

@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -38,6 +39,7 @@ fun ModalAdicionarDesconto(
     produtoInfo: ProdutoTable = ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0),
     isDescontoProduto: Boolean,
     onSalvarDesconto: (Double, Double) -> Unit,
+    fontSize : TextUnit = 12.sp,
     onDismissRequest: () -> Unit
 ) {
 
@@ -166,13 +168,13 @@ fun ModalAdicionarDesconto(
                             ) {
                                 Text(
                                     text = "Valor Unitário",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontSize =fontSize,
+                                    fontWeight = FontWeight.Normal
                                 )
                                 Text(
                                     text = valorPosDesconto,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontSize = fontSize,
+                                    fontWeight = FontWeight.Normal
                                 )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
@@ -186,13 +188,13 @@ fun ModalAdicionarDesconto(
                             ) {
                                 Text(
                                     text = "Valor Atual",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontSize = fontSize,
+                                    fontWeight = FontWeight.Normal
                                 )
                                 Text(
                                     text = valorAtual,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontSize = fontSize,
+                                    fontWeight = FontWeight.Normal
                                 )
                             }
 
@@ -207,17 +209,17 @@ fun ModalAdicionarDesconto(
                             ) {
                                 Text(
                                     text = "Valor Após o Desconto",
-                                    fontSize = 12.sp,
+                                    fontSize = fontSize,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = valorPosDesconto,
-                                    fontSize = 12.sp,
+                                    fontSize = fontSize,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         Row (
                             modifier = Modifier.fillMaxWidth(),

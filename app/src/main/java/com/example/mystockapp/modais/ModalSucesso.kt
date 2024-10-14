@@ -20,9 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable
@@ -59,7 +63,7 @@ fun SucessoDialog(
 
                 Text(
                     titulo,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
@@ -71,10 +75,21 @@ fun SucessoDialog(
                     ButtonComponent(
                         titulo = btnConfirmTitulo,
                         onClick = onDismiss,
-                        containerColor = btnConfirmColor,
+                        containerColor = btnConfirmColor
                     )
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewModalSucesso(){
+    SucessoDialog(
+        titulo = "Ação realizada com sucesso!",
+        onDismiss = {},
+        onConfirm = {},
+        imagem = painterResource(id = R.mipmap.ic_sucesso),
+    )
 }
