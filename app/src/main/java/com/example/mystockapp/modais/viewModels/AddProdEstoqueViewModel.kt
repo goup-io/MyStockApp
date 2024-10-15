@@ -17,7 +17,7 @@ import com.example.mystockapp.models.produtos.ProdutoTable
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
-class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel() {
+class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
 
     var errorMessage by mutableStateOf<String?>(null)
         public set
@@ -85,6 +85,10 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel() {
         }
 
         limparProdutos();
+    }
+
+    override fun escolherProduto(produto: ProdutoTable) {
+        TODO("Not yet implemented")
     }
 }
 

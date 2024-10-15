@@ -54,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 //import androidx.compose.ui.text.font.FontWeight
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.AddProdutoEstoque
+import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.ModalResumoVenda
@@ -292,6 +293,17 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false }, viewModel, idLoja)
                             }
 
+                                if (viewModel.produtoSelecionado != null){
+                                    isModalAddProdCarrinho = false
+                                    ModalAdicionar(
+                                        produto = viewModel.produtoSelecionado!!,
+                                        onDismissRequest = { viewModel.desescolherProduto() },
+                                        viewModel = viewModel,
+                                        isPreVenda = true
+//                    onAddProduto = { produto -> viewModel.addProduto(produto) },
+//                    onRemoverProduto = { produto -> viewModel.remover(produto) },
+                                    )
+                                }
                         }
                     }
 

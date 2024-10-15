@@ -1,5 +1,7 @@
 package com.example.mystockapp.modais.componentes.utils
 
+import android.util.Log
+
 fun formatarPreco(input: String): String {
     var numeros = input.replace(Regex("[^0-9,]"), "") // Remove tudo, exceto números e vírgulas
     if (numeros.count { it == ',' } > 1) {
@@ -32,4 +34,10 @@ fun desformatarPreco(input: String): Double {
     } else {
         numeros.replace(",", ".").toDouble()
     }
+}
+
+fun formatarPrecoParaTexto(Double: Double): String {
+    val stringFormatada = String.format("%.2f", Double)
+    Log.d("formatarPrecoParaTexto", "stringFormatada: $stringFormatada")
+    return stringFormatada
 }

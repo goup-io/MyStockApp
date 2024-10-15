@@ -83,6 +83,8 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                     products = viewModel.produtos,
                     onAddProduto = { produto -> viewModel.addProduto(produto) },
                     onRemoverProduto = { produto -> viewModel.removerProduto(produto) },
+                    isPreVenda = false,
+                    viewModel = viewModel
                 )
             }
 

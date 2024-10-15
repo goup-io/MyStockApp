@@ -13,6 +13,7 @@ import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.api.vendaApi.VendaService
+import com.example.mystockapp.modais.viewModels.ProdutoViewModel
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.vendas.Carrinho
 import com.example.mystockapp.models.vendas.ProdutoVendaReq
@@ -22,7 +23,7 @@ import com.example.mystockapp.models.vendas.VendaPost
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
-class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
+class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
@@ -49,6 +50,17 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
         )
     )
         private set
+
+    var produtoSelecionado by mutableStateOf<ProdutoTable?>(null)
+        private set
+
+    override fun escolherProduto(produto: ProdutoTable){
+        produtoSelecionado = produto
+    }
+
+    fun desescolherProduto(){
+        produtoSelecionado = null
+    }
 
     fun addProduto(produto: ProdutoTable) {
         produto.quantidadeToAdd = produto.quantidadeToAdd.plus(1)

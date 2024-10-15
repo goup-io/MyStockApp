@@ -20,21 +20,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mystockapp.api.RetrofitInstance
-import com.example.mystockapp.api.exceptions.ApiException
-import com.example.mystockapp.api.exceptions.GeneralException
-import com.example.mystockapp.api.exceptions.NetworkException
-import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.ProdutoTable
-import com.example.mystockapp.modais.componentes.ButtonComponent
-import com.example.mystockapp.models.produtos.ProdutoQuantidadeAdd
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 
 @Composable
 fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewModel, idLoja: Int) {
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val listProdutos = remember { mutableStateListOf<ProdutoTable>() }
+    // mockando 10 itens
+    for (i in 1..10) {
+        listProdutos.add(ProdutoTable(i, "Produto $i", "Descrição do Produto $i", "dagira",1.0, 10, "colorido", 10+i))
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchProdutos()
@@ -55,31 +53,11 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewMo
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
                 ProductTable(
-                    products = viewModel.produtos,
+                    products = listProdutos,
                     onAddProduto = { produto -> viewModel.addProduto(produto) },
-                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) }
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                ButtonComponent(
-                    titulo = "Limpar",
-                    onClick = { viewModel.limparProdutos() },
-                    containerColor = Color(0xFF919191),
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                ButtonComponent(
-                    titulo = "Adicionar",
-                    onClick = {
-                        viewModel.adicionar()
-                        onDismissRequest()
-                        },
-                    containerColor = Color(0xFF355070),
+                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) },
+                    isPreVenda = true,
+                    viewModel = viewModel
                 )
             }
         }
