@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -36,6 +37,8 @@ import com.example.mystockapp.R
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.produtoApi.EtpViewModel
 import com.example.mystockapp.api.produtoApi.EtpViewModelFactory
+import com.example.mystockapp.telas.componentes.Header
+import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import android.util.Log
 
@@ -59,25 +62,29 @@ class BipScreen : ComponentActivity() {
 
         setContent {
             MyStockAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Screen(
-                        modifier = Modifier.padding(innerPadding),
-                        contextoBusca = contextoBusca,
-                        viewModel = viewModel)
-                }
+//                MenuDrawer(titulo = "Busca") {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        Screen(
+                            modifier = Modifier.padding(innerPadding),
+                            contextoBusca = contextoBusca,
+                            viewModel = viewModel
+                        )
+                    }
+//                }
             }
-        }
 
-        when {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // Permission is granted. Continue the action or workflow in your app.
-            }
-            else -> {
-                // Request the permission.
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission is granted. Continue the action or workflow in your app.
+                }
+
+                else -> {
+                    // Request the permission.
+                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
             }
         }
     }
@@ -129,437 +136,442 @@ fun Screen(
         }
     }
 
-
     Log.d("ETP-BipScreen", "ETP-BipScreen: $etp")
-//    println("ETP-BipScreen: $etp")
 
-    if (isScanning) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF355070)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            BarcodeScannerView(
-                onScanned = { result ->
-                    barcodeNumber = result
-                    isScanning = false
-                },
-                onError = { error ->
-                    barcodeNumber = "Erro: $error"
-                    isScanning = false
-                }
-            )
-        }
-    } else {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color(0xFF355070)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                modifier = Modifier
-                    .background(Color(0XFF355070))
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Botão Menu 3 Linhas (pode ser substituído por um ícone real)
-                Text(
-                    text = "≡", // Substituir por um ícone de menu
-                    color = Color.White,
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+    MenuDrawer(titulo = "Busca") {
 
-                Text(
-                    text = "Busca",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = R.mipmap.ic_logo_mystock),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .size(50.dp)
-                )
-            }
-
+        if (isScanning) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
-//                    .height(180.dp)
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .fillMaxSize()
+                    .background(Color(0xFF355070)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                BarcodeScannerView(
+                    onScanned = { result ->
+                        barcodeNumber = result
+                        isScanning = false
+                    },
+                    onError = { error ->
+                        barcodeNumber = "Erro: $error"
+                        isScanning = false
+                    }
+                )
+            }
+        } else {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF355070)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+//            Row(
+//                modifier = Modifier
+//                    .background(Color(0XFF355070))
+//                    .fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                // Botão Menu 3 Linhas (pode ser substituído por um ícone real)
+//                Text(
+//                    text = "≡", // Substituir por um ícone de menu
+//                    color = Color.White,
+//                    fontSize = 35.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier.padding(horizontal = 16.dp)
+//                )
+//
+//                Text(
+//                    text = "Busca",
+//                    color = Color.White,
+//                    fontSize = 20.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    modifier = Modifier.padding(horizontal = 16.dp)
+//                )
+//
+//                Image(
+//                    painter = painterResource(id = R.mipmap.ic_logo_mystock),
+//                    contentDescription = "Logo",
+//                    modifier = Modifier
+//                        .padding(16.dp)
+//                        .size(50.dp)
+//                )
+//            }
+
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Color(0xFFFFFFFF),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(16.dp),
+                        .padding(16.dp)
+//                    .height(180.dp)
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
                 ) {
                     Column(
-                        modifier = modifier
-                            .fillMaxWidth(0.75f)
-                            .height(150.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Color(0xFFFFFFFF),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceAround
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        // Container que simula o scanner com as bordas "arredondadas"
-                        Box(
-                            modifier = Modifier
-                                .size(250.dp)
-
-                                .height(150.dp)
-                                .background(Color.Transparent),
-                            contentAlignment = Alignment.Center
+                        Column(
+                            modifier = modifier
+                                .fillMaxWidth(0.75f)
+                                .height(150.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceAround
                         ) {
-                            // Canvas para desenhar as bordas arredondadas
-                            Canvas(modifier = Modifier.fillMaxSize()) {
-                                val strokeWidth = 4.dp.toPx()
-                                val cornerLength = 40.dp.toPx()
+                            // Container que simula o scanner com as bordas "arredondadas"
+                            Box(
+                                modifier = Modifier
+                                    .size(250.dp)
 
-                                // Desenhando cantos superiores
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(cornerLength, 0f),
-                                    strokeWidth = strokeWidth
-                                )
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(0f, cornerLength),
-                                    strokeWidth = strokeWidth
-                                )
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(size.width, 0f),
-                                    end = Offset(
-                                        size.width - cornerLength,
-                                        0f
-                                    ),
-                                    strokeWidth = strokeWidth
-                                )
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(size.width, 0f),
-                                    end = Offset(
-                                        size.width,
-                                        cornerLength
-                                    ),
-                                    strokeWidth = strokeWidth
-                                )
-
-                                // Desenhando cantos inferiores
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(0f, size.height),
-                                    end = Offset(
-                                        cornerLength,
-                                        size.height
-                                    ),
-                                    strokeWidth = strokeWidth
-                                )
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(0f, size.height),
-                                    end = Offset(
-                                        0f,
-                                        size.height - cornerLength
-                                    ),
-                                    strokeWidth = strokeWidth
-                                )
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(
-                                        size.width,
-                                        size.height
-                                    ),
-                                    end = Offset(
-                                        size.width - cornerLength,
-                                        size.height
-                                    ),
-                                    strokeWidth = strokeWidth
-                                )
-                                drawLine(
-                                    color = Color(0xFF355070),
-                                    start = Offset(
-                                        size.width,
-                                        size.height
-                                    ),
-                                    end = Offset(
-                                        size.width,
-                                        size.height - cornerLength
-                                    ),
-                                    strokeWidth = strokeWidth
-                                )
-                            }
-
-                            // Imagem do código de barras dentro das bordas arredondadas
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                    .height(150.dp)
+                                    .background(Color.Transparent),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = painterResource(id = R.mipmap.barcode_image),
-                                    contentDescription = "Código de Barras",
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(100.dp)
-                                )
+                                // Canvas para desenhar as bordas arredondadas
+                                Canvas(modifier = Modifier.fillMaxSize()) {
+                                    val strokeWidth = 4.dp.toPx()
+                                    val cornerLength = 40.dp.toPx()
 
-                                BasicTextField(
-                                    value = barcodeNumber,
-                                    onValueChange = { barcodeNumber = it },
-                                    textStyle = TextStyle(
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.Black,
-                                        textAlign = TextAlign.Center
-                                    ),
-                                    modifier = Modifier
-                                        .background(Color.White)
-                                        .width(200.dp)
-                                        .padding(3.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                        .border(1.dp, Color(0xFF355070), RoundedCornerShape(3.dp))
-                                )
+                                    // Desenhando cantos superiores
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(0f, 0f),
+                                        end = Offset(cornerLength, 0f),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(0f, 0f),
+                                        end = Offset(0f, cornerLength),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(size.width, 0f),
+                                        end = Offset(
+                                            size.width - cornerLength,
+                                            0f
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(size.width, 0f),
+                                        end = Offset(
+                                            size.width,
+                                            cornerLength
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+
+                                    // Desenhando cantos inferiores
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(0f, size.height),
+                                        end = Offset(
+                                            cornerLength,
+                                            size.height
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(0f, size.height),
+                                        end = Offset(
+                                            0f,
+                                            size.height - cornerLength
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(
+                                            size.width,
+                                            size.height
+                                        ),
+                                        end = Offset(
+                                            size.width - cornerLength,
+                                            size.height
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    drawLine(
+                                        color = Color(0xFF355070),
+                                        start = Offset(
+                                            size.width,
+                                            size.height
+                                        ),
+                                        end = Offset(
+                                            size.width,
+                                            size.height - cornerLength
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+                                }
+
+                                // Imagem do código de barras dentro das bordas arredondadas
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.mipmap.barcode_image),
+                                        contentDescription = "Código de Barras",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(100.dp)
+                                    )
+
+                                    BasicTextField(
+                                        value = barcodeNumber,
+                                        onValueChange = { barcodeNumber = it },
+                                        textStyle = TextStyle(
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.Black,
+                                            textAlign = TextAlign.Center
+                                        ),
+                                        modifier = Modifier
+                                            .background(Color.White)
+                                            .width(200.dp)
+                                            .padding(3.dp)
+                                            .align(Alignment.CenterHorizontally)
+                                            .border(
+                                                1.dp,
+                                                Color(0xFF355070),
+                                                RoundedCornerShape(3.dp)
+                                            )
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .background(
-                        Color(0xFFE7E7E7),
-                        shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
-                    )
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Spacer(modifier = Modifier.height(5.dp))
-
-                // Seção de informações
-                Card(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Informações",
-                            fontSize = 19.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
+                        .fillMaxHeight()
+                        .background(
+                            Color(0xFFE7E7E7),
+                            shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Spacer(modifier = Modifier.height(5.dp))
 
-                        // Exibir campos com base no contexto
-                        if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                InfoTextField(
-                                    label = "Código",
-                                    value = codigo.toString(),
-                                    onValueChange = { codigo = it },
-                                    editable = contextoBusca != "pre-venda",
-                                    modifier = Modifier.weight(1f)
-                                )
-                                InfoTextField(
-                                    label = "Nome",
-                                    value = nome,
-                                    onValueChange = { nome = it },
-                                    editable = contextoBusca != "pre-venda",
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
+                    // Seção de informações
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Informações",
+                                fontSize = 19.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                InfoTextField(
-                                    label = "Modelo",
-                                    value = modelo,
-                                    onValueChange = { modelo = it },
-                                    editable = contextoBusca == "estoque",
-                                    modifier = Modifier.weight(1f)
-                                )
-                                InfoTextField(
-                                    label = "Cor",
-                                    value = cor,
-                                    onValueChange = { cor = it },
-                                    editable = contextoBusca == "estoque",
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                InfoTextField(
-                                    label = "Tamanho",
-                                    value = tamanho.toString(),
-                                    onValueChange = { tamanho = it.toInt() },
-                                    editable = contextoBusca == "estoque",
-                                    modifier = Modifier.weight(1f)
-                                )
-                                InfoTextField(
-                                    label = "Quantidade Est.",
-                                    value = quantidadeEstoque.toString(),
-                                    onValueChange = { quantidadeEstoque = it.toInt() },
-                                    editable = contextoBusca != "pre-venda",
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-
-                            if (contextoBusca == "pre-venda") {
-                                InfoTextField(
-                                    label = "Quantidade venda",
-                                    value = quantidadeVenda.toString(),
-                                    onValueChange = {
-                                        val newValue = it.toIntOrNull() ?: 0
-                                        if (newValue in 0..quantidadeEstoque) {
-                                            quantidadeVenda = newValue
-                                        }
-                                    },
-                                    editable = true,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-
-                            if (contextoBusca != "pre-venda") {
+                            // Exibir campos com base no contexto
+                            if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     InfoTextField(
-                                        label = "Preço Custo",
-                                        value = String.format("%.2f", precoCusto),
-                                        onValueChange = { precoCusto = it.toDouble() },
+                                        label = "Código",
+                                        value = codigo.toString(),
+                                        onValueChange = { codigo = it },
                                         editable = contextoBusca != "pre-venda",
                                         modifier = Modifier.weight(1f)
                                     )
                                     InfoTextField(
-                                        label = "Preço Revenda",
-                                        value = String.format("%.2f", precoRevenda),
-                                        onValueChange = { precoRevenda = it.toDouble() },
+                                        label = "Nome",
+                                        value = nome,
+                                        onValueChange = { nome = it },
                                         editable = contextoBusca != "pre-venda",
                                         modifier = Modifier.weight(1f)
                                     )
                                 }
-                            }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth() // Ocupa toda a largura disponível
-                                    .padding(0.dp), // Remove qualquer padding ao redor
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    InfoTextField(
+                                        label = "Modelo",
+                                        value = modelo,
+                                        onValueChange = { modelo = it },
+                                        editable = contextoBusca == "estoque",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    InfoTextField(
+                                        label = "Cor",
+                                        value = cor,
+                                        onValueChange = { cor = it },
+                                        editable = contextoBusca == "estoque",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    InfoTextField(
+                                        label = "Tamanho",
+                                        value = tamanho.toString(),
+                                        onValueChange = { tamanho = it.toInt() },
+                                        editable = contextoBusca == "estoque",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    InfoTextField(
+                                        label = "Quantidade Est.",
+                                        value = quantidadeEstoque.toString(),
+                                        onValueChange = { quantidadeEstoque = it.toInt() },
+                                        editable = contextoBusca != "pre-venda",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                if (contextoBusca == "pre-venda") {
+                                    InfoTextField(
+                                        label = "Quantidade venda",
+                                        value = quantidadeVenda.toString(),
+                                        onValueChange = {
+                                            val newValue = it.toIntOrNull() ?: 0
+                                            if (newValue in 0..quantidadeEstoque) {
+                                                quantidadeVenda = newValue
+                                            }
+                                        },
+                                        editable = true,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+
+                                if (contextoBusca != "pre-venda") {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        InfoTextField(
+                                            label = "Preço Custo",
+                                            value = String.format("%.2f", precoCusto),
+                                            onValueChange = { precoCusto = it.toDouble() },
+                                            editable = contextoBusca != "pre-venda",
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        InfoTextField(
+                                            label = "Preço Revenda",
+                                            value = String.format("%.2f", precoRevenda),
+                                            onValueChange = { precoRevenda = it.toDouble() },
+                                            editable = contextoBusca != "pre-venda",
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                }
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth() // Ocupa toda a largura disponível
+                                        .padding(0.dp), // Remove qualquer padding ao redor
 //                                horizontalArrangement = Arrangement.Start // Alinhar os itens à esquerda
-                            ) {
-                                Checkbox(
-                                    checked = itemPromocional,
-                                    onCheckedChange = { itemPromocional = it },
-                                    modifier = Modifier
-                                        .align(Alignment.Top) // Alinha a Checkbox no topo
-                                        .padding(0.dp) // Sem padding adicional
-                                )
-                                Spacer(modifier = Modifier.width(2.dp)) // Adiciona um pequeno espaço entre o Checkbox e o texto (ajustável)
-                                Text(
-                                    text = "Item Promocional",
-                                    fontSize = 16.sp,
-                                    color = Color.Black,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically) // Centralizar verticalmente
-                                        .padding(start = 0.dp) // Certifique-se de que não há padding no texto
-                                )
+                                ) {
+                                    Checkbox(
+                                        checked = itemPromocional,
+                                        onCheckedChange = { itemPromocional = it },
+                                        modifier = Modifier
+                                            .align(Alignment.Top) // Alinha a Checkbox no topo
+                                            .padding(0.dp) // Sem padding adicional
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp)) // Adiciona um pequeno espaço entre o Checkbox e o texto (ajustável)
+                                    Text(
+                                        text = "Item Promocional",
+                                        fontSize = 16.sp,
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically) // Centralizar verticalmente
+                                            .padding(start = 0.dp) // Certifique-se de que não há padding no texto
+                                    )
+                                }
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    // Botão para ler o código
+                    Button(
+                        onClick = { isScanning = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(35.dp),
+                        shape = RoundedCornerShape(5.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                    ) {
+                        Text(
+                            text = "Ler Referência",
+                            color = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    // Botão para digitar o código
+                    Button(
+                        onClick = { /* Ação de digitar código */
+                            viewModel.buscarEtpPorCodigo(barcodeNumber)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(35.dp),
+                        shape = RoundedCornerShape(5.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                    ) {
+                        Text(
+                            text = "Buscar Ref. Digitada",
+                            color = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    // Botão Adicionar Produto
+                    Button(
+                        onClick = { /* Ação de adicionar produto */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(35.dp),
+                        shape = RoundedCornerShape(5.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                    ) {
+                        Text(
+                            text = "Adicionar Produto",
+                            color = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                // Botão para ler o código
-                Button(
-                    onClick = { isScanning = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(35.dp),
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                ) {
-                    Text(
-                        text = "Ler Referência",
-                        color = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                // Botão para digitar o código
-                Button(
-                    onClick = { /* Ação de digitar código */
-                        viewModel.buscarEtpPorCodigo(barcodeNumber)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(35.dp),
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                ) {
-                    Text(
-                        text = "Buscar Ref. Digitada",
-                        color = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                // Botão Adicionar Produto
-                Button(
-                    onClick = { /* Ação de adicionar produto */},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(35.dp),
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                ) {
-                    Text(
-                        text = "Adicionar Produto",
-                        color = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(15.dp))
             }
         }
     }

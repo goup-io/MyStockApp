@@ -1,5 +1,6 @@
 package com.example.mystockapp.telas
 
+import NovoProdutoDialog
 import ProductTable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,12 +8,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ButtonDefaults
@@ -41,11 +45,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.AddProdutoEstoque
+import com.example.mystockapp.modais.ModalNovoModeloDialog
+import com.example.mystockapp.modais.componentes.SelectField
 import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.componentes.Header
+import com.example.mystockapp.telas.componentes.ScreenTable
+import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.telas.componentes.Spinner
-import com.example.mystockapp.telas.componentes.Table
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import com.example.mystockapp.ui.theme.Cores
 
@@ -68,151 +76,121 @@ fun EstoqueScreen() {
 
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
+
+    var isModalAddProd by remember { mutableStateOf(false) }
+    var isModalNovoProd by remember { mutableStateOf(false) }
+    var isModalNovoModelo by remember { mutableStateOf(false) }
+
     val products = listOf(
-        ProdutoTable(0,"Triple Black", "Air Force", 300.00, 37, "Preto",  20),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"Classic White", "Air Max", 400.00, 38, "Branco", 15)
+        ProdutoTable(0,"166267274711114","Triple Black", "Air Force", 300.00, 37, "Preto",  20),
+        ProdutoTable(0,"1662672747141111111","Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714", "Classic White", "Air Max", 400.00, 38, "Branco", 15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
+        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF355070))
-    ) {
-        Row(
+    MenuDrawer(titulo = "Estoque") {
+        Column(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .height(52.dp)
-                .padding(16.dp)
-                .padding(start = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .background(Color(0xFF355070))
         ) {
-            // Botão de menu o
-            androidx.compose.material3.Button(
-                onClick = { /*TODO*/ },
+            // Filtros
+            Row(
                 modifier = Modifier
-                    .width(30.dp)
-                    .height(55.dp)
-                    .clip(RoundedCornerShape(5.dp)),
-                shape = RoundedCornerShape(5.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent, // Botão com cor transparente
-                    contentColor = Color.White // Cor do texto e ícones dentro do botão
-                ),
-                contentPadding = PaddingValues(0.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = R.mipmap.menu),
-                    contentDescription = "menu",
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp)
-                )
-            }
-
-
-
-            // Título no centro
-            androidx.compose.material3.Text(
-                text = "Estoque",
-                color = Color.White,
-                fontSize = 20.sp
-            )
-
-            // Imagem da logo da empresa na direita
-            Image(
-                painter = painterResource(id = R.mipmap.mystock),
-                contentDescription = "Logo da Empresa",
-                modifier = Modifier.size(40.dp)
-            )
-        }
-
-        // Filtros
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(172.dp)
-                    .shadow(8.dp, RoundedCornerShape(8.dp))
-                    .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .padding(top = 16.dp)
+                        .fillMaxWidth(0.95f)
+                        .height(172.dp)
+                        .shadow(8.dp, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
                 ) {
-                    // Primeira linha (label e input)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+//                            .padding(top = 16.dp)
+                    ) {
+                        // Primeira linha (label e input)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // SelectField para Cor
+                            SelectField(
+                                label = "Modelo :",
+                                selectedOption = "",
+                                options = listOf("Modelo 1", "Modelo 2", "Modelo 3"),
+                                onOptionSelected = { /* Ação ao selecionar */ },
+                                modifier = Modifier.weight(1.4f)
+                            )
+
+                            Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
+
+                            // SelectField para Cor
+                            SelectField(
+                            label = "Cor :",
+                            selectedOption = "",
+                            options = listOf("Cor 1", "Cor 2", "Cor 3"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
+                        )
+                    }
+
+//                    Spacer(modifier = Modifier.height(5.dp))
+
+
+                    // Segunda linha (SelectField para Tam. e Preço)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Label 1
-                        Text(text = "Modelo:", modifier = Modifier.weight(1f))
-
-                        // Input 1
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
+                        // SelectField para Tam.
+                        SelectField(
+                            label = "Tamanho :",
+                            selectedOption = "",
+                            options = listOf("P", "M", "G"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
 
-                        // Label 2
-                        Text(text = "Cor:", modifier = Modifier.weight(1f))
-
-                        // Input 2
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
+                        // SelectField para Preço
+                        SelectField(
+                            label = "Preço :",
+                            selectedOption = "",
+                            options = listOf("R$ 50", "R$ 100", "R$ 150"),
+                            onOptionSelected = { /* Ação ao selecionar */ },
+                            modifier = Modifier.weight(1.4f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(30.dp))
 
-                    // Segunda linha (label e input)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        // Label 3
-                        Text(text = "Tamanho:", modifier = Modifier.weight(1f))
-
-                        // Input 3
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
-                        )
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        // Label 4
-                        Text(text = "Preço:", modifier = Modifier.weight(1f))
-
-                        // Input 4
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier = Modifier.weight(1f).height(10.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
 
                     // Terceira linha (botões)
                     Row(
@@ -227,7 +205,7 @@ fun EstoqueScreen() {
                             shape = RoundedCornerShape(5.dp),
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF355070)
+                                containerColor = Color(0xFF919191)
                             )
                         ) {
                             androidx.compose.material3.Text(
@@ -237,27 +215,27 @@ fun EstoqueScreen() {
                             )
                         }
 
-                        androidx.compose.material3.Button(
-                            onClick = { /* Ação do botão 1 */ },
-                            modifier = Modifier
-                                .width(65.dp)
-                                .height(25.dp),
-                            shape = RoundedCornerShape(5.dp),
-                            contentPadding = PaddingValues(0.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF355070)
-                            )
-                        ) {
-                            androidx.compose.material3.Text(
-                                text = "Filtrar",
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
+                            androidx.compose.material3.Button(
+                                onClick = { /* Ação do botão 1 */ },
+                                modifier = Modifier
+                                    .width(65.dp)
+                                    .height(25.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF355070)
+                                )
+                            ) {
+                                androidx.compose.material3.Text(
+                                    text = "Filtrar",
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
 
 
         // Caixa grande branca (Carrinho)
@@ -277,7 +255,7 @@ fun EstoqueScreen() {
                     .clip(RoundedCornerShape(8.dp))
             ) {
                 Column {
-                    // Header da caixa grande
+                    // Header da caixa grande com campo de pesquisa
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -285,52 +263,69 @@ fun EstoqueScreen() {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Título "Produtos"
                         androidx.compose.material3.Text(
                             text = "Produtos",
                             fontSize = 20.sp,
                             color = Color.Black
                         )
 
-                        Row {
-                            androidx.compose.material3.Button(
-                                onClick = { /* Ação do botão 1 */ },
+                        // Campo de pesquisa e botão
+                        Row(
+                            modifier = Modifier.padding(0.dp),
+                            verticalAlignment = Alignment.CenterVertically // Alinha o texto e input ao centro
+                        ) {
+                            // Texto "Buscar:"
+                            androidx.compose.material3.Text(
+                                text = "Buscar:",
+                                fontSize = 12.sp,
+                                color = Color.Black,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+
+                            // Input para pesquisa com borda arredondada apenas à esquerda
+                            Box(
                                 modifier = Modifier
-                                    .width(65.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
-                                )
+                                    .width(105.dp)
+                                    .height(20.dp) // Define a altura personalizada
+                                    .border(1.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                                    .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                             ) {
-                                androidx.compose.material3.Text(
-                                    text = "Código",
-                                    color = Color.White,
-                                    fontSize = 12.sp
+                                BasicTextField(
+                                    value = "", // Substituir pelo estado da pesquisa
+                                    onValueChange = { /* Ação ao mudar o valor */ },
+                                    singleLine = true,
+                                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+//                                        .padding(start = 8.dp, vertical = 8.dp) // Adiciona padding interno para o texto
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
-
+                            // Botão com ícone e borda arredondada apenas à direita
                             androidx.compose.material3.Button(
-                                onClick = { /* Ação do botão 2 */ },
+                                onClick = { /* Ação ao clicar no botão de pesquisa */ },
                                 modifier = Modifier
-                                    .width(70.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
+                                    .width(30.dp)
+                                    .height(20.dp), // Altura ajustada
+                                shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp), // Arredonda apenas a direita
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
+                                    containerColor = Color(0xFF355070) // Cor do botão
                                 )
                             ) {
-                                androidx.compose.material3.Text(
-                                    text = "Add Prod",
-                                    color = Color.White,
-                                    fontSize = 12.sp
+                                Icon(
+                                    painter = painterResource(id = R.mipmap.search), // Ícone do mipmap
+                                    contentDescription = "Pesquisar",
+                                    tint = Color.White, // Cor do ícone
+                                    modifier = Modifier.size(16.dp) // Tamanho do ícone
                                 )
                             }
                         }
+
+
                     }
+
 
                     // Tabela dentro da caixa grande
                     Column(
@@ -343,13 +338,12 @@ fun EstoqueScreen() {
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                        ProductTable(products, { product -> }, { product -> })
+                        ScreenTable(products, { product -> }, false)
 
                     }
                 }
             }
 
-            // Dois botões azuis na parte inferior
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
@@ -374,7 +368,9 @@ fun EstoqueScreen() {
                 }
 
                 androidx.compose.material3.Button(
-                    onClick = { /* Ação do segundo botão */ },
+                    onClick = {
+                        isModalNovoProd = true
+                    },
                     modifier = Modifier
                         .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
                         .height(50.dp),
@@ -389,6 +385,11 @@ fun EstoqueScreen() {
                         fontSize = 16.sp
                     )
                 }
+                if (isModalNovoProd) {
+                    NovoProdutoDialog(
+                        onDismissRequest = { isModalNovoProd = false }
+                    )
+                }
             }
 
 
@@ -400,7 +401,9 @@ fun EstoqueScreen() {
                 horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
             ) {
                 androidx.compose.material3.Button(
-                    onClick = { /* Ação do primeiro botão */ },
+                    onClick = {
+                        isModalAddProd = true
+                    },
                     modifier = Modifier
                         .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
                         .height(50.dp),
@@ -416,8 +419,16 @@ fun EstoqueScreen() {
                     )
                 }
 
+                if (isModalAddProd) {
+                    AddProdutoEstoque(
+                        onDismissRequest = { isModalAddProd = false }
+                    )
+                }
+
                 androidx.compose.material3.Button(
-                    onClick = { /* Ação do segundo botão */ },
+                    onClick = {
+                        isModalNovoModelo = true
+                    },
                     modifier = Modifier
                         .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
                         .height(50.dp),
@@ -432,8 +443,13 @@ fun EstoqueScreen() {
                         fontSize = 16.sp
                     )
                 }
+                if (isModalNovoModelo) {
+                    ModalNovoModeloDialog(
+                        onDismissRequest = { isModalNovoModelo = false }
+                    )
+                }
             }
-
+        }
         }
     }
 }
