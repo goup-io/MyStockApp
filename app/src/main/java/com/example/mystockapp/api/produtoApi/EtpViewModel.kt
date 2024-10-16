@@ -18,11 +18,7 @@ class EtpViewModel(private val etpApi: EtpApi, private val context: Context) : V
             if (idLoja != -1) {
                 try {
                     val response = etpApi.buscarPorCodigo(codigo, idLoja)
-                    if (response.isNotEmpty()) {
-                        etp.postValue(response.first())
-                    } else {
-                        etp.postValue(null)
-                    }
+                    etp.postValue(response)
                 } catch (e: Exception) {
                     // Handle the exception, e.g., log it or show a message to the user
                     etp.postValue(null)

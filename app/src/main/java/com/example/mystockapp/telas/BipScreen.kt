@@ -29,7 +29,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -38,6 +37,8 @@ import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.produtoApi.EtpViewModel
 import com.example.mystockapp.api.produtoApi.EtpViewModelFactory
 import com.example.mystockapp.ui.theme.MyStockAppTheme
+import android.util.Log
+
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -59,7 +60,10 @@ class BipScreen : ComponentActivity() {
         setContent {
             MyStockAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Screen(modifier = Modifier.padding(innerPadding), contextoBusca = contextoBusca, viewModel = viewModel)
+                    Screen(
+                        modifier = Modifier.padding(innerPadding),
+                        contextoBusca = contextoBusca,
+                        viewModel = viewModel)
                 }
             }
         }
@@ -80,7 +84,11 @@ class BipScreen : ComponentActivity() {
 }
 
 @Composable
-fun Screen(modifier: Modifier = Modifier, contextoBusca: String, viewModel: EtpViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun Screen(
+    modifier: Modifier = Modifier,
+    contextoBusca: String,
+    viewModel: EtpViewModel
+) {
     var barcodeNumber by remember { mutableStateOf("AB1234567890") }
     var isScanning by remember { mutableStateOf(false) }
 
@@ -105,23 +113,25 @@ fun Screen(modifier: Modifier = Modifier, contextoBusca: String, viewModel: EtpV
     }
 
     LaunchedEffect(etp) {
-        println("ETP atualizado: $etp")
         etp?.let {
-            codigo = it.codigo
-            nome = it.nome
-            modelo = it.modelo
-            precoCusto = it.valorCusto
-            precoRevenda = it.valorRevenda
-            tamanho = it.tamanho
-            cor = it.cor
-            quantidadeEstoque = it.quantidade
-            itemPromocional = it.itemPromocional
-            println("Dados atualizados: codigo=$codigo, nome=$nome, modelo=$modelo, precoCusto=$precoCusto, precoRevenda=$precoRevenda, tamanho=$tamanho, cor=$cor, quantidadeEstoque=$quantidadeEstoque, itemPromocional=$itemPromocional")
+            codigo = it.codigo ?: "0"
+            nome = it.produto ?: ""
+            modelo = it.modelo ?: ""
+            precoCusto = it.valorCusto ?: 0.0
+            precoRevenda = it.valorRevenda ?: 0.0
+            tamanho = it.tamanho ?: 0
+            cor = it.cor ?: ""
+            quantidadeEstoque = it.quantidade ?: 0
+            itemPromocional = it.itemPromocional ?: false
         } ?: run {
             println("ETP é nulo")
-            codigo = (barcodeNumber ?: 0).toString()
+            codigo = barcodeNumber ?: "0"
         }
     }
+
+
+    Log.d("ETP-BipScreen", "ETP-BipScreen: $etp")
+//    println("ETP-BipScreen: $etp")
 
     if (isScanning) {
         Column(
@@ -584,10 +594,10 @@ fun InfoTextField(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun BipScreenPreview() {
-    MyStockAppTheme {
-        Screen(contextoBusca = "pesquisa")
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun BipScreenPreview() {
+//    MyStockAppTheme {
+//        Screen(contextoBusca = "pesquisa")
+//    }
+//}

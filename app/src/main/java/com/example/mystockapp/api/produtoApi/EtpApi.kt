@@ -12,5 +12,5 @@ interface EtpApi {
     suspend fun buscarPorCodigo(
         @Query("pesquisa") codigo: String,
         @Query("id_loja") idLoja: Int
-    ): List<EtpRes>
+    ): EtpRes
 }
