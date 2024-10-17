@@ -1,6 +1,7 @@
 package com.example.mystockapp.telas
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -29,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -37,10 +37,12 @@ import com.example.mystockapp.R
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.produtoApi.EtpViewModel
 import com.example.mystockapp.api.produtoApi.EtpViewModelFactory
-import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import org.json.JSONObject
 
 
 class BipScreen : ComponentActivity() {
@@ -58,6 +60,7 @@ class BipScreen : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // pode ser pesquisa, estoque ou pre-venda
         val contextoBusca = intent.getStringExtra("contextoBusca") ?: "pesquisa"
 
         setContent {
@@ -112,6 +115,9 @@ fun Screen(
 
     val etp by viewModel.etp.observeAsState()
 
+    // contexto local (a tela atual)
+    val contexto = LocalContext.current
+
     LaunchedEffect(barcodeNumber) {
         if (barcodeNumber.isNotEmpty()) {
             println("Buscando ETP por código: $barcodeNumber")
@@ -139,7 +145,6 @@ fun Screen(
     Log.d("ETP-BipScreen", "ETP-BipScreen: $etp")
 
     MenuDrawer(titulo = "Busca") {
-
         if (isScanning) {
             Column(
                 modifier = Modifier
@@ -167,44 +172,9 @@ fun Screen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-//            Row(
-//                modifier = Modifier
-//                    .background(Color(0XFF355070))
-//                    .fillMaxWidth(),
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.SpaceBetween
-//            ) {
-//                // Botão Menu 3 Linhas (pode ser substituído por um ícone real)
-//                Text(
-//                    text = "≡", // Substituir por um ícone de menu
-//                    color = Color.White,
-//                    fontSize = 35.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier.padding(horizontal = 16.dp)
-//                )
-//
-//                Text(
-//                    text = "Busca",
-//                    color = Color.White,
-//                    fontSize = 20.sp,
-//                    fontWeight = FontWeight.Medium,
-//                    modifier = Modifier.padding(horizontal = 16.dp)
-//                )
-//
-//                Image(
-//                    painter = painterResource(id = R.mipmap.ic_logo_mystock),
-//                    contentDescription = "Logo",
-//                    modifier = Modifier
-//                        .padding(16.dp)
-//                        .size(50.dp)
-//                )
-//            }
-
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
-//                    .height(180.dp)
-                    ,
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Column(
@@ -214,27 +184,28 @@ fun Screen(
                                 Color(0xFFFFFFFF),
                                 shape = RoundedCornerShape(16.dp)
                             )
+                            // Defina uma altura mínima e máxima para o bloco branco
+                            .heightIn(min = 100.dp, max = 200.dp) // Ajuste os valores conforme necessário
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
                         Column(
-                            modifier = modifier
+                            modifier = Modifier
                                 .fillMaxWidth(0.75f)
-                                .height(150.dp),
+                                .height(150.dp), // Mantém a altura original dos componentes internos
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceAround
                         ) {
-                            // Container que simula o scanner com as bordas "arredondadas"
+                            // Conteúdo da coluna interna (scanner simulado)
                             Box(
                                 modifier = Modifier
                                     .size(250.dp)
-
                                     .height(150.dp)
                                     .background(Color.Transparent),
                                 contentAlignment = Alignment.Center
                             ) {
-                                // Canvas para desenhar as bordas arredondadas
+                                // O resto do seu código
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     val strokeWidth = 4.dp.toPx()
                                     val cornerLength = 40.dp.toPx()
@@ -536,7 +507,7 @@ fun Screen(
 
                     // Botão para digitar o código
                     Button(
-                        onClick = { /* Ação de digitar código */
+                        onClick = { /* Ação de buscar código */
                             viewModel.buscarEtpPorCodigo(barcodeNumber)
                         },
                         modifier = Modifier
@@ -554,20 +525,67 @@ fun Screen(
 
                     Spacer(modifier = Modifier.height(5.dp))
 
-                    // Botão Adicionar Produto
-                    Button(
-                        onClick = { /* Ação de adicionar produto */ },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .height(35.dp),
-                        shape = RoundedCornerShape(5.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                    ) {
-                        Text(
-                            text = "Adicionar Produto",
-                            color = Color.White
-                        )
+                    if (contextoBusca == "pre-venda") {
+                        // Botão Adicionar Produto
+                        Button(
+                            onClick = {
+                                // Validação dos campos
+                                if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
+                                    precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0) {
+
+                                    // Exibir mensagem de erro
+                                    Toast.makeText(
+                                        contexto,
+                                        "Preencha todos os campos corretamente.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                } else if (quantidadeVenda <= 0){
+                                    // Exibir mensagem de erro
+                                    Toast.makeText(
+                                        contexto,
+                                        "Informe a quantidade que deseja adicionar ao carrinho.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    // Ação de adicionar produto
+                                    val telaPreVenda = Intent(contexto, PreVenda::class.java)
+
+                                    val jsonProduto = JSONObject().apply {
+                                        put("codigo", codigo)
+                                        put("nome", nome)
+                                        put("modelo", modelo)
+                                        put("precoCusto", precoCusto)
+                                        put("precoRevenda", precoRevenda)
+                                        put("tamanho", tamanho)
+                                        put("cor", cor)
+                                        put("quantidadeEstoque", quantidadeEstoque)
+                                        put("itemPromocional", itemPromocional)
+                                        put("quantidadeVenda", quantidadeVenda)
+                                    }
+
+                                    // Converte o JSONObject para uma string JSON
+                                    val jsonString = jsonProduto.toString()
+
+                                    // Adicione a string JSON como um extra na Intent
+                                    telaPreVenda.putExtra("produtoAdicionado", jsonString)
+
+                                    // pedindo a execução de outra tela
+                                    contexto.startActivity(telaPreVenda)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .height(35.dp),
+                            shape = RoundedCornerShape(5.dp),
+                            colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                        ) {
+                            Text(
+                                text = "Adicionar Produto",
+                                color = Color.White
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(15.dp))

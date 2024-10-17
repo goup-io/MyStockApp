@@ -2,6 +2,7 @@ package com.example.mystockapp.telas
 
 import NovoProdutoDialog
 import ProductTable
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -106,6 +108,9 @@ fun EstoqueScreen() {
         ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
         ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco", 15)
     )
+
+    // contexto local (a tela atual)
+    val contexto = LocalContext.current
 
     MenuDrawer(titulo = "Estoque") {
         Column(
@@ -351,7 +356,11 @@ fun EstoqueScreen() {
                 horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
             ) {
                 androidx.compose.material3.Button(
-                    onClick = { /* Ação do primeiro botão */ },
+                    onClick = { /* Ação do primeiro botão */
+                        val telaBip = Intent(contexto, BipScreen::class.java)
+                        telaBip.putExtra("contextoBusca", "estoque")
+                        contexto.startActivity(telaBip)
+                    },
                     modifier = Modifier
                         .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
                         .height(50.dp),
