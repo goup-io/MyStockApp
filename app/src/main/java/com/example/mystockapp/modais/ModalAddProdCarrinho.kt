@@ -313,8 +313,10 @@ fun ModalAdicionar(
 
                                 IconButton(
                                     onClick = {
-                                        quantidadeAdd += 1
-                                        },
+                                        if(quantidadeAdd < produtoInfo.quantidade){
+                                            quantidadeAdd += 1
+                                        }
+                                              },
                                     modifier = Modifier
                                         .background(Color.Transparent)
                                         .padding(4.dp)
