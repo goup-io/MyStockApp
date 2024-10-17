@@ -18,6 +18,7 @@ import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.vendas.Carrinho
 import com.example.mystockapp.models.vendas.ProdutoVendaReq
+import com.example.mystockapp.models.vendas.TipoVendasDataClass
 import com.example.mystockapp.models.vendas.VendaDetalhes
 import com.example.mystockapp.models.vendas.VendaInfo
 import com.example.mystockapp.models.vendas.VendaPost
@@ -32,6 +33,9 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     var produtos by mutableStateOf(listOf<ProdutoTable>())
         private set
 
+    var tipoVendas by mutableStateOf(listOf<TipoVendasDataClass>())
+        private set
+
     var _produtoSelecionado = mutableStateOf<ProdutoTable?>(null)
 
     var carrinho by mutableStateOf(
@@ -41,6 +45,10 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         )
     )
         private set
+
+    fun atualizarVendaInfo(tipoVendaId: Int, codigoVendedor: Int){
+        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(tipoVendaId = tipoVendaId, codigoVendedor = codigoVendedor))
+    }
 
     var vendaDetalhes by mutableStateOf(
         VendaDetalhes(
@@ -101,37 +109,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         Log.d("Produto", "Produto atualizado: ${gson.toJson(produtoSelecionado)}")
     }
 
-    fun addProduto(idEtp: Int, quantidade: Int) {
-        val produtoLista = produtos.find { prod -> prod.id == idEtp }
-        if (produtoLista != null) {
-            produtos = produtos.map {
-                if (it.id == idEtp) {
-                    it.copy(quantidadeToAdd = it.quantidadeToAdd + quantidade)
-                } else {
-                    it
-                }
-            }
-        }
-    }
-
-    fun removerProduto(idEtp: Int, quantidade: Int) {
-        val produtoLista = produtos.find { prod -> prod.id == idEtp }
-        if (produtoLista != null) {
-            produtos = produtos.map {
-                if (it.id == idEtp) {
-                    // verifica se o valor a ser removido é maior que o que tem
-                    if (it.quantidadeToAdd - quantidade < 0) {
-                        it.copy(quantidadeToAdd = 0)
-                    } else {
-                        it.copy(quantidadeToAdd = it.quantidadeToAdd - quantidade)
-                    }
-                } else {
-                    it
-                }
-            }
-        }
-
-    }
 
     fun limparProdutos() {
         produtos = produtos
@@ -258,6 +235,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 }
                 val vendaReq = VendaPost(
                     vendaReq = carrinho.vendaInfo,
+
                     produtosVendaReq = produtosVendaReq
                 )
                 val vendaRes = vendaService.createVenda(vendaReq)
@@ -273,6 +251,24 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
             }
         }
     }
+
+    suspend fun getTiposVenda() {
+
+        try {
+            val vendasService = VendaService(RetrofitInstance.vendaApi)
+            val tipoVendaBuscados = vendasService.getTiposVenda()
+
+            tipoVendas = tipoVendaBuscados
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+        }
+
+    }
+
 
     class AddProdCarrinhoViewModelFactory(private val idLoja: Int) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

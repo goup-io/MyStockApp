@@ -1,5 +1,6 @@
 package com.example.mystockapp.telas
 
+import DottedLineComponent
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -37,18 +38,25 @@ import com.example.mystockapp.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalResumoVenda
+import com.example.mystockapp.modais.componentes.FormFieldRowComponent
+import com.example.mystockapp.modais.componentes.FormFieldSelectRowComponent
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.modais.modalAddProdCarrinho
+import com.example.mystockapp.models.vendas.TipoVendasDataClass
 import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 import com.example.mystockapp.telas.componentes.MenuDrawer
+import kotlinx.coroutines.launch
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,10 +86,19 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
         factory = PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja = idLoja)
     )
 
-    val gson = Gson()
+    var showError by remember { mutableStateOf(false) }
+    var tipoVendaId by remember { mutableStateOf(0) }
 
-    var codigo by remember { mutableStateOf("") }
-    var tipoVenda by remember { mutableStateOf("") }
+
+    LaunchedEffect (Unit) {
+        viewModel.getTiposVenda()
+    }
+
+
+        val gson = Gson()
+
+    var codigo by remember { mutableStateOf(0) }
+    var tipoVenda by remember { mutableStateOf(0) }
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     var isModalMaisInfo by remember { mutableStateOf(false) }
@@ -174,18 +191,11 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         // Conteúdo da Caixa
                         Column(
                             modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.SpaceAround
+
                         ) {
                             // Código da Venda
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = "Código da Venda", fontSize = 14.sp)
-                                Text(text = "001", fontSize = 14.sp)
-                            }
 
-                            Divider()
 
                             // Valor da Venda
                             Row(
@@ -193,10 +203,10 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(text = "Valor da Venda", fontSize = 14.sp)
-                                Text(text = "R$ 100,00", fontSize = 14.sp)
+                                Text(text = "R$ " + formatarPreco(viewModel.vendaDetalhes.valorTotal.toString().replace(",",".")), fontSize = 14.sp)
                             }
 
-                            Divider()
+                            DottedLineComponent()
 
                             // Quantidade de Itens
                             Row(
@@ -204,8 +214,10 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(text = "Quantidade de Itens", fontSize = 14.sp)
-                                Text(text = "5", fontSize = 14.sp)
+                                Text(text = viewModel.vendaDetalhes.totalItens.toString(), fontSize = 14.sp)
                             }
+
+                            DottedLineComponent()
                         }
                     }
                 }
@@ -324,32 +336,45 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Código", fontSize = 14.sp)
 
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .width(80.dp)
-                                .height(10.dp),
-                            value = codigo,
-                            onValueChange = { codigo = it }
+                        FormFieldRowComponent(
+                            label = "Código",
+                            fieldType = KeyboardType.Number,
+                            textValue = if (codigo <= 0 || codigo == null) "" else codigo.toString(),
+                            onValueChange = { codigo = it.toInt() },
+                            width = 120.dp,
+                            error = showError && codigo <= 0 || codigo == null
                         )
 
-                        Text(text = "Tipo Venda", fontSize = 14.sp)
-
-                        OutlinedTextField(
-                            modifier = Modifier.width(80.dp),
-                            value = codigo,
-                            onValueChange = { codigo = it }
+                        FormFieldSelectRowComponent(
+                            label = "Tipo Venda",
+                            selectedOption = tipoVenda.toString(),
+                            options = viewModel.tipoVendas.map { it.tipo},
+                            onOptionSelected = { tipoVenda = it.toInt() },
+                            width = 200.dp,
+                            error = showError && tipoVenda <= 0 || tipoVenda == null
                         )
                     }
                 }
 
                 // Botão azul na parte inferior
                 Button(
-                    onClick = { /* Ação do botão */ },
+                    onClick = {
+                        if( codigo <= 0 || tipoVenda <= 0){
+                            showError = true
+                        } else {
+                        coroutineScope.launch {
+                            try {
+                                viewModel.atualizarVendaInfo(tipoVendaId = tipoVenda, codigoVendedor = codigo)
+                                viewModel.realizarVenda()
+                            } catch (e: Exception) {
+                                Log.e("PreVenda", "Erro ao executar ação: ${e.message}")
+                            }
+                        }
+                    } },
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
                         .height(50.dp),
