@@ -18,6 +18,7 @@ fun FormFieldCheck(
     label: String,
     isChecked: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
+    disabled: Boolean = false,
     modifier: Modifier = Modifier,
     labelFontSize: Float = 10f,
     labelColor: Color = Color.Black,
@@ -40,7 +41,11 @@ fun FormFieldCheck(
         ) {
             Checkbox(
                 checked = isChecked,
-                onCheckedChange = { onCheckedChange(it) },
+                onCheckedChange = {
+                    if (!disabled) {
+                        onCheckedChange(it)
+                    }
+                                  },
                 modifier = Modifier
                     .scale(1.5f) // Escala o tamanho do checkbox
                     .padding(end = 2.dp),

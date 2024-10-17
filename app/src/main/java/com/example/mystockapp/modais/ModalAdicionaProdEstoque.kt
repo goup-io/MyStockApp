@@ -81,9 +81,6 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
             } else {
                 ProductTable(
                     products = viewModel.produtos,
-                    onAddProduto = { produto -> viewModel.addProduto(produto) },
-                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) },
-                    isPreVenda = false,
                     viewModel = viewModel
                 )
             }

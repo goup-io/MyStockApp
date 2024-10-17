@@ -13,29 +13,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 
 @Composable
-fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewModel, idLoja: Int) {
+fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewModel) {
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val listProdutos = remember { mutableStateListOf<ProdutoTable>() }
-    // mockando 10 itens
-    for (i in 1..10) {
-        listProdutos.add(ProdutoTable(i, "Produto $i", "Descrição do Produto $i", "dagira",1.0, 10, "colorido", 10+i))
-    }
-
     LaunchedEffect(Unit) {
-        viewModel.fetchProdutos()
+         viewModel.fetchProdutos()
     }
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -53,10 +45,7 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewMo
                 Text(text = errorMessage ?: "", color = Color.Red)
             } else {
                 ProductTable(
-                    products = listProdutos,
-                    onAddProduto = { produto -> viewModel.addProduto(produto) },
-                    onRemoverProduto = { produto -> viewModel.removerProduto(produto) },
-                    isPreVenda = true,
+                    products = viewModel.produtos,
                     viewModel = viewModel
                 )
             }
@@ -71,6 +60,6 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewMo
 @Composable
 fun modalAddProdCarrinho() {
     MyStockAppTheme() {
-        modalAddProdCarrinho(onDismissRequest = {}, viewModel = PreVendaViewModel(idLoja = 1), idLoja = 1)
+        modalAddProdCarrinho(onDismissRequest = {}, viewModel = PreVendaViewModel(idLoja = 1))
     }
 }

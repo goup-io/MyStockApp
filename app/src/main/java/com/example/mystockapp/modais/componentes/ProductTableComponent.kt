@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -16,17 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.models.produtos.ProdutoTable
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.ViewModel
 import com.example.mystockapp.R
-import com.example.mystockapp.modais.ModalAdicionar
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.modais.viewModels.ProdutoViewModel
 
 @Composable
 fun ProductTable(
     products: List<ProdutoTable>,
-    onAddProduto: (ProdutoTable) -> Unit,
-    onRemoverProduto: (ProdutoTable) -> Unit,
-    isPreVenda: Boolean = false,
     viewModel: ProdutoViewModel
 ) {
     Box(
@@ -45,10 +42,7 @@ fun ProductTable(
                     val product = products[index]
                     ProductRow(
                         product = product,
-                        addProdutoOpcao = onAddProduto,
-                        removeProdutoOpcao = onRemoverProduto,
                         backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
-                        isPreVenda = isPreVenda,
                         viewModel = viewModel
                     )
                 }
@@ -93,14 +87,9 @@ fun HeaderText(text: String, modifier: Modifier) {
 @Composable
 fun ProductRow(
     product: ProdutoTable,
-    addProdutoOpcao: (ProdutoTable) -> Unit,
     backgroundColor: Color,
-    isPreVenda: Boolean,
     viewModel: ProdutoViewModel,
-    removeProdutoOpcao: (ProdutoTable) -> Unit
 ) {
-    var showModalAdd by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,7 +120,7 @@ fun ProductRow(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                product.preco.toString(),
+                formatarPreco(product.preco.toString().replace(".", ",")),
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
                 fontSize = 12.sp,
@@ -177,10 +166,8 @@ fun ProductRow(
         ) {
             IconButton(
                 onClick = {
-                    // Ação a ser realizada quando o botão é clicado
-                    // TODO: Utilizar o viewModel para adicionar o produto e assim mudar o estado do botão
+                    Log.d("ProductTableComponent", "Escolhendo produto ${product}")
                     viewModel.escolherProduto(product)
-//                    showModalAdd = true
                 },
             ) {
                 Icon(
@@ -190,25 +177,5 @@ fun ProductRow(
                 )
             }
         }
-//        if (isPreVenda && showModalAdd) {
-//            ModalAdicionar(
-//                onDismissRequest = { showModalAdd = false },
-//                produto = product,
-////                onAddProduto = { addProdutoOpcao(product) },
-////                onRemoveProduto = { removeProdutoOpcao(product) },
-//                viewModel = viewModel
-//            )
-//        }
-//        if(!isPreVenda && showModalAdd) {
-////            ModalAdicionar(
-////                onDismissRequest = { showModalAdd = false },
-////                idProduto = product.id,
-////                onAddProduto = { addProdutoOpcao(product) },
-////                onRemoveProduto = { removeProdutoOpcao(product) },
-////                viewModel = viewModel
-////            )
-//
-//            //todo: modal de add no estoque
-//        }
     }
 }

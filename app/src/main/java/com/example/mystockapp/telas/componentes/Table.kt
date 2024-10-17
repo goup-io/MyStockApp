@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.models.produtos.ProdutoTable
 
 @Composable
@@ -159,7 +160,7 @@ fun ProductRow(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                product.preco.toString(),
+                formatarPreco(product.preco.toString().replace(".", ",")),
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
                 fontSize = 10.sp,

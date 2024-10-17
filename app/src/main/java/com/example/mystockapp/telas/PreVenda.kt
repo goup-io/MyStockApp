@@ -1,12 +1,10 @@
 package com.example.mystockapp.telas
 
-import ProductTable
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -33,39 +30,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.lifecycle.viewmodel.compose.viewModel
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.layout.ContentScale
-//import androidx.compose.ui.text.font.FontWeight
-import com.example.mystockapp.R
-import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalAdicionarDesconto
-import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.ModalResumoVenda
 import com.example.mystockapp.modais.modalAddProdCarrinho
-import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
-import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
-import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
-import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.MenuDrawer
 
 class PreVenda : ComponentActivity() {
@@ -290,18 +272,21 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             }
 
                             if (isModalAddProdCarrinho) {
-                                modalAddProdCarrinho(onDismissRequest = { isModalAddProdCarrinho = false }, viewModel, idLoja)
+                                modalAddProdCarrinho(
+                                    onDismissRequest = {
+                                        isModalAddProdCarrinho = false
+                                    },
+                                    viewModel
+                                )
                             }
 
                                 if (viewModel.produtoSelecionado != null){
                                     isModalAddProdCarrinho = false
                                     ModalAdicionar(
-                                        produto = viewModel.produtoSelecionado!!,
                                         onDismissRequest = { viewModel.desescolherProduto() },
                                         viewModel = viewModel,
-                                        isPreVenda = true
-//                    onAddProduto = { produto -> viewModel.addProduto(produto) },
-//                    onRemoverProduto = { produto -> viewModel.remover(produto) },
+                                        isPreVenda = true,
+                                        onConfirmarAdd = {quantidade -> viewModel.adicionar(quantidade)},
                                     )
                                 }
                         }
@@ -379,16 +364,6 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
         }
     }
 }
-
-data class Item(
-    val codigo: String,
-    val nome: String,
-    val preco: String,
-    val quantidade: String,
-    val verMaisResId: Int
-)
-
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

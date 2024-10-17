@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,14 +24,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,28 +41,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import androidx.lifecycle.ViewModel
 import com.example.mystockapp.components.FormFieldCheck
 import com.example.mystockapp.modais.componentes.SelectField
 import com.example.mystockapp.modais.componentes.utils.desformatarPreco
 import com.example.mystockapp.modais.componentes.utils.formatarPreco
+import com.example.mystockapp.modais.viewModels.ProdutoViewModel
 import com.example.mystockapp.models.produtos.Cor
 import com.example.mystockapp.models.produtos.ItemPromocional
 import com.example.mystockapp.models.produtos.Modelo
 import com.example.mystockapp.models.produtos.Produto
-import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.produtos.Tamanho
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 
 @Composable
 fun ModalAdicionar(
     onDismissRequest: () -> Unit,
-    produto: ProdutoTable,
-//    onAddProduto: (Produto) -> Unit,
-//    onRemoveProduto: (Produto) -> Unit,
-    viewModel: ViewModel,
-    isPreVenda: Boolean = true // TODO: remover o = true, fazendo com que seja obrigatório declarar
+    onConfirmarAdd: (quantidade:Int) -> Unit,
+    viewModel: ProdutoViewModel,
+    isPreVenda: Boolean
 ) {
 
     var isPromocional by remember { mutableStateOf(false) }
@@ -73,13 +67,10 @@ fun ModalAdicionar(
     var coresOptions by remember { mutableStateOf<List<Cor>>(emptyList()) }
     var tamanhosOptions by remember { mutableStateOf<List<Tamanho>>(emptyList()) }
 
+    Log.d("ModalAdicionar", "Produto Selecionado: ${viewModel.produtoSelecionado}")
+    var quantidadeAdd by remember { mutableStateOf(0) }
+
     var showError by remember { mutableStateOf(false) }
-    var confirmarTitulo by remember { mutableStateOf("") }
-    var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
-    var confirmarBtnTitulo by remember { mutableStateOf("") }
-    var recusarBtnTitulo by remember { mutableStateOf("") }
-    var bgCorBtn by remember { mutableStateOf(Color(0xFF355070)) }
-    var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
 
     var tempPreco by remember { mutableStateOf("") }
 
@@ -96,6 +87,22 @@ fun ModalAdicionar(
         ItemPromocional.NAO,
         0
     )) }
+
+    LaunchedEffect(Unit) {
+        val produtoSelecionadoId = viewModel.produtoSelecionado?.id
+        if (produtoSelecionadoId != null) {
+            val produtoSelecionado = viewModel.pesquisarProdutoPorId(produtoSelecionadoId)
+            if (produtoSelecionado != null) {
+                produtoInfo = produtoSelecionado
+                quantidadeAdd = viewModel.produtoSelecionado?.quantidadeToAdd ?: 0
+                tempPreco = formatarPreco(produtoInfo.preco.toString().replace(".", ","))
+                Log.d("ModalAdicionar", "Produto selecionado: ${viewModel.produtoSelecionado}")
+                Log.d("ModalAdicionar", "quantidade que já tem: ${viewModel.produtoSelecionado?.quantidadeToAdd}")
+            } else {
+                Log.d("ModalAdicionar", "Produto não encontrado.")
+            }
+        }
+    }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -128,6 +135,7 @@ fun ModalAdicionar(
                                     textValue = produtoInfo.codigo,
                                     onValueChange = { produtoInfo = produtoInfo.copy(codigo = it) },
                                     fieldType = KeyboardType.Number,
+                                    disabled = true,
                                     error = showError && produtoInfo.codigo.isEmpty()
                                 )
                                 SelectField(
@@ -157,6 +165,7 @@ fun ModalAdicionar(
                                 FormField(
                                     label = "Nome:",
                                     textValue = produtoInfo.nome,
+                                    disabled = true,
                                     onValueChange = { produtoInfo = produtoInfo.copy(nome = it) },
                                     error = showError && produtoInfo.nome.isEmpty()
                                 )
@@ -170,6 +179,7 @@ fun ModalAdicionar(
                                         produtoInfo = produtoInfo.copy(preco = desformatarPreco(precoFormatado))
                                         Log.d("InformacoesProdutoDialog", "Preço Custo: ${produtoInfo.preco}")
                                     },
+                                    disabled = true,
                                     error = showError && produtoInfo.preco <= 0.0
                                 )
                                 FormField(
@@ -182,12 +192,14 @@ fun ModalAdicionar(
                                             produtoInfo = produtoInfo.copy(quantidade = newValue.toIntOrNull() ?: 0)
                                         }
                                     },
+                                    disabled = true,
                                     error = showError && produtoInfo.quantidade < 0
                                 )
                                 Spacer(modifier = Modifier.height(10.dp))
                                 FormFieldCheck(
                                     label = "Item Promocional",
-                                    isChecked = isPromocional,
+                                    isChecked = produtoInfo.itemPromocional == ItemPromocional.SIM,
+                                    disabled = true,
                                     onCheckedChange = {
                                         isPromocional = it
                                         if (isPromocional) {
@@ -207,26 +219,26 @@ fun ModalAdicionar(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(IntrinsicSize.Min), // Mantém a altura mínima da Row
+                        .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom // Alinha todos os elementos ao fundo da Row
+                    verticalAlignment = Alignment.Bottom
                 ) {
                     if(isPreVenda){
                         Column(
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
                                 .weight(1f),
-                            verticalArrangement = Arrangement.Bottom // Alinha o conteúdo ao fundo da coluna
+                            verticalArrangement = Arrangement.Bottom
                         ) {
                             Text(
-                                text = "R$ ${formatarPreco((1360.83 * 4).toString().replace(".", ","))}",
+                                text = "R$ ${formatarPreco((produtoInfo.preco * quantidadeAdd).toString().replace(".", ","))}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Left,
                                 modifier = Modifier
                                     .align(Alignment.Start)
-                                    .padding(0.dp), // Remove qualquer padding extra que possa interferir
-                                color = Color.Black // Certifique-se de que a cor do texto seja visível
+                                    .padding(0.dp),
+                                color = Color.Black
                             )
                         }
                     } else {
@@ -234,7 +246,7 @@ fun ModalAdicionar(
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
                                 .weight(1f),
-                            verticalArrangement = Arrangement.Bottom // Alinha o conteúdo ao fundo da coluna
+                            verticalArrangement = Arrangement.Bottom
                         ) { }
                     }
                     // Segunda Coluna (Box com Row)
@@ -243,30 +255,36 @@ fun ModalAdicionar(
                             .background(Color.Transparent)
                             .weight(2.1f)
                             .padding(horizontal = 8.dp)
-                            .height(45.dp), // Deixe a coluna usar a altura da Row
-                        verticalArrangement = Arrangement.Bottom // Alinha o conteúdo ao fundo da coluna
+                            .height(45.dp),
+                        verticalArrangement = Arrangement.Bottom
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(45.dp) // Define a altura fixa da Box
+                                .height(45.dp)
                                 .padding(0.dp)
                                 .padding(bottom = 8.dp)
-                                .shadow(0.dp, RoundedCornerShape(10.dp), clip = false) // Remova a sombra para ver se a linha desaparece
+                                .shadow(
+                                    0.dp,
+                                    RoundedCornerShape(10.dp),
+                                    clip = false
+                                )
                                 .border(1.dp, Color(0xFF355070), RoundedCornerShape(5.dp))
-                                .background(Color.Transparent) // Certifica que o fundo da Box é transparente
-                                .clip(RoundedCornerShape(10.dp)) // Mantém os cantos arredondados
+                                .background(Color.Transparent)
+                                .clip(RoundedCornerShape(10.dp))
                         ) {
                             Row(
                                 modifier = Modifier
                                     .background(Color.Transparent)
                                     .fillMaxWidth()
-                                    .fillMaxHeight(), // Garante que a Row ocupe toda a altura do Box
-                                horizontalArrangement = Arrangement.SpaceBetween, // Distribui o espaço entre os ícones e o texto
-                                verticalAlignment = Alignment.CenterVertically // Alinha o conteúdo no centro verticalmente dentro do Box
+                                    .fillMaxHeight(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(
-                                    onClick = { /* Diminui a quantidade */ },
+                                    onClick = {
+                                        quantidadeAdd = if (quantidadeAdd > 0) quantidadeAdd - 1 else 0
+                                              },
                                     modifier = Modifier
                                         .background(Color.Transparent)
                                         .padding(4.dp)
@@ -280,7 +298,7 @@ fun ModalAdicionar(
                                 }
 
                                 Text(
-                                    text = "10",
+                                    text = quantidadeAdd.toString(),
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 20.sp,
                                     lineHeight = 20.sp,
@@ -294,7 +312,9 @@ fun ModalAdicionar(
                                 )
 
                                 IconButton(
-                                    onClick = { /* Aumenta a quantidade */ },
+                                    onClick = {
+                                        quantidadeAdd += 1
+                                        },
                                     modifier = Modifier
                                         .background(Color.Transparent)
                                         .padding(4.dp)
@@ -310,15 +330,18 @@ fun ModalAdicionar(
                         }
                     }
 
-                    // Terceira Coluna (Botão de Carrinho)
                     Column(
                         modifier = Modifier
-                            .weight(1f),
-                        horizontalAlignment = Alignment.End, // Alinha o botão à direita dentro da coluna
-                        verticalArrangement = Arrangement.Center // Alinha o conteúdo ao fundo da coluna
+                            .weight(1f)
+                            .height(60.dp),
+                        horizontalAlignment = Alignment.End, 
+                        verticalArrangement = Arrangement.Center
                     ) {
                         IconButton(
-                            onClick = { },
+                            onClick = {
+                                onConfirmarAdd(quantidadeAdd)
+                                onDismissRequest()
+                            },
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
                                 .size(40.dp)
@@ -348,19 +371,7 @@ fun ModalAdicionar(
 private fun PreviewModalAddProdCarrinho() {
     ModalAdicionar(
         {},
-        ProdutoTable(
-            1,
-            "123",
-            "Camiseta",
-            "Camiseta de algodão",
-            50.0,
-            10,
-            "Colorido",
-            0,
-            12
-        ),
-//        {},
-//        {},
+        {_, -> },
         PreVendaViewModel(1),
         true
     )

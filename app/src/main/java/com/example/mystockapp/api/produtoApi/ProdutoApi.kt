@@ -24,6 +24,9 @@ interface ProdutoApi {
     @GET("/api/v1/etps/editar/{id}")
     suspend fun getProdutoEditarById(@Path("id") id: Int): Response<ProdutoEditarGet>
 
+    @GET("/api/v1/etps/{id}")
+    suspend fun getEtpById(@Path("id") id: Int): Response<Produto>
+
     @PUT("/api/v1/etps/{id}")
     suspend fun updateEtp(
         @Path("id") id: Int,

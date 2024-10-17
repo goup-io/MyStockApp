@@ -13,6 +13,7 @@ import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.AdicionarEstoqueReq
+import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -87,7 +88,15 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoVie
         limparProdutos();
     }
 
+    override var produtoSelecionado: ProdutoTable?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+
     override fun escolherProduto(produto: ProdutoTable) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
         TODO("Not yet implemented")
     }
 }
