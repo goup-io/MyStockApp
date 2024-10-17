@@ -1,28 +1,30 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.models.produtos.ProdutoTable
 import androidx.compose.ui.text.style.TextOverflow
+import com.example.mystockapp.R
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
+import com.example.mystockapp.modais.viewModels.ProdutoViewModel
 
 @Composable
 fun ProductTable(
     products: List<ProdutoTable>,
-    onAddProduto: (ProdutoTable) -> Unit,
-    onRemoverProduto: (ProdutoTable) -> Unit
+    viewModel: ProdutoViewModel
 ) {
     Box(
         modifier = Modifier
@@ -40,9 +42,8 @@ fun ProductTable(
                     val product = products[index]
                     ProductRow(
                         product = product,
-                        addProdutoOpcao = onAddProduto,
-                        removerProdutoOpcao = onRemoverProduto,
-                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0)
+                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
+                        viewModel = viewModel
                     )
                 }
             }
@@ -61,12 +62,10 @@ fun TableHeader() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HeaderText("Nome", Modifier.weight(2f))
-        HeaderText("Modelo", Modifier.weight(2f))
         HeaderText("Preço", Modifier.weight(1.2f))
         HeaderText("Tamanho", Modifier.weight(1.5f))
         HeaderText("Cor", Modifier.weight(1f))
-        HeaderText("N. Itens", Modifier.weight(1f))
-        HeaderText("Add", Modifier.weight(1.3f))
+        HeaderText("Add", Modifier.weight(1.2f))
     }
 }
 
@@ -77,7 +76,7 @@ fun HeaderText(text: String, modifier: Modifier) {
         modifier = modifier,
         textAlign = TextAlign.Center,
         color = Color.White,
-        fontSize = 10.sp,
+        fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
@@ -88,12 +87,9 @@ fun HeaderText(text: String, modifier: Modifier) {
 @Composable
 fun ProductRow(
     product: ProdutoTable,
-    addProdutoOpcao: (ProdutoTable) -> Unit,
-    removerProdutoOpcao: (ProdutoTable) -> Unit,
-    backgroundColor: Color
+    backgroundColor: Color,
+    viewModel: ProdutoViewModel,
 ) {
-    var quantidadeToAdd by remember { mutableStateOf(product.quantidadeToAdd) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,25 +108,10 @@ fun ProductRow(
                 product.nome,
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
-                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
-                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
-            )
-        }
-        Column(
-            modifier = Modifier.weight(2f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                product.modelo,
-                textAlign = TextAlign.Left,
-                fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
-                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
-                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 14.sp
             )
         }
         Column(
@@ -139,13 +120,13 @@ fun ProductRow(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                product.preco.toString(),
+                formatarPreco(product.preco.toString().replace(".", ",")),
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
-                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
-                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 14.sp
             )
         }
         Column(
@@ -157,10 +138,10 @@ fun ProductRow(
                 product.tamanho.toString(),
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
-                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
-                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 14.sp
             )
         }
         Column(
@@ -172,101 +153,28 @@ fun ProductRow(
                 product.cor,
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
-                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
-                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 12.sp
             )
         }
-        Column(
-            modifier = Modifier.weight(1f),
+        Column (
+            modifier = Modifier.weight(1.2f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                product.quantidade.toString(),
-                textAlign = TextAlign.Left,
-                fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
-                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
-                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.weight(1.3f)
-        ) {
-            Button(
+            IconButton(
                 onClick = {
-                    removerProdutoOpcao(product)
-                    quantidadeToAdd = product.quantidadeToAdd
+                    Log.d("ProductTableComponent", "Escolhendo produto ${product}")
+                    viewModel.escolherProduto(product)
                 },
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Black
-                ),
-                contentPadding = PaddingValues(0.dp)
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("-", fontSize = 15.sp, color = Color.Black, lineHeight = 20.sp)
-                }
-            }
-
-            BasicTextField(
-                value = quantidadeToAdd.toString(),
-                onValueChange = { },
-                modifier = Modifier
-                    .size(13.dp)
-                    .border(1.dp, Color(0xFF355070), RoundedCornerShape(50))
-                    .background(Color.Transparent),
-                textStyle = LocalTextStyle.current.copy(
-                    fontSize = 6.sp,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 10.sp
-                ),
-                singleLine = true,
-                enabled = false,
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .clipToBounds()
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        innerTextField()
-                    }
-                }
-            )
-
-            Button(
-                onClick = {
-                    addProdutoOpcao(product)
-                    quantidadeToAdd = product.quantidadeToAdd
-                },
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Black
-                ),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("+", fontSize = 15.sp, color = Color.Black, lineHeight = 20.sp)
-                }
+                Icon(
+                    painter = painterResource(id = R.mipmap.vermais),
+                    contentDescription = "Adicionar",
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

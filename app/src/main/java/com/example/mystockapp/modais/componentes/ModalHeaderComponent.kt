@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +37,7 @@ verticalAlignment = Alignment.CenterVertically
 ) {
     Text(
         text = titulo,
-        fontSize = 15.sp,
+        style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Medium
     )
     Button(
@@ -54,7 +55,7 @@ verticalAlignment = Alignment.CenterVertically
             Text(
                 "X",
                 color = Color.White,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
         }

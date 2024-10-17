@@ -1,5 +1,6 @@
 package com.example.mystockapp.telas
 
+import InformacoesProdutoDialog
 import NovoProdutoDialog
 import ProductTable
 import android.content.Intent
@@ -82,6 +83,7 @@ fun EstoqueScreen() {
     var isModalAddProd by remember { mutableStateOf(false) }
     var isModalNovoProd by remember { mutableStateOf(false) }
     var isModalNovoModelo by remember { mutableStateOf(false) }
+    var showTest by remember { mutableStateOf(false) }
 
     val products = listOf(
         ProdutoTable(0,"166267274711114","Triple Black", "Air Force", 300.00, 37, "Preto",  20),
@@ -221,7 +223,7 @@ fun EstoqueScreen() {
                         }
 
                             androidx.compose.material3.Button(
-                                onClick = { /* Ação do botão 1 */ },
+                                onClick = { showTest = true},
                                 modifier = Modifier
                                     .width(65.dp)
                                     .height(25.dp),
@@ -235,6 +237,12 @@ fun EstoqueScreen() {
                                     text = "Filtrar",
                                     color = Color.White,
                                     fontSize = 12.sp
+                                )
+                            }
+                            if (showTest) {
+                                InformacoesProdutoDialog(
+                                    onDismissRequest = { showTest = false },
+                                    idProduto = 1
                                 )
                             }
                         }

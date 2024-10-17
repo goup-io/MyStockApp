@@ -13,6 +13,8 @@ import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.api.vendaApi.VendaService
+import com.example.mystockapp.modais.viewModels.ProdutoViewModel
+import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.vendas.Carrinho
 import com.example.mystockapp.models.vendas.ProdutoVendaReq
@@ -22,13 +24,15 @@ import com.example.mystockapp.models.vendas.VendaPost
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
-class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
+class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
     val gson = Gson();
     var produtos by mutableStateOf(listOf<ProdutoTable>())
         private set
+
+    var _produtoSelecionado = mutableStateOf<ProdutoTable?>(null)
 
     var carrinho by mutableStateOf(
         Carrinho(
@@ -50,14 +54,83 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
     )
         private set
 
-    fun addProduto(produto: ProdutoTable) {
-        produto.quantidadeToAdd = produto.quantidadeToAdd.plus(1)
+    override var produtoSelecionado: ProdutoTable?
+        get() = _produtoSelecionado.value
+        set(value) {
+            _produtoSelecionado.value = value
+        }
+
+    override fun escolherProduto(produto: ProdutoTable){
+        produtoSelecionado = produto
     }
 
-    fun removerProduto(produto: ProdutoTable) {
-        if (produto.quantidadeToAdd > 0){
-            produto.quantidadeToAdd = (produto.quantidadeToAdd.minus(1))
+    override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
+        Log.d("Produto", "Pesquisando produto por id: $idEtp")
+
+        return try {
+            val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+            val produtoBuscado = produtoService.fetchEtpPorId(idEtp)
+            Log.d("Produto", "Produto encontrado: ${gson.toJson(produtoBuscado)}")
+            produtoBuscado
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+            null
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+            null
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+            null
         }
+    }
+
+    fun desescolherProduto(){
+        produtoSelecionado = null
+    }
+
+    fun atualizarQuantidadeProduto(quantidade: Int){
+        Log.d("Produto", "Atualizando quantidade do produto: $_produtoSelecionado")
+        produtoSelecionado = produtoSelecionado?.copy(quantidadeToAdd = quantidade)
+        produtos = produtos.map {
+            if (it.id == produtoSelecionado!!.id) {
+                it.copy(quantidadeToAdd = quantidade)
+            } else {
+                it
+            }
+        }
+        Log.d("Produto", "Produto atualizado: ${gson.toJson(produtoSelecionado)}")
+    }
+
+    fun addProduto(idEtp: Int, quantidade: Int) {
+        val produtoLista = produtos.find { prod -> prod.id == idEtp }
+        if (produtoLista != null) {
+            produtos = produtos.map {
+                if (it.id == idEtp) {
+                    it.copy(quantidadeToAdd = it.quantidadeToAdd + quantidade)
+                } else {
+                    it
+                }
+            }
+        }
+    }
+
+    fun removerProduto(idEtp: Int, quantidade: Int) {
+        val produtoLista = produtos.find { prod -> prod.id == idEtp }
+        if (produtoLista != null) {
+            produtos = produtos.map {
+                if (it.id == idEtp) {
+                    // verifica se o valor a ser removido é maior que o que tem
+                    if (it.quantidadeToAdd - quantidade < 0) {
+                        it.copy(quantidadeToAdd = 0)
+                    } else {
+                        it.copy(quantidadeToAdd = it.quantidadeToAdd - quantidade)
+                    }
+                } else {
+                    it
+                }
+            }
+        }
+
     }
 
     fun limparProdutos() {
@@ -70,14 +143,16 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
         carrinho = carrinho.copy(itensCarrinho = mutableListOf())
     }
 
-    fun adicionar() {
+    fun adicionar(quantidade: Int) {
+        atualizarQuantidadeProduto(quantidade)
+
         val novosItensCarrinho = carrinho.itensCarrinho.toMutableList()
 
         produtos.forEach { produto ->
             if (produto.quantidadeToAdd >= 1) {
                 val itemCarrinho = novosItensCarrinho.find { it.id == produto.id }
                 if (itemCarrinho != null) {
-                    val updatedItem = itemCarrinho.copy(quantidadeToAdd = itemCarrinho.quantidadeToAdd + produto.quantidadeToAdd)
+                    val updatedItem = itemCarrinho.copy(quantidadeToAdd = produto.quantidadeToAdd)
                     novosItensCarrinho[novosItensCarrinho.indexOf(itemCarrinho)] = updatedItem
                 } else {
                     novosItensCarrinho.add(produto.copy(quantidadeToAdd = produto.quantidadeToAdd))
@@ -87,7 +162,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
 
         carrinho = carrinho.copy(itensCarrinho = novosItensCarrinho)
 
-        limparProdutos()
         atualizarVendaDetalhes()
     }
 
@@ -144,18 +218,30 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel() {
 //        atualizarVendaDetalhes()
     }
 
-    suspend fun fetchProdutos(){
-        viewModelScope.launch {
+    suspend fun fetchProdutos() {
+        try {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-            try {
-                produtos = produtoService.fetchProdutosTabela(idLoja = idLoja)
-            } catch (e: ApiException) {
-                errorMessage = "${e.message}"
-            } catch (e: NetworkException) {
-                errorMessage = "Network Error: ${e.message}"
-            } catch (e: GeneralException) {
-                errorMessage = "${e.message}"
+            val produtosBuscados = produtoService.fetchProdutosTabela(idLoja = idLoja)
+
+            val produtosAtuais = produtos
+            Log.d("FetchProdutos", "fetchProdutos: ${gson.toJson(produtosAtuais)}")
+            Log.d("FetchProdutos", "fetchProdutos: ${gson.toJson(produtos)}")
+
+            produtos = produtosBuscados.map { produtoBuscado ->
+                val produtoExistente = produtos.find { it.id == produtoBuscado.id }
+                if (produtoExistente != null) {
+                    Log.d("FetchProdutos", "Produto encontrado: ${produtoExistente.id}, quantidadeToAdd: ${produtoExistente.quantidadeToAdd}")
+                } else {
+                    Log.d("FetchProdutos", "Produto não encontrado: ${produtoBuscado.id}")
+                }
+                produtoBuscado.copy(quantidadeToAdd = produtoExistente?.quantidadeToAdd ?: 0)
             }
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
         }
     }
 

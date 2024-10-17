@@ -20,9 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.ButtonComponent
 
 @Composable
@@ -60,7 +63,7 @@ fun ConfirmacaoDialog(
 
                 Text(
                     titulo,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
@@ -84,4 +87,18 @@ fun ConfirmacaoDialog(
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun PreviewModalConfirmacao(){
+    ConfirmacaoDialog(
+        titulo = "Deseja realmente excluir este item?",
+        onConfirm = {},
+        onDismiss = {},
+        confirmarBtnTitulo = "Excluir",
+        recusarBtnTitulo = "Cancelar",
+        imagem = painterResource(id = R.mipmap.ic_excluir),
+        btnConfirmColor = Color(0xFF355070),
+    )
 }
