@@ -27,11 +27,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
-import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
+fun AddProdutoEstoque(onDismissRequest: () -> Unit, viewModel: AddProdEstoqueViewModel) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showSucessoDialog by remember { mutableStateOf(false) }
@@ -42,12 +41,9 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
 
     val coroutineScope = rememberCoroutineScope()
 
-    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
-    val idLoja = sharedPreferences.getInt("idLoja", -1)
-
-    val viewModel: AddProdEstoqueViewModel = viewModel(
-        factory = AddProdEstoqueViewModelFactory(idLoja = idLoja)
-    )
+    LaunchedEffect(Unit) {
+        viewModel.fetchProdutos()
+    }
 
     fun handleAbrirModalConfirm(
         titulo: String,
@@ -85,32 +81,6 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                 )
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                ButtonComponent(
-                    titulo = "Limpar",
-                    onClick = { viewModel.limparProdutos() },
-                    containerColor = Color(0xFF919191),
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                ButtonComponent(
-                    titulo = "Adicionar",
-                    onClick = {
-                        handleAbrirModalConfirm(
-                            "Tem certeza que deseja adicionar esses produtos ao estoque?",
-                            { viewModel.handleAdicionarProdutos() },
-                            "Adicionar",
-                            "Cancelar",
-                            Color(0xFF355070)
-                        )
-                    },
-                    containerColor = Color(0xFF355070),
-                )
-            }
         }
     }
 
@@ -155,6 +125,10 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
 @Composable
 fun GreetingPreview() {
     MyStockAppTheme() {
-        AddProdutoEstoque(onDismissRequest = {})
+        AddProdutoEstoque(
+            onDismissRequest = {},
+            context = androidx.compose.ui.platform.LocalContext.current,
+            viewModel = AddProdEstoqueViewModel(1)
+        )
     }
 }
