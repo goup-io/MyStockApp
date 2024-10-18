@@ -153,6 +153,12 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         )
     }
 
+    fun atualizarPosVenda(){
+        vendaDetalhes = vendaDetalhes.copy(valorDescontoVenda = 0.0)
+        vendaDetalhes = vendaDetalhes.copy(porcentagemDesconto = 0.0)
+        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = 0.0))
+        atualizarVendaDetalhes()
+    }
     private fun calcularValorTotal(): Double {
         return calcularSubtotal2() - calcularValorDescontoVenda()
     }
@@ -242,6 +248,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 Log.d("Venda", "Venda realizada com sucesso: ${vendaRes}")
                 limparCarrinho()
                 limparProdutos()
+                atualizarPosVenda()
             } catch (e: ApiException) {
                 errorMessage = "${e.message}"
             } catch (e: NetworkException) {
