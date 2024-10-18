@@ -32,12 +32,12 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoVie
             try {
                 produtos = produtoService.fetchProdutosTabela(idLoja)
             } catch (e: ApiException) {
-                    errorMessage = "${e.message}"
-                } catch (e: NetworkException) {
-                    errorMessage = "Network Error: ${e.message}"
-                } catch (e: GeneralException) {
-                    errorMessage = "${e.message}"
-                }
+                errorMessage = "${e.message}"
+            } catch (e: NetworkException) {
+                errorMessage = "Network Error: ${e.message}"
+            } catch (e: GeneralException) {
+                errorMessage = "${e.message}"
+            }
         }
 
 
@@ -49,7 +49,7 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoVie
 
 
     fun removerProduto(produto: ProdutoTable) {
-        if (produto.quantidadeToAdd > 0){
+        if (produto.quantidadeToAdd > 0) {
             produto.quantidadeToAdd = (produto.quantidadeToAdd.minus(1))
         }
     }
@@ -99,14 +99,14 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoVie
     override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
         TODO("Not yet implemented")
     }
-}
 
-class AddProdEstoqueViewModelFactory(private val idLoja: Int) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AddProdEstoqueViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return AddProdEstoqueViewModel(idLoja) as T
+    class AddProdEstoqueViewModelFactory(private val idLoja: Int) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(AddProdEstoqueViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return AddProdEstoqueViewModel(idLoja) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

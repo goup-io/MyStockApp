@@ -127,7 +127,6 @@ fun GreetingPreview() {
     MyStockAppTheme() {
         AddProdutoEstoque(
             onDismissRequest = {},
-            context = androidx.compose.ui.platform.LocalContext.current,
             viewModel = AddProdEstoqueViewModel(1)
         )
     }

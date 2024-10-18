@@ -61,6 +61,7 @@ import com.example.mystockapp.api.produtoApi.TamanhoService
 import com.example.mystockapp.modais.AddProdutoEstoque
 import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
 import com.example.mystockapp.modais.viewModels.EstoqueViewModel
 import com.example.mystockapp.models.produtos.Cor
 import com.example.mystockapp.models.produtos.Modelo
@@ -97,6 +98,10 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
     val viewModel: EstoqueViewModel = viewModel(
         factory = EstoqueViewModel.EstoqueViewModelFactory(idLoja = idLoja)
+    )
+
+    val addProdEstoqueViewModel: AddProdEstoqueViewModel = viewModel(
+        factory = AddProdEstoqueViewModel.AddProdEstoqueViewModelFactory(idLoja = idLoja)
     )
 
     val coroutineScope = rememberCoroutineScope()
@@ -502,7 +507,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
                 if (isModalAddProd) {
                     AddProdutoEstoque(
-                        onDismissRequest = { isModalAddProd = false }
+                        onDismissRequest = { isModalAddProd = false },
+                        viewModel = addProdEstoqueViewModel
                     )
                 }
 
