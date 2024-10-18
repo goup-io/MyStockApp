@@ -45,4 +45,26 @@ interface ProdutoApi {
 
     @POST("/api/v1/produtos")
     suspend fun createEtp(@Body produtoCreate: ProdutoCreate): Response<Produto>
+
+
+
+    @GET("api/v1/etps/filtro")
+    suspend fun searchProdutos(
+        @Query("pesquisa") searchTerm: String,
+        @Query("id_loja") idLoja: Int
+    ): Response<List<ProdutoTable>>
+
+
+
+    @GET("/api/v1/etps/filtro")
+    suspend fun getProdutosByFiltros(
+        @Query("id_Loja") idLoja: Int,  // Obrigatório
+        @Query("modelo") modelo: String? = null,  // Omitido se for null
+        @Query("tamanho") tamanho: Int? = null,   // Omitido se for null
+        @Query("cor") cor: String? = null,        // Omitido se for null
+        @Query("precoMinimo") precoMin: Double? = null, // Omitido se for null
+        @Query("precoMaximo") precoMax: Double? = null  // Omitido se for null
+    ): Response<List<ProdutoTable>>
+
+
 }
