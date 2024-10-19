@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -155,7 +156,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
         }
     }
 
-    MenuDrawer(titulo = "Estoque") {
+    MenuDrawer(titulo = stringResource(id = R.string.titulo_estoque)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -195,7 +196,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         ) {
                             // SelectField para Modelo
                             SelectField(
-                                label = "Modelo:",
+                                label = stringResource(id = R.string.label_modelo),
                                 selectedOption = modelo.nome,
                                 options = modelosOptions.map { it.nome },
                                 onOptionSelected = { modeloNome ->
@@ -209,13 +210,12 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
                             // SelectField para Cor
                             SelectField(
-                                label = "Cor:",
+                                label = stringResource(id = R.string.label_cor),
                                 selectedOption = cor.nome,
                                 options = coresOptions.map { it.nome },
                                 onOptionSelected = { corSelected ->
                                     val selectedCor = coresOptions.find { it.nome == corSelected }
-                                    selectedCor?.let { cor = it }
-                                },
+                                    selectedCor?.let { cor = it } },
                                 modifier = Modifier.weight(1.4f)
                             )
                         }
@@ -227,21 +227,20 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         ) {
                             // SelectField para Tamanho
                             SelectField(
-                                label = "Tamanho:",
+                                label = stringResource(id = R.string.label_tamanho),
                                 selectedOption = if (tamanho.numero == -1) "" else tamanho.numero.toString(),
                                 options = tamanhosOptions.map { it.numero.toString() },
                                 onOptionSelected = { tamanhoNome ->
                                     val selectedTamanho = tamanhosOptions.find { it.numero.toString() == tamanhoNome }
-                                    selectedTamanho?.let { tamanho = it }
-                                },
+                                    selectedTamanho?.let { tamanho = it } },
                                 modifier = Modifier.weight(1.4f)
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
+                            Spacer(modifier = Modifier.width(16.dp))
 
                             // SelectField para Preço
                             SelectField(
-                                label = "Preço :",
+                                label = stringResource(id = R.string.label_preco),
                                 selectedOption = if(preco == 0.0) "" else preco.toString(),
                                 options = precoOptions,
                                 onOptionSelected = { selectedPreco ->
@@ -262,8 +261,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         ) {
                             // Botão Limpar
                             androidx.compose.material3.Button(
-                                onClick = {
-                                    limparFiltros()
+                                onClick = { limparFiltros()
                                     coroutineScope.launch {
                                         try {
                                             viewModel.fetchProdutos()
@@ -282,7 +280,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 )
                             ) {
                                 androidx.compose.material3.Text(
-                                    text = "Limpar",
+                                    text = stringResource(id = R.string.botao_limpar),
                                     color = Color.White,
                                     fontSize = 12.sp
                                 )
@@ -309,7 +307,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 )
                             ) {
                                 androidx.compose.material3.Text(
-                                    text = "Filtrar",
+                                    text = stringResource(id = R.string.botao_filtrar),
                                     color = Color.White,
                                     fontSize = 12.sp
                                 )
@@ -319,74 +317,71 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                 }
             }
 
-
             // Caixa grande branca (Carrinho)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFE7E7E7))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(365.dp)
-                    .background(Color.White, RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth()
+                    .background(Color(0xFFE7E7E7))
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column {
-                    // Header da caixa grande com campo de pesquisa
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Título "Produtos"
-                        androidx.compose.material3.Text(
-                            text = "Produtos",
-                            fontSize = 20.sp,
-                            color = Color.Black
-                        )
-
-                        // Campo de pesquisa e botão
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f)
+                        .height(365.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                ) {
+                    Column {
+                        // Header da caixa grande com campo de pesquisa
                         Row(
-                            modifier = Modifier.padding(0.dp),
-                            verticalAlignment = Alignment.CenterVertically // Alinha o texto e input ao centro
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Texto "Buscar:"
+                            // Título "Produtos"
                             androidx.compose.material3.Text(
-                                text = "Buscar:",
-                                fontSize = 12.sp,
-                                color = Color.Black,
-                                modifier = Modifier.padding(end = 8.dp)
+                                text = stringResource(id = R.string.titulo_produtos),
+                                fontSize = 20.sp,
+                                color = Color.Black
                             )
 
-                            // Input para pesquisa com borda arredondada apenas à esquerda
-                            Box(
-                                modifier = Modifier
-                                    .width(105.dp)
-                                    .height(20.dp) // Define a altura personalizada
-                                    .border(1.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                                    .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                            // Campo de pesquisa e botão
+                            Row(
+                                modifier = Modifier.padding(0.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                BasicTextField(
-                                    value = queryPesquisa,
-                                    onValueChange = { queryPesquisa = it },
-                                    singleLine = true,
-                                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
-                                    modifier = Modifier
-                                        .fillMaxSize()
-//                                        .padding(start = 8.dp, vertical = 8.dp) // Adiciona padding interno para o texto
+                                // Texto "Buscar:"
+                                androidx.compose.material3.Text(
+                                    text = stringResource(id = R.string.label_buscar),
+                                    fontSize = 12.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier.padding(end = 8.dp)
                                 )
-                            }
 
-                            // Botão com ícone e borda arredondada apenas à direita
-                            androidx.compose.material3.Button(
-                                onClick = {
+                                // Input para pesquisa
+                                Box(
+                                    modifier = Modifier
+                                        .width(105.dp)
+                                        .height(20.dp)
+                                        .border(1.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                                        .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                                ) {
+                                    BasicTextField(
+                                        value = queryPesquisa,
+                                        onValueChange = { queryPesquisa = it },
+                                        singleLine = true,
+                                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+
+                                // Botão com ícone
+                                androidx.compose.material3.Button(
+                                    onClick = {
                                     coroutineScope.launch {
                                         try {
                                             viewModel.buscarProdutos(queryPesquisa)
@@ -395,27 +390,24 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                         }
                                     }
                                 },
-                                modifier = Modifier
-                                    .width(30.dp)
-                                    .height(20.dp), // Altura ajustada
-                                shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp), // Arredonda apenas a direita
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070) // Cor do botão
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.mipmap.search), // Ícone do mipmap
-                                    contentDescription = "Pesquisar",
-                                    tint = Color.White, // Cor do ícone
-                                    modifier = Modifier.size(16.dp) // Tamanho do ícone
-                                )
+                                    modifier = Modifier
+                                        .width(30.dp)
+                                        .height(20.dp),
+                                    shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp),
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF355070)
+                                    )
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.mipmap.search),
+                                        contentDescription = stringResource(id = R.string.descricao_pesquisar),
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
                             }
                         }
-
-
-                    }
-
 
                     // Tabela dentro da caixa grande
                     Column(
@@ -434,84 +426,84 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(50.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
-            ) {
-                androidx.compose.material3.Button(
-                    onClick = { /* Ação do primeiro botão */ },
+                Row(
                     modifier = Modifier
-                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
+                        .fillMaxWidth(0.95f)
                         .height(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF355070)
-                    )
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    androidx.compose.material3.Text(
-                        text = "Código",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
+                    androidx.compose.material3.Button(
+                        onClick = { /* Ação do primeiro botão */},
+
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF355070)
+                        )
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = stringResource(id = R.string.botao_codigo),
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
+
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            isModalNovoProd = true
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF355070)
+                        )
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = stringResource(id = R.string.botao_novo_produto),
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
+                    if (isModalNovoProd) {
+                        NovoProdutoDialog(
+                            onDismissRequest = { isModalNovoProd = false }
+                        )
+                    }
                 }
 
-                androidx.compose.material3.Button(
-                    onClick = {
-                        isModalNovoProd = true
-                    },
+                // Dois botões azuis na parte inferior
+                Row(
                     modifier = Modifier
-                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
+                        .fillMaxWidth(0.95f)
                         .height(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF355070)
-                    )
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    androidx.compose.material3.Text(
-                        text = "Novo Produto",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-                }
-                if (isModalNovoProd) {
-                    NovoProdutoDialog(
-                        onDismissRequest = { isModalNovoProd = false }
-                    )
-                }
-            }
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            isModalAddProd = true
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF355070)
+                        )
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = stringResource(id = R.string.botao_add_produto),
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
 
-
-            // Dois botões azuis na parte inferior
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(50.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaçamento entre os botões
-            ) {
-                androidx.compose.material3.Button(
-                    onClick = {
-                        isModalAddProd = true
-                    },
-                    modifier = Modifier
-                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
-                        .height(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF355070)
-                    )
-                ) {
-                    androidx.compose.material3.Text(
-                        text = "ADD Produto",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-                }
-
-                if (isModalAddProd) {
-                    AddProdutoEstoque(
-                        onDismissRequest = { isModalAddProd = false },
+                    if (isModalAddProd) {
+                        AddProdutoEstoque(
+                            onDismissRequest = { isModalAddProd = false },
                         viewModel = addProdEstoqueViewModel
                     )
                 }
@@ -558,35 +550,34 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         },
                         btnConfirmColor = Color(0xFF355070),
                         imagem = addProdEstoqueViewModel.imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
-                        btnConfirmTitulo = "OK"
-                    )
-                }
+                        btnConfirmTitulo = "OK")
+                    }
 
-                androidx.compose.material3.Button(
-                    onClick = {
-                        isModalNovoModelo = true
-                    },
-                    modifier = Modifier
-                        .weight(1f) // Para garantir que os dois botões tenham o mesmo tamanho
-                        .height(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF355070)
-                    )
-                ) {
-                    androidx.compose.material3.Text(
-                        text = "Novo Modelo",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-                }
-                if (isModalNovoModelo) {
-                    ModalNovoModeloDialog(
-                        onDismissRequest = { isModalNovoModelo = false }
-                    )
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            isModalNovoModelo = true
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF355070)
+                        )
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = stringResource(id = R.string.botao_novo_modelo),
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
+                    if (isModalNovoModelo) {
+                        ModalNovoModeloDialog(
+                            onDismissRequest = { isModalNovoModelo = false }
+                        )
+                    }
                 }
             }
-        }
         }
     }
 }

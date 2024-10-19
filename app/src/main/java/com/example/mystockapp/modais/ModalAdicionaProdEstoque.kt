@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.R
@@ -47,7 +49,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, viewModel: AddProdEstoqueVie
                 .padding(8.dp)
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
-            ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
+            ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.add_produto_estoque_title))
             Spacer(modifier = Modifier.height(6.dp))
 
             if (errorMessage != null) {

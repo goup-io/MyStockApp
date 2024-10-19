@@ -1,6 +1,5 @@
 package com.example.mystockapp.telas.componentes
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,20 +13,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.utils.formatarPreco
@@ -81,11 +77,11 @@ fun TableHeader() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        HeaderText("Codigo", Modifier.weight(2f))
-        HeaderText("Nome", Modifier.weight(2f))
-        HeaderText("Preço", Modifier.weight(1.2f))
-        HeaderText("Q. Itens", Modifier.weight(1.5f))
-        HeaderText("Ver Mais", Modifier.weight(1.3f))
+        HeaderText(stringResource(id = R.string.codigo_label), Modifier.weight(2f))
+        HeaderText(stringResource(id = R.string.nome_label), Modifier.weight(2f))
+        HeaderText(stringResource(id = R.string.preco_label), Modifier.weight(1.2f))
+        HeaderText(stringResource(id = R.string.quantidade_itens_label), Modifier.weight(1.5f))
+        HeaderText(stringResource(id = R.string.ver_mais_label), Modifier.weight(1.3f))
     }
 }
 
@@ -112,7 +108,6 @@ fun ProductRow(
     backgroundColor: Color,
     isPreVenda: Boolean
 ) {
-
     val quantidade = if (isPreVenda) product.quantidadeToAdd else product.quantidade
     Row(
         modifier = Modifier
@@ -197,11 +192,10 @@ fun ProductRow(
             ) {
                 Icon(
                     painter = painterResource(id = R.mipmap.vermais), // Substitua pelo ícone desejado
-                    contentDescription = "Adicionar", // Descrição acessível do ícone
+                    contentDescription = stringResource(id = R.string.descricao_icone_adicionar), // Descrição acessível do ícone
                     modifier = Modifier.size(20.dp) // Define o tamanho do ícone
                 )
             }
         }
-
     }
 }

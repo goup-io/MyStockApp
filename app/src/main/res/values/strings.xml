@@ -8,4 +8,173 @@
     <string name="title_activity_terms_lgpd">TermsLgpdActivity</string>
     <string name="title_activity_estoque">Estoque</string>
     <string name="title_activity_pre_venda">Pré-Venda</string>
+
+    <!-- Strings for TermsLgpdActivity -->
+    <string name="terms_title">Política de Privacidade – MyStock</string>
+    <string name="terms_text">**1. Coleta de Dados**\nColetamos dados pessoais fornecidos pelos usuários, como nome, e-mail e informações de contato, para fins de cadastro e uso do aplicativo. Além disso, dados relacionados às transações comerciais e ao gerenciamento de estoque também são armazenados.\n\n**2. Uso dos Dados**\nOs dados coletados são utilizados exclusivamente para a operação do MyStock, oferecendo controle de estoque em tempo real, emissão de relatórios e insights de vendas. Não compartilhamos informações pessoais com terceiros sem o consentimento do usuário, exceto quando exigido por lei.\n\n**3. Segurança dos Dados**\nO MyStock implementa medidas de segurança técnicas e organizacionais adequadas para proteger os dados pessoais contra acessos não autorizados, perdas ou qualquer forma de tratamento ilícito.\n\n**4. Direitos dos Usuários**\nEm conformidade com a LGPD, os usuários podem solicitar acesso, correção, exclusão ou a portabilidade de seus dados pessoais. O usuário também pode revogar o consentimento para o uso dos seus dados a qualquer momento, mediante solicitação.\n\n**5. Armazenamento dos Dados**\nOs dados são armazenados em servidores seguros, localizados em conformidade com as diretrizes da LGPD, e são mantidos pelo tempo necessário para o cumprimento das finalidades descritas, ou conforme exigido por lei.\n\n**6. Contato**\nPara exercer seus direitos ou obter mais informações sobre como seus dados são tratados, entre em contato com nossa equipe pelo e-mail: goup.contactus@gmail.com.</string>
+    <string name="accept_button">Aceitar e continuar</string>
+    <string name="decline_button">Recusar</string>
+    <string name="decline_message">Você deve aceitar os termos para continuar usando o app.</string>
+
+    <!-- Strings for Login -->
+    <string name="login_title">Login</string>
+    <string name="user_label">Usuário:</string>
+    <string name="password_label">Senha:</string>
+    <string name="enter_button">Entrar</string>
+    <string name="user_placeholder">usuário</string>
+    <string name="password_placeholder">*****</string>
+    <string name="error_message_empty_fields">Por favor, preencha todos os campos.</string>
+
+    <!-- Strings for Pré-Venda -->
+    <string name="pre_venda">Pré Venda</string>
+    <string name="resumo_venda">Resumo da Venda</string>
+    <string name="adicionar_desconto">AddDisc</string>
+    <string name="mais_info">+</string>
+    <string name="codigo_venda">Código da Venda</string>
+    <string name="valor_venda">Valor da Venda</string>
+    <string name="quantidade_itens">Quantidade de Itens</string>
+    <string name="carrinho">Carrinho</string>
+    <string name="codigo">Código</string>
+    <string name="add_prod">Add Prod.</string>
+    <string name="tipo_venda">Tipo Venda</string>
+    <string name="finalizar_venda">Finalizar Venda</string>
+
+    <!-- Strings for Estoque -->
+    <string name="titulo_estoque">Estoque</string>
+    <string name="label_modelo">Modelo :</string>
+    <string name="label_cor">Cor :</string>
+    <string name="label_tamanho">Tamanho :</string>
+    <string name="label_preco">Preço :</string>
+    <string name="botao_limpar">Limpar</string>
+    <string name="botao_filtrar">Filtrar</string>
+    <string name="titulo_produtos">Produtos</string>
+    <string name="label_buscar">Buscar:</string>
+    <string name="botao_codigo">Código</string>
+    <string name="botao_novo_produto">Novo Produto</string>
+    <string name="botao_add_produto">ADD Produto</string>
+    <string name="botao_novo_modelo">Novo Modelo</string>
+    <string name="descricao_pesquisar">Pesquisar</string>
+
+    <!-- Strings for Barcode -->
+    <string name="erro_desconhecido">Erro desconhecido</string>
+    <string name="erro_iniciar_camera">Erro ao iniciar a câmera</string>
+
+    <string name="buscando_etp_por_codigo">Buscando ETP por código: %1$s</string>
+    <string name="etp_e_nulo">ETP é nulo</string>
+    <string name="etp_bip_screen">ETP-BipScreen: %1$s</string>
+    <string name="busca">Busca</string>
+    <string name="erro">Erro: %1$s</string>
+    <string name="codigo_de_barras">Código de Barras</string>
+    <string name="informacoes">Informações</string>
+    <string name="nome">Nome</string>
+    <string name="modelo">Modelo</string>
+    <string name="cor">Cor</string>
+    <string name="tamanho">Tamanho</string>
+    <string name="quantidade_est">Quantidade Est.</string>
+    <string name="quantidade_venda">Quantidade venda</string>
+    <string name="preco_custo">Preço Custo</string>
+    <string name="preco_revenda">Preço Revenda</string>
+    <string name="item_promocional">Item Promocional</string>
+    <string name="ler_referencia">Ler Referência</string>
+    <string name="buscar_ref_digitada">Buscar Ref. Digitada</string>
+    <string name="adicionar_produto">Adicionar Produto</string>
+    <string name="preencha_todos_os_campos">Preencha todos os campos corretamente.</string>
+    <string name="informe_quantidade">Informe a quantidade que deseja adicionar ao carrinho.</string>
+
+    <!-- Strings for Componentes -->
+    <string name="codigo_label">Código</string>
+    <string name="nome_label">Nome</string>
+    <string name="preco_label">Preço</string>
+    <string name="quantidade_itens_label">Q. Itens</string>
+    <string name="ver_mais_label">Ver Mais</string>
+    <string name="descricao_icone_adicionar">Adicionar</string>
+
+    <string name="informacoes_produto_titulo">Informações do Produto</string>
+    <string name="modelo_label">Modelo:</string>
+    <string name="tamanho_label">Tamanho:</string>
+    <string name="cor_label">Cor:</string>
+    <string name="item_promocional_label">Item Promocional</string>
+    <string name="preco_custo_label">Preço Custo:</string>
+    <string name="preco_venda_label">Preço Venda:</string>
+    <string name="n_itens_label">N. Itens:</string>
+    <string name="excluir_button_text">Excluir</string>
+    <string name="editar_button_text">Editar</string>
+    <string name="confirm_excluir_titulo">Tem certeza que deseja excluir o produto?</string>
+    <string name="confirm_editar_titulo">Tem certeza que deseja editar o produto?</string>
+    <string name="excluir_confirm_button">Excluir</string>
+    <string name="editar_confirm_button">Editar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="acao_sucesso_titulo">Ação realizada com sucesso!</string>
+    <string name="ok_button">OK</string>
+
+    <string name="menu_description">Menu</string>
+    <string name="logo_empresa_description">MyStock - Logo da Empresa</string>
+
+    <string name="add_label">Add</string>
+
+    <string name="select_option_label">Selecione uma opção</string>
+    <string name="dropdown_icon_description">Ícone de Dropdown</string>
+
+    <string name="menu_item_estoque">Estoque</string>
+    <string name="menu_item_venda">Venda</string>
+    <string name="menu_item_bipe">Bipe</string>
+    <string name="menu_item_sair">Sair</string>
+    <string name="role_label">Gerente</string>
+    <string name="user_icon_description">Ícone de usuário</string>
+
+    <string name="ok">OK</string>
+    <string name="icon_action_description">Ícone de Ação</string>
+
+    <string name="modal_resumo_venda_title">Resumo da Venda</string>
+    <string name="total_de_itens">Total de Itens</string>
+    <string name="subtotal_1">Subtotal 1</string>
+    <string name="desconto_em_produtos">Desconto em Produtos</string>
+    <string name="subtotal_2">Subtotal 2</string>
+    <string name="desconto_na_venda">Desconto na Venda</string>
+    <string name="valor_total">Valor Total</string>
+
+    <string name="novo_produto">Novo Produto</string>
+    <string name="codigo_label2">Codigo:</string>
+    <string name="cor_label2">Cor:</string>
+    <string name="nome_label2">Nome:</string>
+    <string name="limpar">Limpar</string>
+    <string name="salvar">Salvar</string>
+    <string name="produto_salvo_com_sucesso">Produto salvo com sucesso</string>
+
+    <string name="novo_modelo_title">Novo Modelo</string>
+    <string name="tipo_label">Tipo:</string>
+    <string name="categoria_label">Categoria:</string>
+    <string name="limpar_button">Limpar</string>
+    <string name="salvar_button">Salvar</string>
+    <string name="modelo_salvo_sucesso">Modelo salvo com sucesso!</string>
+    <string name="dados_nao_preenchidos">Dados não preenchidos corretamente</string>
+    <string name="modelo_duplicado">Modelo já cadastrado</string>
+    <string name="erro_inesperado">Erro inesperado ao salvar modelo</string>
+    <string name="network_error">Network Error: %1$s</string>
+    <string name="api_error">API Error: %1$s</string>
+    <string name="geral_error">Erro: %1$s</string>
+
+    <string name="digitar_codigo_barras_title">Digitar Código de Barras</string>
+
+    <string name="adicionar_desconto_title">Adicionar Desconto</string>
+    <string name="porcentagem_label">Porcentagem %:</string>
+    <string name="valor_calculado_label">Valor Calculado:</string>
+    <string name="valor_unitario_label">Valor Unitário</string>
+    <string name="valor_atual_label">Valor Atual</string>
+    <string name="valor_apos_desconto_label">Valor Após o Desconto</string>
+
+    <string name="add_produto_estoque_title">Add Produto no Estoque</string>
+    <string name="adicionar_button">Adicionar</string>
+    <string name="confirmacao_dialog_title">Tem certeza que deseja adicionar esses produtos ao estoque?</string>
+    <string name="sucesso_dialog_title">Produtos adicionados com sucesso!</string>
+
+    <string name="add_produto_carrinho_title">Add Produto no Carrinho</string>
+
+    <string name="adicionar_carrinho">Adicionar no Carrinho</string>
+    <string name="adicionar_estoque">Adicionar no Estoque</string>
+    <string name="preco">Preço:</string>
+    <string name="preco_total">R$ %1$s</string>
+    <string name="diminuir_quantidade">Diminuir Quantidade</string>
+    <string name="aumentar_quantidade">Aumentar Quantidade</string>
+    <string name="confirmar_adicao">Confirmar Adição do Produto</string>
 </resources>

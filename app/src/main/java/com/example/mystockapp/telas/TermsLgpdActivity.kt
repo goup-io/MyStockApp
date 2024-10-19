@@ -18,12 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.ui.theme.MyStockAppTheme
+import com.example.mystockapp.R
 
 class TermsLgpdActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,7 @@ class TermsLgpdActivity : ComponentActivity() {
                     onDecline = {
                         Toast.makeText(
                             this,
-                            "Você deve aceitar os termos para continuar usando o app.",
+                            getString(R.string.decline_message),
                             Toast.LENGTH_LONG
                         ).show()
                         finish()
@@ -69,14 +71,13 @@ fun TermsScreen(onAccept: () -> Unit, onDecline: () -> Unit) {
         // Título da política
         Column {
             Text(
-                text = "Política de Privacidade – MyStock",
+                text = stringResource(id = R.string.terms_title),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp),
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
-
         }
 
         // Bloco branco com o texto da política
@@ -89,25 +90,7 @@ fun TermsScreen(onAccept: () -> Unit, onDecline: () -> Unit) {
         ) {
             // Texto da política de privacidade
             Text(
-                text = """
-                **1. Coleta de Dados**
-                Coletamos dados pessoais fornecidos pelos usuários, como nome, e-mail e informações de contato, para fins de cadastro e uso do aplicativo. Além disso, dados relacionados às transações comerciais e ao gerenciamento de estoque também são armazenados.
-                
-                **2. Uso dos Dados**
-                Os dados coletados são utilizados exclusivamente para a operação do MyStock, oferecendo controle de estoque em tempo real, emissão de relatórios e insights de vendas. Não compartilhamos informações pessoais com terceiros sem o consentimento do usuário, exceto quando exigido por lei.
-                
-                **3. Segurança dos Dados**
-                O MyStock implementa medidas de segurança técnicas e organizacionais adequadas para proteger os dados pessoais contra acessos não autorizados, perdas ou qualquer forma de tratamento ilícito.
-                
-                **4. Direitos dos Usuários**
-                Em conformidade com a LGPD, os usuários podem solicitar acesso, correção, exclusão ou a portabilidade de seus dados pessoais. O usuário também pode revogar o consentimento para o uso dos seus dados a qualquer momento, mediante solicitação.
-                
-                **5. Armazenamento dos Dados**
-                Os dados são armazenados em servidores seguros, localizados em conformidade com as diretrizes da LGPD, e são mantidos pelo tempo necessário para o cumprimento das finalidades descritas, ou conforme exigido por lei.
-                
-                **6. Contato**
-                Para exercer seus direitos ou obter mais informações sobre como seus dados são tratados, entre em contato com nossa equipe pelo e-mail: goup.contactus@gmail.com.
-                """.trimIndent(),
+                text = stringResource(id = R.string.terms_text),
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
                 textAlign = TextAlign.Justify
@@ -125,10 +108,9 @@ fun TermsScreen(onAccept: () -> Unit, onDecline: () -> Unit) {
             Button(
                 onClick = onAccept,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD0D4F0)),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Aceitar e continuar", color = Color(0xFF355070))
+                Text(text = stringResource(id = R.string.accept_button), color = Color(0xFF355070))
             }
 
             // Botão de recusar
@@ -139,7 +121,7 @@ fun TermsScreen(onAccept: () -> Unit, onDecline: () -> Unit) {
                     .fillMaxWidth()
                     .padding(vertical = 5.dp)
             ) {
-                Text(text = "Recusar", color = Color.White)
+                Text(text = stringResource(id = R.string.decline_button), color = Color.White)
             }
         }
     }
@@ -152,3 +134,4 @@ fun PreviewTermsScreen() {
         TermsScreen(onAccept = {}, onDecline = {})
     }
 }
+

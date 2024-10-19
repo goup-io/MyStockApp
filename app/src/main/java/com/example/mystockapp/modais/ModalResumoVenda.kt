@@ -17,30 +17,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.R
 import com.example.mystockapp.models.vendas.VendaDetalhes
-
 
 @Composable
 fun ModalResumoVenda(onDismissRequest: () -> Unit, detalhes: VendaDetalhes) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
-            modifier =
-            Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
-        ){
+        ) {
             Column (
                 modifier = Modifier.padding(16.dp)
-            ){
-                ModalHeaderComponent(onDismissRequest,"Resumo da Venda")
+            ) {
+                ModalHeaderComponent(onDismissRequest, stringResource(id = R.string.modal_resumo_venda_title))
                 ResumoLista(detalhes)
             }
         }
@@ -48,25 +49,23 @@ fun ModalResumoVenda(onDismissRequest: () -> Unit, detalhes: VendaDetalhes) {
 }
 
 @Composable
-fun ResumoLista(detalhes: VendaDetalhes){
+fun ResumoLista(detalhes: VendaDetalhes) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        ResumoItem("Total de Itens",detalhes.totalItens.toString())
+        ResumoItem(stringResource(id = R.string.total_de_itens), detalhes.totalItens.toString())
         DottedLineComponent()
-        ResumoItem("Subtotal 1",detalhes.subtotal1.toString())
+        ResumoItem(stringResource(id = R.string.subtotal_1), detalhes.subtotal1.toString())
         DottedLineComponent()
-        ResumoItem("Desconto em Produtos",detalhes.valorDescontoProdutos.toString())
+        ResumoItem(stringResource(id = R.string.desconto_em_produtos), detalhes.valorDescontoProdutos.toString())
         DottedLineComponent()
-        ResumoItem("Subtotal 2",detalhes.subtotal2.toString())
+        ResumoItem(stringResource(id = R.string.subtotal_2), detalhes.subtotal2.toString())
         DottedLineComponent()
-        ResumoItem("Desconto na Venda",detalhes.valorDescontoVenda.toString())
+        ResumoItem(stringResource(id = R.string.desconto_na_venda), detalhes.valorDescontoVenda.toString())
         DottedLineComponent()
-        ResumoItem("Valor Total",detalhes.valorTotal.toString(), fontWeight = FontWeight.Bold)
+        ResumoItem(stringResource(id = R.string.valor_total), detalhes.valorTotal.toString(), fontWeight = FontWeight.Bold)
     }
 }
 
