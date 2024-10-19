@@ -92,10 +92,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         }
     }
 
-    fun desescolherProduto(){
-        produtoSelecionado = null
-    }
-
     fun atualizarQuantidadeProduto(quantidade: Int){
         Log.d("Produto", "Atualizando quantidade do produto: $_produtoSelecionado")
         produtoSelecionado = produtoSelecionado?.copy(quantidadeToAdd = quantidade)

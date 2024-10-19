@@ -1,9 +1,5 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-<<<<<<< HEAD
         <domain includeSubdomains="true">192.168.0.106</domain>
-=======
-        <domain includeSubdomains="true">192.168.15.75</domain>
->>>>>>> enzo@feat/estoque
     </domain-config>
 </network-security-config>

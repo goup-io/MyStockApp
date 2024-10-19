@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mystockapp.R
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
@@ -20,11 +21,28 @@ import kotlinx.coroutines.launch
 
 class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
 
+    val gson = Gson();
+
     var errorMessage by mutableStateOf<String?>(null)
         public set
 
+    var showConfirmDialog by mutableStateOf(false)
+
+    var showSucessoDialog by mutableStateOf(false)
+
+    var executarFuncao by mutableStateOf(false)
+
+    var sucessoDialogTitulo by mutableStateOf("")
+
+    var imgCasoDeErro by mutableStateOf<Int?>(null)
+
     var produtos by mutableStateOf(listOf<ProdutoTable>())
         private set
+
+    var _produtoSelecionado = mutableStateOf<ProdutoTable?>(null)
+
+    var etpId by mutableStateOf(0)
+    var quantidade by mutableStateOf(0)
 
     fun fetchProdutos() {
         viewModelScope.launch {
@@ -43,62 +61,80 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoVie
 
     }
 
-    fun addProduto(produto: ProdutoTable) {
-        produto.quantidadeToAdd = (produto.quantidadeToAdd.plus(1))
-    }
-
-
-    fun removerProduto(produto: ProdutoTable) {
-        if (produto.quantidadeToAdd > 0) {
-            produto.quantidadeToAdd = (produto.quantidadeToAdd.minus(1))
-        }
-    }
-
-    fun limparProdutos() {
-        produtos = produtos.map { produto ->
-            produto.copy(quantidadeToAdd = 0)
-        }
-    }
-
-    suspend fun handleAdicionarProdutos() {
-        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-        val gson = Gson()
-
-        Log.d("AddProdEstoqueViewModel", "produtos: ${gson.toJson(produtos)}")
-
-        val estoqueReqList = produtos
-            .filter { produto -> produto.quantidadeToAdd > 0 }
-            .map { produto ->
-                AdicionarEstoqueReq(
-                    idEtp = produto.id,
-                    quantidade = produto.quantidadeToAdd
-                )
-            }
-        Log.d("AddProdEstoqueViewModel", "estoqueReqList: ${gson.toJson(estoqueReqList)}")
-        try {
-            produtoService.addProdutosEstoque(estoqueReqList, idLoja)
-        } catch (e: ApiException) {
-            throw e
-        } catch (e: NetworkException) {
-            throw e
-        } catch (e: GeneralException) {
-            throw e
-        }
-
-        limparProdutos();
-    }
-
     override var produtoSelecionado: ProdutoTable?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+        get() = _produtoSelecionado.value
+        set(value) {
+            _produtoSelecionado.value = value
+        }
 
     override fun escolherProduto(produto: ProdutoTable) {
-        TODO("Not yet implemented")
+        produtoSelecionado = produto
     }
 
     override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
-        TODO("Not yet implemented")
+        Log.d("Produto", "Pesquisando produto por id: $idEtp")
+
+        return try {
+            val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+            val produtoBuscado = produtoService.fetchEtpPorId(idEtp)
+            Log.d("Produto", "Produto encontrado: ${gson.toJson(produtoBuscado)}")
+            produtoBuscado
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+            null
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+            null
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+            null
+        }
     }
+
+    fun adicionarNoEstoque(quantidade:Int){
+        val etpId = produtoSelecionado?.id ?: return
+
+        if (produtoSelecionado == null) {
+            throw IllegalArgumentException("produtoSelecionado não pode ser nulo")
+        }
+
+        this.etpId = etpId
+        this.quantidade = quantidade
+
+        showConfirmDialog = true
+    }
+
+    suspend fun adicionar(){
+        if (executarFuncao){
+            val produtosParaAdd = listOf(AdicionarEstoqueReq(etpId, quantidade))
+
+            val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+
+            if (idLoja == null) {
+                throw IllegalArgumentException("idLoja não pode ser nulo")
+            }
+            try {
+                Log.d("AddProdEstoqueViewModel", "produtosParaAdd: ${gson.toJson(produtosParaAdd)}")
+                produtoService.addProdutosEstoque(produtosParaAdd, idLoja)
+                sucessoDialogTitulo = "Produto adicionado com sucesso!"
+                showSucessoDialog = true
+            } catch (e: ApiException) {
+                sucessoDialogTitulo = "Erro ao adicionar produto"
+                imgCasoDeErro = R.mipmap.ic_excluir
+                throw e
+            } catch (e: NetworkException) {
+                imgCasoDeErro = R.mipmap.ic_excluir
+                sucessoDialogTitulo = "Erro ao adicionar produto"
+                throw e
+            } catch (e: GeneralException) {
+                imgCasoDeErro = R.mipmap.ic_excluir
+                sucessoDialogTitulo = "Erro ao adicionar produto"
+                throw e
+            }
+        }
+    }
+
+
 
     class AddProdEstoqueViewModelFactory(private val idLoja: Int) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

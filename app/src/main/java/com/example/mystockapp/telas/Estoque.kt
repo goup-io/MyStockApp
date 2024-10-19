@@ -59,7 +59,10 @@ import com.example.mystockapp.api.produtoApi.CorService
 import com.example.mystockapp.api.produtoApi.ModeloService
 import com.example.mystockapp.api.produtoApi.TamanhoService
 import com.example.mystockapp.modais.AddProdutoEstoque
+import com.example.mystockapp.modais.ConfirmacaoDialog
+import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalNovoModeloDialog
+import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.SelectField
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
 import com.example.mystockapp.modais.viewModels.EstoqueViewModel
@@ -511,6 +514,53 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         viewModel = addProdEstoqueViewModel
                     )
                 }
+
+                if (addProdEstoqueViewModel.produtoSelecionado != null) {
+                    isModalAddProd = false
+                    ModalAdicionar(
+                        onDismissRequest = { addProdEstoqueViewModel.desescolherProduto() },
+                        viewModel = addProdEstoqueViewModel,
+                        isPreVenda = false,
+                        onConfirmarAdd = { quantidade ->
+                            addProdEstoqueViewModel.adicionarNoEstoque(quantidade)
+                        },
+                    )
+                }
+
+                if (addProdEstoqueViewModel.showConfirmDialog) {
+                    ConfirmacaoDialog(
+                        titulo = "Alterar a quantidade desse produto no estoque?",
+                        confirmarBtnTitulo = "Adicionar",
+                        recusarBtnTitulo = "Cancelar",
+                        imagem = painterResource(id = R.mipmap.ic_editar),
+                        onConfirm = {
+                            coroutineScope.launch {
+                                addProdEstoqueViewModel.showConfirmDialog = false
+                                addProdEstoqueViewModel.executarFuncao = true
+                                addProdEstoqueViewModel.adicionar()
+                            }
+                        },
+                        onDismiss = {
+                            addProdEstoqueViewModel.showConfirmDialog = false
+                        }
+                    )
+                }
+
+                if (addProdEstoqueViewModel.showSucessoDialog) {
+                    SucessoDialog(
+                        titulo = addProdEstoqueViewModel.sucessoDialogTitulo,
+                        onDismiss = {
+                            addProdEstoqueViewModel.showSucessoDialog = false
+                        },
+                        onConfirm = {
+                            addProdEstoqueViewModel.showSucessoDialog = false
+                        },
+                        btnConfirmColor = Color(0xFF355070),
+                        imagem = addProdEstoqueViewModel.imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+                        btnConfirmTitulo = "OK"
+                    )
+                }
+
 
                 androidx.compose.material3.Button(
                     onClick = {
