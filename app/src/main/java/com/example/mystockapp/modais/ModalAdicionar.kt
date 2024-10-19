@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,7 +59,7 @@ import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 @Composable
 fun ModalAdicionar(
     onDismissRequest: () -> Unit,
-    onConfirmarAdd: (quantidade: Int) -> Unit,
+    onConfirmarAdd: (quantidade:Int) -> Unit,
     viewModel: ProdutoViewModel,
     isPreVenda: Boolean
 ) {
@@ -225,7 +226,7 @@ fun ModalAdicionar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    if (isPreVenda) {
+                    if(isPreVenda){
                         Column(
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
@@ -315,7 +316,9 @@ fun ModalAdicionar(
 
                                 IconButton(
                                     onClick = {
-                                        quantidadeAdd += 1
+                                        if(quantidadeAdd < produtoInfo.quantidade){
+                                            quantidadeAdd += 1
+                                        }
                                     },
                                     modifier = Modifier
                                         .background(Color.Transparent)
@@ -336,7 +339,7 @@ fun ModalAdicionar(
                         modifier = Modifier
                             .weight(1f)
                             .height(60.dp),
-                        horizontalAlignment = Alignment.End,
+                        horizontalAlignment = Alignment.End, 
                         verticalArrangement = Arrangement.Center
                     ) {
                         IconButton(
@@ -351,7 +354,7 @@ fun ModalAdicionar(
                                 .background(Color(0xFF355070), RoundedCornerShape(10.dp))
                         ) {
                             Icon(
-                                imageVector = Icons.Default.AddShoppingCart,
+                                imageVector = if(isPreVenda) Icons.Default.AddShoppingCart else Icons.Default.Inventory2,
                                 contentDescription = stringResource(R.string.confirmar_adicao),
                                 tint = Color.White
                             )

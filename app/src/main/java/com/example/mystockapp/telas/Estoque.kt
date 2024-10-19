@@ -3,6 +3,7 @@ package com.example.mystockapp.telas
 import InformacoesProdutoDialog
 import NovoProdutoDialog
 import ProductTable
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,9 +33,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,18 +51,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.R
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
+import com.example.mystockapp.api.exceptions.NetworkException
+import com.example.mystockapp.api.lojaApi.LojaService
+import com.example.mystockapp.api.produtoApi.CorService
+import com.example.mystockapp.api.produtoApi.ModeloService
+import com.example.mystockapp.api.produtoApi.TamanhoService
 import com.example.mystockapp.modais.AddProdutoEstoque
+import com.example.mystockapp.modais.ConfirmacaoDialog
+import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalNovoModeloDialog
+import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
+import com.example.mystockapp.modais.viewModels.EstoqueViewModel
+import com.example.mystockapp.models.produtos.Cor
+import com.example.mystockapp.models.produtos.Modelo
 import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.models.produtos.Tamanho
 import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.telas.componentes.Spinner
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import com.example.mystockapp.ui.theme.Cores
+import kotlinx.coroutines.launch
 
 
 class Estoque : ComponentActivity() {
@@ -76,7 +97,24 @@ class Estoque : ComponentActivity() {
 }
 
 @Composable
-fun EstoqueScreen() {
+fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.current) {
+
+    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1)
+
+    val viewModel: EstoqueViewModel = viewModel(
+        factory = EstoqueViewModel.EstoqueViewModelFactory(idLoja = idLoja)
+    )
+
+    val addProdEstoqueViewModel: AddProdEstoqueViewModel = viewModel(
+        factory = AddProdEstoqueViewModel.AddProdEstoqueViewModelFactory(idLoja = idLoja)
+    )
+
+    val coroutineScope = rememberCoroutineScope()
+
+
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     var codigo by remember { mutableStateOf("") }
     var tipoVenda by remember { mutableStateOf("") }
@@ -84,36 +122,39 @@ fun EstoqueScreen() {
     var isModalAddProd by remember { mutableStateOf(false) }
     var isModalNovoProd by remember { mutableStateOf(false) }
     var isModalNovoModelo by remember { mutableStateOf(false) }
-    var showTest by remember { mutableStateOf(false) }
 
-    val products = listOf(
-        ProdutoTable(0,"166267274711114","Triple Black", "Air Force", 300.00, 37, "Preto",  20),
-        ProdutoTable(0,"1662672747141111111","Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714", "Classic White", "Air Max", 400.00, 38, "Branco", 15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco",  15),
-        ProdutoTable(0,"166267274714","Classic White", "Air Max", 400.00, 38, "Branco", 15)
-    )
 
-    // contexto local (a tela atual)
-    val contexto = LocalContext.current
+
+    var modelo by remember { mutableStateOf(Modelo(-1, "", "", "")) }
+    var tamanho by remember { mutableStateOf(Tamanho(-1, -1)) }
+    var cor by remember { mutableStateOf(Cor(-1, "")) }
+    var preco by remember { mutableStateOf(0.0) }
+
+    var queryPesquisa by remember { mutableStateOf("") }
+
+    var modelosOptions by remember { mutableStateOf<List<Modelo>>(emptyList()) }
+    var coresOptions by remember { mutableStateOf<List<Cor>>(emptyList()) }
+    var tamanhosOptions by remember { mutableStateOf<List<Tamanho>>(emptyList()) }
+    var precoOptions by remember { mutableStateOf(listOf(50.0,100.0,200.0))}
+
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchProdutos()
+        val modeloSerivce = ModeloService(RetrofitInstance.modeloApi)
+        val tamanhoService = TamanhoService(RetrofitInstance.tamanhoApi)
+        val corService = CorService(RetrofitInstance.corApi)
+        try {
+            modelosOptions = modeloSerivce.fetchModelos()
+            tamanhosOptions = tamanhoService.fetchTamanhos()
+            coresOptions = corService.fetchCores();
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+        }
+    }
 
     MenuDrawer(titulo = stringResource(id = R.string.titulo_estoque)) {
         Column(
@@ -121,7 +162,14 @@ fun EstoqueScreen() {
                 .fillMaxSize()
                 .background(Color(0xFF355070))
         ) {
-            // Filtros
+            // Função para limpar os filtros
+            fun limparFiltros() {
+                modelo = Modelo(-1, "", "", "")
+                cor = Cor(id = -1, nome = "")
+                tamanho = Tamanho(id = -1, numero = -1)
+            }
+
+// Filtros
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -134,7 +182,7 @@ fun EstoqueScreen() {
                         .fillMaxWidth(0.95f)
                         .height(172.dp)
                         .shadow(8.dp, RoundedCornerShape(8.dp))
-                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
                 ) {
                     Column(
                         modifier = Modifier
@@ -149,25 +197,30 @@ fun EstoqueScreen() {
                             // SelectField para Modelo
                             SelectField(
                                 label = stringResource(id = R.string.label_modelo),
-                                selectedOption = "",
-                                options = listOf("Modelo 1", "Modelo 2", "Modelo 3"),
-                                onOptionSelected = { /* Ação ao selecionar */ },
+                                selectedOption = modelo.nome,
+                                options = modelosOptions.map { it.nome },
+                                onOptionSelected = { modeloNome ->
+                                    val selectedModelo = modelosOptions.find { it.nome == modeloNome }
+                                    selectedModelo?.let { modelo = it }
+                                },
                                 modifier = Modifier.weight(1.4f)
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
 
                             // SelectField para Cor
                             SelectField(
                                 label = stringResource(id = R.string.label_cor),
-                                selectedOption = "",
-                                options = listOf("Cor 1", "Cor 2", "Cor 3"),
-                                onOptionSelected = { /* Ação ao selecionar */ },
+                                selectedOption = cor.nome,
+                                options = coresOptions.map { it.nome },
+                                onOptionSelected = { corSelected ->
+                                    val selectedCor = coresOptions.find { it.nome == corSelected }
+                                    selectedCor?.let { cor = it } },
                                 modifier = Modifier.weight(1.4f)
                             )
                         }
 
-                        // Segunda linha (SelectField para Tam. e Preço)
+                        // Segunda linha (SelectField para Tamanho e Preço)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -175,9 +228,11 @@ fun EstoqueScreen() {
                             // SelectField para Tamanho
                             SelectField(
                                 label = stringResource(id = R.string.label_tamanho),
-                                selectedOption = "",
-                                options = listOf("P", "M", "G"),
-                                onOptionSelected = { /* Ação ao selecionar */ },
+                                selectedOption = if (tamanho.numero == -1) "" else tamanho.numero.toString(),
+                                options = tamanhosOptions.map { it.numero.toString() },
+                                onOptionSelected = { tamanhoNome ->
+                                    val selectedTamanho = tamanhosOptions.find { it.numero.toString() == tamanhoNome }
+                                    selectedTamanho?.let { tamanho = it } },
                                 modifier = Modifier.weight(1.4f)
                             )
 
@@ -186,9 +241,13 @@ fun EstoqueScreen() {
                             // SelectField para Preço
                             SelectField(
                                 label = stringResource(id = R.string.label_preco),
-                                selectedOption = "",
-                                options = listOf("R$ 50", "R$ 100", "R$ 150"),
-                                onOptionSelected = { /* Ação ao selecionar */ },
+                                selectedOption = if(preco == 0.0) "" else preco.toString(),
+                                options = precoOptions,
+                                onOptionSelected = { selectedPreco ->
+                                    val selectedPreco = precoOptions.find { it == selectedPreco.toDouble() }
+                                    if (selectedPreco != null) {
+                                        preco = selectedPreco
+                                    } },
                                 modifier = Modifier.weight(1.4f)
                             )
                         }
@@ -200,8 +259,17 @@ fun EstoqueScreen() {
                             modifier = Modifier.fillMaxWidth(0.75f).padding(start = 70.dp),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
+                            // Botão Limpar
                             androidx.compose.material3.Button(
-                                onClick = { /* Ação do botão 1 */ },
+                                onClick = { limparFiltros()
+                                    coroutineScope.launch {
+                                        try {
+                                            viewModel.fetchProdutos()
+                                        } catch (e: Exception) {
+                                            //deu erro
+                                        }
+                                    }
+                                          }, // Chama a função limparFiltros ao clicar
                                 modifier = Modifier
                                     .width(65.dp)
                                     .height(25.dp),
@@ -218,8 +286,17 @@ fun EstoqueScreen() {
                                 )
                             }
 
+                            // Botão Filtrar
                             androidx.compose.material3.Button(
-                                onClick = { showTest = true },
+                                onClick = {
+                                    coroutineScope.launch {
+                                        try {
+                                            viewModel.buscarPorFiltros(modelo.nome,tamanho.numero,cor.nome,precoMin = 0.0,precoMax = preco)
+                                        } catch (e: Exception) {
+                                            //deu erro
+                                        }
+                                    }
+                                },
                                 modifier = Modifier
                                     .width(65.dp)
                                     .height(25.dp),
@@ -233,13 +310,6 @@ fun EstoqueScreen() {
                                     text = stringResource(id = R.string.botao_filtrar),
                                     color = Color.White,
                                     fontSize = 12.sp
-                                )
-                            }
-
-                            if (showTest) {
-                                InformacoesProdutoDialog(
-                                    onDismissRequest = { showTest = false },
-                                    idProduto = 1
                                 )
                             }
                         }
@@ -301,8 +371,8 @@ fun EstoqueScreen() {
                                         .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                                 ) {
                                     BasicTextField(
-                                        value = "", // Substituir pelo estado da pesquisa
-                                        onValueChange = { /* Ação ao mudar o valor */ },
+                                        value = queryPesquisa,
+                                        onValueChange = { queryPesquisa = it },
                                         singleLine = true,
                                         textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
                                         modifier = Modifier.fillMaxSize()
@@ -311,7 +381,15 @@ fun EstoqueScreen() {
 
                                 // Botão com ícone
                                 androidx.compose.material3.Button(
-                                    onClick = { /* Ação ao clicar no botão de pesquisa */ },
+                                    onClick = {
+                                    coroutineScope.launch {
+                                        try {
+                                            viewModel.buscarProdutos(queryPesquisa)
+                                        } catch (e: Exception) {
+                                            //deu erro
+                                        }
+                                    }
+                                },
                                     modifier = Modifier
                                         .width(30.dp)
                                         .height(20.dp),
@@ -331,20 +409,22 @@ fun EstoqueScreen() {
                             }
                         }
 
-                        // Tabela dentro da caixa grande
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(0.95f)
-                                .height(310.dp)
-                                .background(Color(0xFF355070))
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            ScreenTable(products, { product -> }, false)
-                        }
+                    // Tabela dentro da caixa grande
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(0.95f)
+                            .height(310.dp)
+                            .background(Color(0xFF355070))
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+
+                        ScreenTable(viewModel.produtos, { product -> }, false)
+
                     }
                 }
+            }
 
                 Row(
                     modifier = Modifier
@@ -353,11 +433,8 @@ fun EstoqueScreen() {
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     androidx.compose.material3.Button(
-                        onClick = { /* Ação do primeiro botão */
-                            val telaBip = Intent(contexto, BipScreen::class.java)
-                            telaBip.putExtra("contextoBusca", "estoque")
-                            contexto.startActivity(telaBip)
-                        },
+                        onClick = { /* Ação do primeiro botão */},
+
                         modifier = Modifier
                             .weight(1f)
                             .height(50.dp),
@@ -398,6 +475,7 @@ fun EstoqueScreen() {
                     }
                 }
 
+                // Dois botões azuis na parte inferior
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
@@ -425,8 +503,54 @@ fun EstoqueScreen() {
 
                     if (isModalAddProd) {
                         AddProdutoEstoque(
-                            onDismissRequest = { isModalAddProd = false }
-                        )
+                            onDismissRequest = { isModalAddProd = false },
+                        viewModel = addProdEstoqueViewModel
+                    )
+                }
+
+                if (addProdEstoqueViewModel.produtoSelecionado != null) {
+                    isModalAddProd = false
+                    ModalAdicionar(
+                        onDismissRequest = { addProdEstoqueViewModel.desescolherProduto() },
+                        viewModel = addProdEstoqueViewModel,
+                        isPreVenda = false,
+                        onConfirmarAdd = { quantidade ->
+                            addProdEstoqueViewModel.adicionarNoEstoque(quantidade)
+                        },
+                    )
+                }
+
+                if (addProdEstoqueViewModel.showConfirmDialog) {
+                    ConfirmacaoDialog(
+                        titulo = "Alterar a quantidade desse produto no estoque?",
+                        confirmarBtnTitulo = "Adicionar",
+                        recusarBtnTitulo = "Cancelar",
+                        imagem = painterResource(id = R.mipmap.ic_editar),
+                        onConfirm = {
+                            coroutineScope.launch {
+                                addProdEstoqueViewModel.showConfirmDialog = false
+                                addProdEstoqueViewModel.executarFuncao = true
+                                addProdEstoqueViewModel.adicionar()
+                            }
+                        },
+                        onDismiss = {
+                            addProdEstoqueViewModel.showConfirmDialog = false
+                        }
+                    )
+                }
+
+                if (addProdEstoqueViewModel.showSucessoDialog) {
+                    SucessoDialog(
+                        titulo = addProdEstoqueViewModel.sucessoDialogTitulo,
+                        onDismiss = {
+                            addProdEstoqueViewModel.showSucessoDialog = false
+                        },
+                        onConfirm = {
+                            addProdEstoqueViewModel.showSucessoDialog = false
+                        },
+                        btnConfirmColor = Color(0xFF355070),
+                        imagem = addProdEstoqueViewModel.imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+                        btnConfirmTitulo = "OK")
                     }
 
                     androidx.compose.material3.Button(
