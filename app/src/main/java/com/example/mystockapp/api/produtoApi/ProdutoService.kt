@@ -198,4 +198,57 @@ class ProdutoService(private val produtoApi: ProdutoApi) {
             }
         }
     }
+
+
+
+    suspend fun buscarProdutos(query: String, idLoja: Int): List<ProdutoTable> {
+        return try {
+            val response = produtoApi.searchProdutos(query, idLoja)
+
+            if (response.isSuccessful) {
+                Log.d("ProdutoService", "Busca bem-sucedida: ${response.body()}")
+                response.body() ?: emptyList()
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: response.message() ?: "Erro desconhecido"
+                Log.e("ProdutoService", "Erro na busca: ${response.code()} - $errorMessage")
+                throw ApiException(response.code(), errorMessage)
+            }
+        } catch (e: IOException) {
+            Log.e("ProdutoService", "Erro de rede: ${e.message}")
+            throw NetworkException("Ocorreu um erro de rede", e)
+        } catch (e: HttpException) {
+            val errorMessage = e.response()?.errorBody()?.string() ?: e.message() ?: "Erro desconhecido"
+            Log.e("ProdutoService", "Erro HTTP: ${e.code()} - $errorMessage")
+            throw ApiException(e.code(), errorMessage)
+        }
+    }
+
+
+    suspend fun buscarProdutosPorFiltros(
+        idLoja: Int,
+        modelo: String?,
+        tamanho: Int?,
+        cor: String?,
+        precoMin: Double?,
+        precoMax: Double?
+    ): List<ProdutoTable>{
+        return try {
+            // Chame a API com os parâmetros de filtro
+            val response = produtoApi.getProdutosByFiltros(idLoja, modelo, tamanho, cor, precoMin, precoMax)
+
+            if (response.isSuccessful) {
+                response.body() ?: emptyList()
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: response.message() ?: "Erro desconhecido"
+                throw ApiException(response.code(), errorMessage)
+            }
+        } catch (e: IOException) {
+            throw NetworkException("Erro de rede: ${e.message}", e)
+        } catch (e: HttpException) {
+            val errorMessage = e.response()?.errorBody()?.string() ?: e.message() ?: "Erro desconhecido"
+            throw ApiException(e.code(), errorMessage)
+        }
+    }
+
+
 }

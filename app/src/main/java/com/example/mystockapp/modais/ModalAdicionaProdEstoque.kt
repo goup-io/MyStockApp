@@ -23,42 +23,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.R
-import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
-import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModelFactory
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.compose.ui.platform.LocalContext.current) {
+fun AddProdutoEstoque(onDismissRequest: () -> Unit, viewModel: AddProdEstoqueViewModel) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var showConfirmDialog by remember { mutableStateOf(false) }
-    var showSucessoDialog by remember { mutableStateOf(false) }
-    var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
-    var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) }
-    var sucessoDialogTitulo by remember { mutableStateOf<String?>(null) }
-    var tituloFinalizacaoDialog by remember { mutableStateOf<String?>(null) }
 
-    val coroutineScope = rememberCoroutineScope()
-
-    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
-    val idLoja = sharedPreferences.getInt("idLoja", -1)
-
-    val viewModel: AddProdEstoqueViewModel = viewModel(
-        factory = AddProdEstoqueViewModelFactory(idLoja = idLoja)
-    )
-
-    fun handleAbrirModalConfirm(
-        titulo: String,
-        action: suspend () -> Unit,
-        confirmarTexto: String,
-        recusarTexto: String,
-        corBtn: Color
-    ) {
-        showConfirmDialog = true
-        actionToPerform = action
-        sucessoDialogTitulo = titulo
+    LaunchedEffect(Unit) {
+        viewModel.fetchProdutos()
     }
 
     LaunchedEffect(Unit) {
@@ -85,69 +59,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                 )
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                ButtonComponent(
-                    titulo = "Limpar",
-                    onClick = { viewModel.limparProdutos() },
-                    containerColor = Color(0xFF919191),
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                ButtonComponent(
-                    titulo = "Adicionar",
-                    onClick = {
-                        handleAbrirModalConfirm(
-                            "Tem certeza que deseja adicionar esses produtos ao estoque?",
-                            { viewModel.handleAdicionarProdutos() },
-                            "Adicionar",
-                            "Cancelar",
-                            Color(0xFF355070)
-                        )
-                    },
-                    containerColor = Color(0xFF355070),
-                )
-            }
         }
-    }
-
-    if (showConfirmDialog) {
-        ConfirmacaoDialog(
-            titulo = sucessoDialogTitulo ?: "",
-            confirmarBtnTitulo = "Adicionar",
-            recusarBtnTitulo = "Cancelar",
-            imagem = painterResource(id = R.mipmap.ic_editar),
-            onConfirm = {
-                coroutineScope.launch {
-                    viewModel.handleAdicionarProdutos()
-                    showConfirmDialog = false
-                    showSucessoDialog = true
-                }
-            },
-            onDismiss = {
-                showConfirmDialog = false
-            }
-        )
-    }
-
-    if (showSucessoDialog) {
-        SucessoDialog(
-            titulo = tituloFinalizacaoDialog ?: "Produtos adicionados com sucesso!",
-            onDismiss = {
-                showSucessoDialog = false
-                onDismissRequest()
-            },
-            onConfirm = {
-                showSucessoDialog = false
-                onDismissRequest()
-            },
-            btnConfirmColor = Color(0xFF355070),
-            imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
-            btnConfirmTitulo = "OK"
-        )
     }
 }
 
@@ -155,6 +67,9 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
 @Composable
 fun GreetingPreview() {
     MyStockAppTheme() {
-        AddProdutoEstoque(onDismissRequest = {})
+        AddProdutoEstoque(
+            onDismissRequest = {},
+            viewModel = AddProdEstoqueViewModel(1)
+        )
     }
 }

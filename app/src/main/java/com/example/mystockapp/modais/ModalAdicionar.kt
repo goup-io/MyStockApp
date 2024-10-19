@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -313,8 +314,10 @@ fun ModalAdicionar(
 
                                 IconButton(
                                     onClick = {
-                                        quantidadeAdd += 1
-                                        },
+                                        if(quantidadeAdd < produtoInfo.quantidade){
+                                            quantidadeAdd += 1
+                                        }
+                                              },
                                     modifier = Modifier
                                         .background(Color.Transparent)
                                         .padding(4.dp)
@@ -349,7 +352,7 @@ fun ModalAdicionar(
                                 .background(Color(0xFF355070), RoundedCornerShape(10.dp))
                         ) {
                             Icon(
-                                imageVector = Icons.Default.AddShoppingCart,
+                                imageVector = if(isPreVenda) Icons.Default.AddShoppingCart else Icons.Default.Inventory2,
                                 contentDescription = "Confirmar Adição do Produto",
                                 tint = Color.White
                             )

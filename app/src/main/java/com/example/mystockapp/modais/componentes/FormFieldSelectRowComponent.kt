@@ -1,13 +1,12 @@
 package com.example.mystockapp.modais.componentes
 
-import android.icu.text.ListFormatter.Width
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,8 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,19 +40,16 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import com.example.mystockapp.modais.FormField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> SelectField(
+fun <T> FormFieldSelectRowComponent(
     label: String,
     selectedOption: String,
     options: List<T>,
@@ -72,12 +66,12 @@ fun <T> SelectField(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(
+    Row (
         modifier = modifier.width(width),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = label,
+            text = "$label:",
             style = MaterialTheme.typography.titleMedium.copy(
                 fontSize = labelFontSize,
                 fontWeight = FontWeight.Normal
@@ -163,8 +157,8 @@ fun <T> SelectField(
 
 @Preview(showSystemUi = true)
 @Composable
-fun PreviewFormField(){
-    SelectField(
+fun PreviewFormFieldSelectRowComponent(){
+    FormFieldSelectRowComponent(
         label = "Selecione uma opção",
         selectedOption = "TESTE COM O TEXTO BEM GRANDE PRA TESTAR SE ESTÁ POR CIMA DO NEGÓCIO ALI 1",
         options = listOf("Opção 1", "Opção 2", "Opção 3"),

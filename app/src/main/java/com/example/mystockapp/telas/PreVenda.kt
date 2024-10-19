@@ -1,5 +1,6 @@
 package com.example.mystockapp.telas
 
+import DottedLineComponent
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -37,18 +38,25 @@ import com.example.mystockapp.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalResumoVenda
+import com.example.mystockapp.modais.componentes.FormFieldRowComponent
+import com.example.mystockapp.modais.componentes.FormFieldSelectRowComponent
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.modais.modalAddProdCarrinho
+import com.example.mystockapp.models.vendas.TipoVendasDataClass
 import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 import com.example.mystockapp.telas.componentes.MenuDrawer
+import kotlinx.coroutines.launch
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,10 +86,23 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
         factory = PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja = idLoja)
     )
 
+    var showError by remember { mutableStateOf(false) }
+
+    LaunchedEffect (Unit) {
+        viewModel.getTiposVenda()
+    }
+
+
     val gson = Gson()
 
-    var codigo by remember { mutableStateOf("") }
-    var tipoVenda by remember { mutableStateOf("") }
+    var codigo by remember { mutableStateOf(0) }
+    var tipoVenda by remember { mutableStateOf(
+        TipoVendasDataClass(
+            id = 0,
+            tipo = "",
+            desconto = 0.0
+        )
+    ) }
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     var isModalMaisInfo by remember { mutableStateOf(false) }
@@ -123,69 +144,62 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         ) {
                             Text(text = "Resumo da Venda", fontSize = 16.sp)
 
-                        Row {
-                            // Botões com bordas arredondadas
-                            Button(
-                                onClick = {
-                                    isModalAdicionarDesconto = true
-                                },
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .width(65.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp) // Ajusta o padding
-                            ) {
-                                Text(text = "AddDisc", fontSize = 12.sp)
-                            }
+                            Row {
+                                // Botões com bordas arredondadas
+                                Button(
+                                    onClick = {
+                                        isModalAdicionarDesconto = true
+                                    },
+                                    modifier = Modifier
+                                        .padding(end = 8.dp)
+                                        .width(65.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    contentPadding = PaddingValues(0.dp) // Ajusta o padding
+                                ) {
+                                    Text(text = "AddDisc", fontSize = 12.sp)
+                                }
 
-                            if (isModalAdicionarDesconto) {
-                                ModalAdicionarDesconto(
-                                    vendaDetalhes = viewModel.vendaDetalhes,
-                                    isDescontoProduto = false,
-                                    onDismissRequest = { isModalAdicionarDesconto = false },
-                                    onSalvarDesconto = {  desconto, porcentagemDesconto ->
-                                        viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)}
-                                )
-                            }
+                                if (isModalAdicionarDesconto) {
+                                    ModalAdicionarDesconto(
+                                        vendaDetalhes = viewModel.vendaDetalhes,
+                                        isDescontoProduto = false,
+                                        onDismissRequest = { isModalAdicionarDesconto = false },
+                                        onSalvarDesconto = {  desconto, porcentagemDesconto ->
+                                            viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)}
+                                    )
+                                }
 
-                            Button(
-                                onClick = { isModalMaisInfo = true },
-                                modifier = Modifier
-                                    .width(25.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF96BDCE) // Definindo a cor de fundo
-                                ),
-                                contentPadding = PaddingValues(0.dp)
-                            ) {
-                                Text(text = "+", fontSize = 22.sp, color = Color.White) // Define a cor do texto
-                            }
-                            if(isModalMaisInfo){
-                                ModalResumoVenda(
-                                    detalhes = viewModel.vendaDetalhes,
-                                    onDismissRequest = { isModalMaisInfo = false }
-                                )
+                                Button(
+                                    onClick = { isModalMaisInfo = true },
+                                    modifier = Modifier
+                                        .width(25.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF96BDCE) // Definindo a cor de fundo
+                                    ),
+                                    contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text(text = "+", fontSize = 22.sp, color = Color.White) // Define a cor do texto
+                                }
+                                if(isModalMaisInfo){
+                                    ModalResumoVenda(
+                                        detalhes = viewModel.vendaDetalhes,
+                                        onDismissRequest = { isModalMaisInfo = false }
+                                    )
+                                }
                             }
                         }
-                    }
 
                         // Conteúdo da Caixa
                         Column(
                             modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.SpaceAround
+
                         ) {
                             // Código da Venda
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = "Código da Venda", fontSize = 14.sp)
-                                Text(text = "001", fontSize = 14.sp)
-                            }
 
-                            Divider()
 
                             // Valor da Venda
                             Row(
@@ -193,10 +207,10 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(text = "Valor da Venda", fontSize = 14.sp)
-                                Text(text = "R$ 100,00", fontSize = 14.sp)
+                                Text(text = "R$ " + formatarPreco(viewModel.vendaDetalhes.valorTotal.toString().replace(".",",")), fontSize = 14.sp)
                             }
 
-                            Divider()
+                            DottedLineComponent()
 
                             // Quantidade de Itens
                             Row(
@@ -204,39 +218,41 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(text = "Quantidade de Itens", fontSize = 14.sp)
-                                Text(text = "5", fontSize = 14.sp)
+                                Text(text = viewModel.vendaDetalhes.totalItens.toString(), fontSize = 14.sp)
                             }
+
+                            DottedLineComponent()
                         }
                     }
                 }
             }
 
-        // Caixa grande branca (Carrinho)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFE7E7E7))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(
+            // Caixa grande branca (Carrinho)
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(365.dp)
-                    .background(Color.White, RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth()
+                    .background(Color(0xFFE7E7E7))
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column {
-                    // Header da caixa grande
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Carrinho", fontSize = 20.sp, color = Color.Black)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f)
+                        .height(365.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                ) {
+                    Column {
+                        // Header da caixa grande
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "Carrinho", fontSize = 20.sp, color = Color.Black)
 
                             Row {
                                 Button(
@@ -255,30 +271,30 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
 
                                 Spacer(modifier = Modifier.width(8.dp))
 
-                            Button(
-                                onClick = {
-                                    isModalAddProdCarrinho = true
-                                },
-                                modifier = Modifier
-                                    .width(70.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
-                                )
-                            ) {
-                                Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
-                            }
-
-                            if (isModalAddProdCarrinho) {
-                                modalAddProdCarrinho(
-                                    onDismissRequest = {
-                                        isModalAddProdCarrinho = false
+                                Button(
+                                    onClick = {
+                                        isModalAddProdCarrinho = true
                                     },
-                                    viewModel
-                                )
-                            }
+                                    modifier = Modifier
+                                        .width(70.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF355070)
+                                    )
+                                ) {
+                                    Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
+                                }
+
+                                if (isModalAddProdCarrinho) {
+                                    modalAddProdCarrinho(
+                                        onDismissRequest = {
+                                            isModalAddProdCarrinho = false
+                                        },
+                                        viewModel
+                                    )
+                                }
 
                                 if (viewModel.produtoSelecionado != null){
                                     isModalAddProdCarrinho = false
@@ -289,29 +305,29 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                         onConfirmarAdd = {quantidade -> viewModel.adicionar(quantidade)},
                                     )
                                 }
+                            }
+                        }
+
+                        // Tabela dentro da caixa grande
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(0.95f)
+                                .height(310.dp)
+                                .background(Color(0xFF355070))
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .align(Alignment.CenterHorizontally)
+                        ) {
+
+                            Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")
+                            ScreenTable(
+                                products = viewModel.carrinho.itensCarrinho,
+                                verMaisAction = { },
+                                isPreVenda = true
+                            )
                         }
                     }
-
-                    // Tabela dentro da caixa grande
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(0.95f)
-                            .height(310.dp)
-                            .background(Color(0xFF355070))
-                            .padding(4.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-
-                        Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")
-                        ScreenTable(
-                            products = viewModel.carrinho.itensCarrinho,
-                            verMaisAction = { },
-                            isPreVenda = true
-                        )
-                    }
                 }
-            }
 
                 // Caixa pequena branca com inputs
                 Box(
@@ -324,32 +340,54 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Código", fontSize = 14.sp)
 
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .width(80.dp)
-                                .height(10.dp),
-                            value = codigo,
-                            onValueChange = { codigo = it }
+                        FormFieldRowComponent(
+                            label = "Código",
+                            fieldType = KeyboardType.Number,
+                            textValue = if (codigo <= 0 || codigo == null) "" else codigo.toString(),
+                            onValueChange = { codigo = it.toInt() },
+                            width = 120.dp,
+                            error = showError && codigo <= 0 || codigo == null
                         )
 
-                        Text(text = "Tipo Venda", fontSize = 14.sp)
-
-                        OutlinedTextField(
-                            modifier = Modifier.width(80.dp),
-                            value = codigo,
-                            onValueChange = { codigo = it }
+                        FormFieldSelectRowComponent(
+                            label = "Tipo Venda",
+                            selectedOption = tipoVenda.tipo,
+                            options = viewModel.tipoVendas.map { it.tipo},
+                            onOptionSelected = {
+                                    tipoVendaSelected ->
+                                tipoVenda = viewModel.tipoVendas.find { it.tipo == tipoVendaSelected }!!
+                            },
+                            width = 200.dp,
+                            error = showError && tipoVenda.id <= 0 || tipoVenda == null
                         )
                     }
                 }
 
                 // Botão azul na parte inferior
                 Button(
-                    onClick = { /* Ação do botão */ },
+                    onClick = {
+                        if( codigo <= 0 || tipoVenda.id <= 0){
+                            showError = true
+                        } else {
+                            coroutineScope.launch {
+                                try {
+                                    viewModel.atualizarVendaInfo(tipoVendaId = tipoVenda.id, codigoVendedor = codigo)
+                                    viewModel.realizarVenda()
+                                } catch (e: Exception) {
+                                    Log.e("PreVenda", "Erro ao executar ação: ${e.message}")
+                                }
+                            }
+                            tipoVenda = TipoVendasDataClass(
+                                id = 0,
+                                tipo = "",
+                                desconto = 0.0
+                            )
+                            codigo = 0
+                        } },
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
                         .height(50.dp),
