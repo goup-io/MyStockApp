@@ -380,13 +380,13 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 } catch (e: Exception) {
                                     Log.e("PreVenda", "Erro ao executar ação: ${e.message}")
                                 }
+                                tipoVenda = TipoVendasDataClass(
+                                    id = 0,
+                                    tipo = "",
+                                    desconto = 0.0
+                                )
+                                codigo = 0
                             }
-                            tipoVenda = TipoVendasDataClass(
-                                id = 0,
-                                tipo = "",
-                                desconto = 0.0
-                            )
-                            codigo = 0
                         } },
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
