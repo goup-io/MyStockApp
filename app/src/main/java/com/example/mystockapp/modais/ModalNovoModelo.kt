@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -149,7 +150,7 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ModalHeaderComponent(onDismissRequest = onDismissRequest, "Novo Modelo")
+                ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.novo_modelo_title))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
@@ -164,13 +165,13 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Nome:",
+                                    label = stringResource(id = R.string.nome_label),
                                     textValue = nome,
                                     onValueChange = { nome = it },
                                     error = showError && nome.isEmpty()
                                 )
                                 SelectField(
-                                    label = "Tipo:",
+                                    label = stringResource(id = R.string.tipo_label),
                                     selectedOption = tipo.nome,
                                     onOptionSelected = { selectedNome ->
                                         val selectedTipo = tiposOptions.find { it.nome == selectedNome }
@@ -184,7 +185,7 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                             }
                             Column(modifier = Modifier.weight(1f)) {
                                 SelectField(
-                                    label = "Categoria:",
+                                    label = stringResource(id = R.string.categoria_label),
                                     selectedOption = categoria.nome,
                                     onOptionSelected = { selectedNome ->
                                         val selectedCategoria = categoriasOptions.find { it.nome == selectedNome }
@@ -207,7 +208,7 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Limpar",
+                        titulo = stringResource(id = R.string.limpar_button),
                         onClick = {
                             nome = ""
                             tipo = Tipo(id = 0, nome = "")
@@ -217,39 +218,39 @@ fun ModalNovoModeloDialog(onDismissRequest: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.width(18.dp))
                     ButtonComponent(
-                        titulo = "Salvar",
+                        titulo = stringResource(id = R.string.salvar_button),
                         onClick = {
                             if (nome.isNotEmpty() && tipo.nome.isNotEmpty() && categoria.nome.isNotEmpty()) {
                                 coroutineScope.launch {
-                                        handleSaveModelo(nome, tipo, categoria)
-                                        showSucessDialog = true
-                                    }
-                                } else {
-                                    showError = true
+                                    handleSaveModelo(nome, tipo, categoria)
+                                    showSucessDialog = true
+                                }
+                            } else {
+                                showError = true
                             }
-                            },
+                        },
                         containerColor = Color(0xFF355070),
                     )
                 }
             }
         }
-    }
 
-    if (showSucessDialog) {
-        SucessoDialog(
-            titulo = confirmarTitulo,
-            onDismiss = {
-                showSucessDialog = false
-                onDismissRequest()
-            },
-            onConfirm = {
-                showSucessDialog = false
-                onDismissRequest()
-            },
-            btnConfirmColor = Color(0xFF355070),
-            imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
-            btnConfirmTitulo = "OK"
-        )
+        if (showSucessDialog) {
+            SucessoDialog(
+                titulo = confirmarTitulo,
+                onDismiss = {
+                    showSucessDialog = false
+                    onDismissRequest()
+                },
+                onConfirm = {
+                    showSucessDialog = false
+                    onDismissRequest()
+                },
+                btnConfirmColor = Color(0xFF355070),
+                imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+                btnConfirmTitulo = stringResource(id = R.string.ok_button)
+            )
+        }
     }
 }
 

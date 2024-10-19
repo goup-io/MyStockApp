@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.FormField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,7 +106,7 @@ fun <T> SelectField(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = if (selectedOption.isNotEmpty()) selectedOption else "Selecione uma opção",
+                        text = if (selectedOption.isNotEmpty()) selectedOption else stringResource(id = R.string.select_option_label),
                         style = textStyle.copy(
                             fontSize = labelFontSize,
                             fontWeight = FontWeight.Normal,
@@ -115,7 +117,7 @@ fun <T> SelectField(
                     )
                     Icon(
                         imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        contentDescription = "Dropdown Icon",
+                        contentDescription = stringResource(id = R.string.dropdown_icon_description),
                         modifier = Modifier
                             .size(16.dp)
                     )

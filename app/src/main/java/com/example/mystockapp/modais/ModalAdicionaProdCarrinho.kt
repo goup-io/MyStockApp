@@ -17,9 +17,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
+import com.example.mystockapp.R
 
 @Composable
 fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewModel) {
@@ -39,7 +41,7 @@ fun modalAddProdCarrinho(onDismissRequest: () -> Unit, viewModel: PreVendaViewMo
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
 
-            ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Carrinho")
+            ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.add_produto_carrinho_title))
             Spacer(modifier = Modifier.height(6.dp))
             if (errorMessage != null) {
                 Text(text = errorMessage ?: "", color = Color.Red)

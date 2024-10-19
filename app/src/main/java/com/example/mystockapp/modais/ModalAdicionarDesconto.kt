@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.vendas.VendaDetalhes
@@ -39,7 +41,7 @@ fun ModalAdicionarDesconto(
     produtoInfo: ProdutoTable = ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0),
     isDescontoProduto: Boolean,
     onSalvarDesconto: (Double, Double) -> Unit,
-    fontSize : TextUnit = 12.sp,
+    fontSize: TextUnit = 12.sp,
     onDismissRequest: () -> Unit
 ) {
 
@@ -96,11 +98,11 @@ fun ModalAdicionarDesconto(
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
-            ) {
+        ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ModalHeaderComponent(onDismissRequest = onDismissRequest, "Adicionar Desconto")
+                ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.adicionar_desconto_title))
                 Spacer(modifier = Modifier.height(6.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -117,7 +119,7 @@ fun ModalAdicionarDesconto(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Porcentagem %:",
+                                    label = stringResource(id = R.string.porcentagem_label),
                                     placeholder = "0.0",
                                     textValue = if (porcentagem == "0.0") "" else porcentagem,
                                     width = 300.dp,
@@ -146,7 +148,7 @@ fun ModalAdicionarDesconto(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Valor Calculado:",
+                                    label = stringResource(id = R.string.valor_calculado_label),
                                     textValue = valorCalculado,
                                     width = 300.dp,
                                     onValueChange = { valorCalculado = it },
@@ -162,24 +164,24 @@ fun ModalAdicionarDesconto(
                         ) {
                             if(isDescontoProduto){
                                 // Linha para o valor unitário produto
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Valor Unitário",
-                                    fontSize =fontSize,
-                                    fontWeight = FontWeight.Normal
-                                )
-                                Text(
-                                    text = valorPosDesconto,
-                                    fontSize = fontSize,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            DottedLineComponent() // Linha pontilhada
-                            Spacer(modifier = Modifier.height(3.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.valor_unitario_label),
+                                        fontSize = fontSize,
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                    Text(
+                                        text = valorPosDesconto,
+                                        fontSize = fontSize,
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                DottedLineComponent() // Linha pontilhada
+                                Spacer(modifier = Modifier.height(3.dp))
                             }
                             // Linha para o valor atual
                             Row(
@@ -187,7 +189,7 @@ fun ModalAdicionarDesconto(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Valor Atual",
+                                    text = stringResource(id = R.string.valor_atual_label),
                                     fontSize = fontSize,
                                     fontWeight = FontWeight.Normal
                                 )
@@ -208,7 +210,7 @@ fun ModalAdicionarDesconto(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Valor Após o Desconto",
+                                    text = stringResource(id = R.string.valor_apos_desconto_label),
                                     fontSize = fontSize,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -226,7 +228,7 @@ fun ModalAdicionarDesconto(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ){
                             ButtonComponent(
-                                titulo = "Limpar",
+                                titulo = stringResource(id = R.string.limpar_button),
                                 onClick = {
                                     valorCalculado = "R$ 0,00"
                                     porcentagem = ""
@@ -234,7 +236,7 @@ fun ModalAdicionarDesconto(
                                 containerColor = Color(0xFF919191),
                             )
                             ButtonComponent(
-                                titulo = "Salvar",
+                                titulo = stringResource(id = R.string.salvar_button),
                                 onClick = {
                                     val valorCalculadoDouble = valorCalculado
                                         .replace("[^\\d,.]".toRegex(), "")
@@ -242,7 +244,7 @@ fun ModalAdicionarDesconto(
                                         .toDoubleOrNull() ?: 0.0
                                     onSalvarDesconto(valorCalculadoDouble, porcentagem.toDouble())
                                     onDismissRequest()
-                                          },
+                                },
                                 containerColor = Color(0xFF355070),
                             )
                         }
@@ -260,8 +262,6 @@ fun ModalAdicionarDesconto(
             }
         }
     }
-
-
 }
 
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import com.example.mystockapp.telas.Estoque
 import com.example.mystockapp.telas.Login
 import com.example.mystockapp.telas.LoginScreen
 import com.example.mystockapp.telas.PreVenda
+import com.example.mystockapp.R
 
 @Composable
 fun SideMenu(context: Context) {
@@ -42,26 +44,23 @@ fun SideMenu(context: Context) {
 
         Spacer(modifier = Modifier.height(1.dp))
 
-        MenuItem(icon = Icons.Default.Inventory, text = "Estoque") {
+        MenuItem(icon = Icons.Default.Inventory, text = stringResource(id = R.string.menu_item_estoque)) {
             val intent = Intent(context, Estoque::class.java)
             context.startActivity(intent)
         }
 
-        MenuItem(icon = Icons.Default.ShoppingCart, text = "Venda") {
-            // Handle venda item click
+        MenuItem(icon = Icons.Default.ShoppingCart, text = stringResource(id = R.string.menu_item_venda)) {
             val intent = Intent(context, PreVenda::class.java)
             context.startActivity(intent)
         }
 
-        MenuItem(icon = Icons.Default.PhotoCamera, text = "Bipe") {
-            // Handle bipe item click
+        MenuItem(icon = Icons.Default.PhotoCamera, text = stringResource(id = R.string.menu_item_bipe)) {
             val intent = Intent(context, BipScreen::class.java)
             context.startActivity(intent)
         }
 
         // Menu items with Material Icons
-        MenuItem(icon = Icons.Default.ExitToApp, text = "Sair") {
-            // Handle menu item click
+        MenuItem(icon = Icons.Default.ExitToApp, text = stringResource(id = R.string.menu_item_sair)) {
             val intent = Intent(context, Login::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)
@@ -79,7 +78,7 @@ fun UserSection() {
     ) {
         Icon(
             imageVector = Icons.Default.AccountBox,
-            contentDescription = "User",
+            contentDescription = stringResource(id = R.string.user_icon_description),
             tint = Color.White,
             modifier = Modifier
                 .size(40.dp)
@@ -89,7 +88,7 @@ fun UserSection() {
             modifier = Modifier
                 .fillMaxWidth(fraction = 0.8f)
                 .padding(top = 10.dp, start = 4.dp),
-            text = "User",
+            text = stringResource(id = R.string.user_label),
             fontSize = 18.sp,
             color = Color.White,
             textAlign = TextAlign.Start,
@@ -102,7 +101,7 @@ fun UserSection() {
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(fraction = 0.9f),
-            text = "Gerente",
+            text = stringResource(id = R.string.role_label),
             fontSize = 18.sp,
             color = Color.White,
             textAlign = TextAlign.Center,

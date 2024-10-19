@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -68,10 +69,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Instanciar AuthService e AuthViewModelFactory
     val authService = AuthService(RetrofitInstance.authApi)
     val viewModelFactory = AuthViewModelFactory(authService, LocalContext.current)
     val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
@@ -89,14 +88,14 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         ) {
             Image(
                 painter = painterResource(id = R.mipmap.ic_logo_mystock_tp2),
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.logo_empresa_description),
                 modifier = Modifier
                     .size(206.dp, 158.dp)
                     .padding(top = 4.dp)
             )
 
             Text(
-                text = "Login",
+                text = stringResource(id = R.string.login_title),
                 color = Color.White,
                 style = TextStyle(
                     fontSize = 35.sp,
@@ -106,7 +105,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             )
 
             Text(
-                text = "Usuário:",
+                text = stringResource(id = R.string.user_label),
                 color = Color.White,
                 style = TextStyle(
                     fontSize = 18.sp,
@@ -130,7 +129,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         RoundedCornerShape(50.dp)
                     ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                placeholder = { Text("usuário") },
+                placeholder = { Text(stringResource(id = R.string.user_placeholder)) },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.mipmap.ic_user),
@@ -149,7 +148,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             )
 
             Text(
-                text = "Senha:",
+                text = stringResource(id = R.string.password_label),
                 color = Color.White,
                 style = TextStyle(
                     fontSize = 18.sp,
@@ -172,10 +171,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         if (showError && passwordState.isEmpty()) Color.Red else Color.Transparent,
                         RoundedCornerShape(50.dp)
                     ),
-                // Altera o campo de senha para suportar o modo de visibilidade
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                placeholder = { Text("*****") },
+                placeholder = { Text(stringResource(id = R.string.password_placeholder)) },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.mipmap.ic_lock),
@@ -185,9 +183,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 },
                 trailingIcon = {
                     val image = if (passwordVisible)
-                        painterResource(id = R.mipmap.ic_visibility_off) // Ícone para senha oculta
+                        painterResource(id = R.mipmap.ic_visibility_off)
                     else
-                        painterResource(id = R.mipmap.ic_visibility) // Ícone para senha visível
+                        painterResource(id = R.mipmap.ic_visibility)
 
                     IconButton(
                         onClick = { passwordVisible = !passwordVisible },
@@ -215,7 +213,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         viewModel.login(emailState, passwordState)
                     } else {
                         showError = true
-                        errorMessage = "Por favor, preencha todos os campos."
                     }
                 },
                 modifier = Modifier
@@ -227,27 +224,12 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 ),
                 shape = RoundedCornerShape(50.dp)
             ) {
-                Text(text = "Entrar", color = Color(0xFF355070), fontSize = 22.sp)
-            }
-
-            // Observa o estado do login
-            when (loginState) {
-                is AuthViewModel.LoginState.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is AuthViewModel.LoginState.Success -> {
-                    onLoginSuccess()
-                }
-                is AuthViewModel.LoginState.Error -> {
-                    showError = true
-                    errorMessage = (loginState as AuthViewModel.LoginState.Error).message
-                }
-                else -> {}
+                Text(text = stringResource(id = R.string.enter_button), color = Color(0xFF355070), fontSize = 22.sp)
             }
 
             if (showError) {
                 Text(
-                    text = errorMessage,
+                    text = stringResource(id = R.string.error_message_empty_fields),
                     color = Color(0xFFEF233C),
                     modifier = Modifier.padding(top = 8.dp),
                     style = TextStyle(

@@ -42,8 +42,8 @@ import com.example.mystockapp.ui.theme.MyStockAppTheme
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import org.json.JSONObject
-
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -120,7 +120,7 @@ fun Screen(
 
     LaunchedEffect(barcodeNumber) {
         if (barcodeNumber.isNotEmpty()) {
-            println("Buscando ETP por código: $barcodeNumber")
+            println(contexto.getString(R.string.buscando_etp_por_codigo, barcodeNumber))
             viewModel.buscarEtpPorCodigo(barcodeNumber)
         }
     }
@@ -137,14 +137,14 @@ fun Screen(
             quantidadeEstoque = it.quantidade ?: 0
             itemPromocional = it.itemPromocional ?: false
         } ?: run {
-            println("ETP é nulo")
+            println(contexto.getString(R.string.etp_e_nulo))
             codigo = barcodeNumber ?: "0"
         }
     }
 
-    Log.d("ETP-BipScreen", "ETP-BipScreen: $etp")
+    Log.d("ETP-BipScreen", contexto.getString(R.string.etp_bip_screen, etp))
 
-    MenuDrawer(titulo = "Busca") {
+    MenuDrawer(titulo = contexto.getString(R.string.busca)) {
         if (isScanning) {
             Column(
                 modifier = Modifier
@@ -159,7 +159,7 @@ fun Screen(
                         isScanning = false
                     },
                     onError = { error ->
-                        barcodeNumber = "Erro: $error"
+                        barcodeNumber = contexto.getString(R.string.erro, error)
                         isScanning = false
                     }
                 )
@@ -184,8 +184,7 @@ fun Screen(
                                 Color(0xFFFFFFFF),
                                 shape = RoundedCornerShape(16.dp)
                             )
-                            // Defina uma altura mínima e máxima para o bloco branco
-                            .heightIn(min = 100.dp, max = 200.dp) // Ajuste os valores conforme necessário
+                            .heightIn(min = 100.dp, max = 200.dp)
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -193,11 +192,10 @@ fun Screen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(0.75f)
-                                .height(150.dp), // Mantém a altura original dos componentes internos
+                                .height(150.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceAround
                         ) {
-                            // Conteúdo da coluna interna (scanner simulado)
                             Box(
                                 modifier = Modifier
                                     .size(250.dp)
@@ -205,12 +203,10 @@ fun Screen(
                                     .background(Color.Transparent),
                                 contentAlignment = Alignment.Center
                             ) {
-                                // O resto do seu código
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     val strokeWidth = 4.dp.toPx()
                                     val cornerLength = 40.dp.toPx()
 
-                                    // Desenhando cantos superiores
                                     drawLine(
                                         color = Color(0xFF355070),
                                         start = Offset(0f, 0f),
@@ -226,74 +222,48 @@ fun Screen(
                                     drawLine(
                                         color = Color(0xFF355070),
                                         start = Offset(size.width, 0f),
-                                        end = Offset(
-                                            size.width - cornerLength,
-                                            0f
-                                        ),
+                                        end = Offset(size.width - cornerLength, 0f),
                                         strokeWidth = strokeWidth
                                     )
                                     drawLine(
                                         color = Color(0xFF355070),
                                         start = Offset(size.width, 0f),
-                                        end = Offset(
-                                            size.width,
-                                            cornerLength
-                                        ),
+                                        end = Offset(size.width, cornerLength),
                                         strokeWidth = strokeWidth
                                     )
 
-                                    // Desenhando cantos inferiores
                                     drawLine(
                                         color = Color(0xFF355070),
                                         start = Offset(0f, size.height),
-                                        end = Offset(
-                                            cornerLength,
-                                            size.height
-                                        ),
+                                        end = Offset(cornerLength, size.height),
                                         strokeWidth = strokeWidth
                                     )
                                     drawLine(
                                         color = Color(0xFF355070),
                                         start = Offset(0f, size.height),
-                                        end = Offset(
-                                            0f,
-                                            size.height - cornerLength
-                                        ),
+                                        end = Offset(0f, size.height - cornerLength),
                                         strokeWidth = strokeWidth
                                     )
                                     drawLine(
                                         color = Color(0xFF355070),
-                                        start = Offset(
-                                            size.width,
-                                            size.height
-                                        ),
-                                        end = Offset(
-                                            size.width - cornerLength,
-                                            size.height
-                                        ),
+                                        start = Offset(size.width, size.height),
+                                        end = Offset(size.width - cornerLength, size.height),
                                         strokeWidth = strokeWidth
                                     )
                                     drawLine(
                                         color = Color(0xFF355070),
-                                        start = Offset(
-                                            size.width,
-                                            size.height
-                                        ),
-                                        end = Offset(
-                                            size.width,
-                                            size.height - cornerLength
-                                        ),
+                                        start = Offset(size.width, size.height),
+                                        end = Offset(size.width, size.height - cornerLength),
                                         strokeWidth = strokeWidth
                                     )
                                 }
 
-                                // Imagem do código de barras dentro das bordas arredondadas
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Image(
                                         painter = painterResource(id = R.mipmap.barcode_image),
-                                        contentDescription = "Código de Barras",
+                                        contentDescription = contexto.getString(R.string.codigo_de_barras),
                                         contentScale = ContentScale.Fit,
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -339,7 +309,6 @@ fun Screen(
                 ) {
                     Spacer(modifier = Modifier.height(5.dp))
 
-                    // Seção de informações
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -352,28 +321,27 @@ fun Screen(
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = "Informações",
+                                text = contexto.getString(R.string.informacoes),
                                 fontSize = 19.sp,
                                 color = Color.Black,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Exibir campos com base no contexto
                             if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     InfoTextField(
-                                        label = "Código",
+                                        label = contexto.getString(R.string.codigo),
                                         value = codigo.toString(),
                                         onValueChange = { codigo = it },
                                         editable = contextoBusca != "pre-venda",
                                         modifier = Modifier.weight(1f)
                                     )
                                     InfoTextField(
-                                        label = "Nome",
+                                        label = contexto.getString(R.string.nome),
                                         value = nome,
                                         onValueChange = { nome = it },
                                         editable = contextoBusca != "pre-venda",
@@ -386,14 +354,14 @@ fun Screen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     InfoTextField(
-                                        label = "Modelo",
+                                        label = contexto.getString(R.string.modelo),
                                         value = modelo,
                                         onValueChange = { modelo = it },
                                         editable = contextoBusca == "estoque",
                                         modifier = Modifier.weight(1f)
                                     )
                                     InfoTextField(
-                                        label = "Cor",
+                                        label = contexto.getString(R.string.cor),
                                         value = cor,
                                         onValueChange = { cor = it },
                                         editable = contextoBusca == "estoque",
@@ -406,14 +374,14 @@ fun Screen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     InfoTextField(
-                                        label = "Tamanho",
+                                        label = contexto.getString(R.string.tamanho),
                                         value = tamanho.toString(),
                                         onValueChange = { tamanho = it.toInt() },
                                         editable = contextoBusca == "estoque",
                                         modifier = Modifier.weight(1f)
                                     )
                                     InfoTextField(
-                                        label = "Quantidade Est.",
+                                        label = contexto.getString(R.string.quantidade_est),
                                         value = quantidadeEstoque.toString(),
                                         onValueChange = { quantidadeEstoque = it.toInt() },
                                         editable = contextoBusca != "pre-venda",
@@ -423,7 +391,7 @@ fun Screen(
 
                                 if (contextoBusca == "pre-venda") {
                                     InfoTextField(
-                                        label = "Quantidade venda",
+                                        label = contexto.getString(R.string.quantidade_venda),
                                         value = quantidadeVenda.toString(),
                                         onValueChange = {
                                             val newValue = it.toIntOrNull() ?: 0
@@ -442,14 +410,14 @@ fun Screen(
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         InfoTextField(
-                                            label = "Preço Custo",
+                                            label = contexto.getString(R.string.preco_custo),
                                             value = String.format("%.2f", precoCusto),
                                             onValueChange = { precoCusto = it.toDouble() },
                                             editable = contextoBusca != "pre-venda",
                                             modifier = Modifier.weight(1f)
                                         )
                                         InfoTextField(
-                                            label = "Preço Revenda",
+                                            label = contexto.getString(R.string.preco_revenda),
                                             value = String.format("%.2f", precoRevenda),
                                             onValueChange = { precoRevenda = it.toDouble() },
                                             editable = contextoBusca != "pre-venda",
@@ -460,25 +428,24 @@ fun Screen(
 
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth() // Ocupa toda a largura disponível
-                                        .padding(0.dp), // Remove qualquer padding ao redor
-//                                horizontalArrangement = Arrangement.Start // Alinhar os itens à esquerda
+                                        .fillMaxWidth()
+                                        .padding(0.dp)
                                 ) {
                                     Checkbox(
                                         checked = itemPromocional,
                                         onCheckedChange = { itemPromocional = it },
                                         modifier = Modifier
-                                            .align(Alignment.Top) // Alinha a Checkbox no topo
-                                            .padding(0.dp) // Sem padding adicional
+                                            .align(Alignment.Top)
+                                            .padding(0.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(2.dp)) // Adiciona um pequeno espaço entre o Checkbox e o texto (ajustável)
+                                    Spacer(modifier = Modifier.width(2.dp))
                                     Text(
-                                        text = "Item Promocional",
+                                        text = contexto.getString(R.string.item_promocional),
                                         fontSize = 16.sp,
                                         color = Color.Black,
                                         modifier = Modifier
-                                            .align(Alignment.CenterVertically) // Centralizar verticalmente
-                                            .padding(start = 0.dp) // Certifique-se de que não há padding no texto
+                                            .align(Alignment.CenterVertically)
+                                            .padding(start = 0.dp)
                                     )
                                 }
                             }
@@ -487,7 +454,6 @@ fun Screen(
 
                     Spacer(modifier = Modifier.height(5.dp))
 
-                    // Botão para ler o código
                     Button(
                         onClick = { isScanning = true },
                         modifier = Modifier
@@ -498,18 +464,15 @@ fun Screen(
                         colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                     ) {
                         Text(
-                            text = "Ler Referência",
+                            text = contexto.getString(R.string.ler_referencia),
                             color = Color.White
                         )
                     }
 
                     Spacer(modifier = Modifier.height(5.dp))
 
-                    // Botão para digitar o código
                     Button(
-                        onClick = { /* Ação de buscar código */
-                            viewModel.buscarEtpPorCodigo(barcodeNumber)
-                        },
+                        onClick = { viewModel.buscarEtpPorCodigo(barcodeNumber) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -518,7 +481,7 @@ fun Screen(
                         colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                     ) {
                         Text(
-                            text = "Buscar Ref. Digitada",
+                            text = contexto.getString(R.string.buscar_ref_digitada),
                             color = Color.White
                         )
                     }
@@ -526,29 +489,24 @@ fun Screen(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     if (contextoBusca == "pre-venda") {
-                        // Botão Adicionar Produto
                         Button(
                             onClick = {
-                                // Validação dos campos
                                 if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
                                     precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0) {
 
-                                    // Exibir mensagem de erro
                                     Toast.makeText(
                                         contexto,
-                                        "Preencha todos os campos corretamente.",
+                                        contexto.getString(R.string.preencha_todos_os_campos),
                                         Toast.LENGTH_SHORT
                                     ).show()
 
                                 } else if (quantidadeVenda <= 0){
-                                    // Exibir mensagem de erro
                                     Toast.makeText(
                                         contexto,
-                                        "Informe a quantidade que deseja adicionar ao carrinho.",
+                                        contexto.getString(R.string.informe_quantidade),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
-                                    // Ação de adicionar produto
                                     val telaPreVenda = Intent(contexto, PreVenda::class.java)
 
                                     val jsonProduto = JSONObject().apply {
@@ -564,13 +522,8 @@ fun Screen(
                                         put("quantidadeVenda", quantidadeVenda)
                                     }
 
-                                    // Converte o JSONObject para uma string JSON
                                     val jsonString = jsonProduto.toString()
-
-                                    // Adicione a string JSON como um extra na Intent
                                     telaPreVenda.putExtra("produtoAdicionado", jsonString)
-
-                                    // pedindo a execução de outra tela
                                     contexto.startActivity(telaPreVenda)
                                 }
                             },
@@ -582,7 +535,7 @@ fun Screen(
                             colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                         ) {
                             Text(
-                                text = "Adicionar Produto",
+                                text = contexto.getString(R.string.adicionar_produto),
                                 color = Color.White
                             )
                         }

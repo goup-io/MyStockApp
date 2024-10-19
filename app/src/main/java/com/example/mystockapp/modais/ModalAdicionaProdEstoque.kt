@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,6 +51,9 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
         factory = AddProdEstoqueViewModelFactory(idLoja = idLoja)
     )
 
+    // contexto local (a tela atual)
+    val contexto = LocalContext.current
+
     fun handleAbrirModalConfirm(
         titulo: String,
         action: suspend () -> Unit,
@@ -73,7 +78,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                 .padding(8.dp)
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
-            ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
+            ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.add_produto_estoque_title))
             Spacer(modifier = Modifier.height(6.dp))
 
             if (errorMessage != null) {
@@ -92,18 +97,18 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
                 horizontalArrangement = Arrangement.End
             ) {
                 ButtonComponent(
-                    titulo = "Limpar",
+                    titulo = stringResource(id = R.string.limpar_button),
                     onClick = { viewModel.limparProdutos() },
                     containerColor = Color(0xFF919191),
                 )
                 Spacer(modifier = Modifier.width(24.dp))
                 ButtonComponent(
-                    titulo = "Adicionar",
+                    titulo = stringResource(id = R.string.adicionar_button),
                     onClick = {
                         handleAbrirModalConfirm(
-                            "Tem certeza que deseja adicionar esses produtos ao estoque?",
+                            contexto.getString(R.string.confirmacao_dialog_title),
                             { viewModel.handleAdicionarProdutos() },
-                            "Adicionar",
+                            contexto.getString(R.string.adicionar_button),
                             "Cancelar",
                             Color(0xFF355070)
                         )
@@ -117,7 +122,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
     if (showConfirmDialog) {
         ConfirmacaoDialog(
             titulo = sucessoDialogTitulo ?: "",
-            confirmarBtnTitulo = "Adicionar",
+            confirmarBtnTitulo = stringResource(id = R.string.adicionar_button),
             recusarBtnTitulo = "Cancelar",
             imagem = painterResource(id = R.mipmap.ic_editar),
             onConfirm = {
@@ -135,7 +140,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
 
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = tituloFinalizacaoDialog ?: "Produtos adicionados com sucesso!",
+            titulo = tituloFinalizacaoDialog ?: stringResource(id = R.string.sucesso_dialog_title),
             onDismiss = {
                 showSucessoDialog = false
                 onDismissRequest()
@@ -146,7 +151,7 @@ fun AddProdutoEstoque(onDismissRequest: () -> Unit, context: Context = androidx.
             },
             btnConfirmColor = Color(0xFF355070),
             imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
-            btnConfirmTitulo = "OK"
+            btnConfirmTitulo = stringResource(id = R.string.ok_button)
         )
     }
 }
