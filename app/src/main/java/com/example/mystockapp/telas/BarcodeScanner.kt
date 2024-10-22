@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
+import com.example.mystockapp.R
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -90,7 +91,7 @@ private suspend fun startCamera(
                             }
                         }
                         .addOnFailureListener { e ->
-                            onError(e.localizedMessage ?: "Erro desconhecido")
+                            onError(e.localizedMessage ?: context.getString(R.string.erro_desconhecido))
                         }
                         .addOnCompleteListener {
                             textRecognizer.process(image)
@@ -108,7 +109,7 @@ private suspend fun startCamera(
                                     }
                                 }
                                 .addOnFailureListener { e ->
-                                    onError(e.localizedMessage ?: "Erro desconhecido")
+                                    onError(e.localizedMessage ?: context.getString(R.string.erro_desconhecido))
                                 }
                                 .addOnCompleteListener {
                                     imageProxy.close()
@@ -127,8 +128,8 @@ private suspend fun startCamera(
                 imageAnalyzer
             )
         } catch (exc: Exception) {
-            onError(exc.localizedMessage ?: "Erro ao iniciar a câmera")
-            Log.e("BarcodeScannerView", "Erro ao iniciar a câmera", exc)
+            onError(exc.localizedMessage ?: context.getString(R.string.erro_iniciar_camera))
+            Log.e("BarcodeScannerView", context.getString(R.string.erro_iniciar_camera), exc)
         }
     }
 }

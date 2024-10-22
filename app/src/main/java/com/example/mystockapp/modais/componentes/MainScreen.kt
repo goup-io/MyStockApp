@@ -9,8 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.SideMenu
 import kotlinx.coroutines.launch
 
@@ -47,7 +49,7 @@ fun MainScreen() {
             }) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu",
+                    contentDescription = stringResource(id = R.string.menu_description),
                     tint = Color.Black,
                     modifier = Modifier.size(40.dp)
                 )

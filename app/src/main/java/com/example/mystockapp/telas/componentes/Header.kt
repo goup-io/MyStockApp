@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
@@ -56,7 +57,7 @@ fun Header(
         ) {
             Image(
                 painter = painterResource(id = R.mipmap.menu),
-                contentDescription = "menu",
+                contentDescription = stringResource(id = R.string.menu_description),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp)
@@ -73,7 +74,7 @@ fun Header(
         // Imagem da logo da empresa na direita
         Image(
             painter = painterResource(id = R.mipmap.mystock),
-            contentDescription = "Logo da Empresa",
+            contentDescription = stringResource(id = R.string.logo_empresa_description),
             modifier = Modifier.size(40.dp)
         )
     }

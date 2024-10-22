@@ -11,7 +11,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +70,9 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
     var tempValorCusto by remember { mutableStateOf("") }
     var tempValorVenda by remember { mutableStateOf("") }
 
+    // contexto local (a tela atual)
+    val contexto = LocalContext.current
+
     // Função que controla a exibição do modal
     fun handleAbrirModalConfirm(
         titulo: String,
@@ -123,7 +128,10 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ModalHeaderComponent(onDismissRequest = onDismissRequest, "Informações do Produto")
+                ModalHeaderComponent(
+                    onDismissRequest = onDismissRequest,
+                    stringResource(id = R.string.informacoes_produto_titulo)
+                )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
@@ -138,14 +146,14 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Codigo:",
+                                    label = stringResource(id = R.string.codigo_label),
                                     textValue = produtoInfo.codigo,
                                     onValueChange = { produtoInfo = produtoInfo.copy(codigo = it) },
                                     fieldType = KeyboardType.Number,
                                     error = showError && produtoInfo.codigo.isEmpty()
                                 )
                                 SelectField(
-                                    label = "Modelo:",
+                                    label = stringResource(id = R.string.modelo_label),
                                     selectedOption = produtoInfo.modelo,
                                     options = modelosOptions,
                                     disabled = true,
@@ -153,21 +161,21 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                                     error = showError && produtoInfo.modelo.isEmpty()
                                 )
                                 SelectField(
-                                    label = "Tamanho:",
+                                    label = stringResource(id = R.string.tamanho_label),
                                     selectedOption = produtoInfo.tamanho.toString(),
                                     disabled = true,
                                     options = tamanhosOptions,
                                     onOptionSelected = { produtoInfo = produtoInfo.copy(tamanho = it.toInt()) },
                                 )
                                 SelectField(
-                                    label = "Cor:",
+                                    label = stringResource(id = R.string.cor_label),
                                     selectedOption = produtoInfo.cor,
                                     disabled = true,
                                     options = coresOptions,
                                     onOptionSelected = { produtoInfo = produtoInfo.copy(cor = it) }
                                 )
                                 FormFieldCheck(
-                                    label = "Item Promocional",
+                                    label = stringResource(id = R.string.item_promocional_label),
                                     isChecked = isPromocional,
                                     onCheckedChange = {
                                         isPromocional = it
@@ -181,13 +189,13 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                             }
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Nome:",
+                                    label = stringResource(id = R.string.nome_label),
                                     textValue = produtoInfo.nome,
                                     onValueChange = { produtoInfo = produtoInfo.copy(nome = it) },
                                     error = showError && produtoInfo.nome.isEmpty()
                                 )
                                 FormField(
-                                    label = "Preço Custo:",
+                                    label = stringResource(id = R.string.preco_custo_label),
                                     textValue = tempValorCusto,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { input ->
@@ -199,7 +207,7 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                                     error = showError && produtoInfo.precoCusto <= 0.0
                                 )
                                 FormField(
-                                    label = "Preço Venda:",
+                                    label = stringResource(id = R.string.preco_venda_label),
                                     textValue = tempValorVenda,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { newValue ->
@@ -211,7 +219,7 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                                     error = showError && produtoInfo.precoRevenda <= 0.0
                                 )
                                 FormField(
-                                    label = "N. Itens:",
+                                    label = stringResource(id = R.string.quantidade_itens_label),
                                     textValue = produtoInfo.quantidade.toString(),
                                     fieldType = KeyboardType.Number,
                                     onValueChange = { newValue ->
@@ -234,14 +242,14 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Excluir",
+                        titulo = stringResource(id = R.string.excluir_button_text),
                         onClick = {
                             handleAbrirModalConfirm(
-                                "Tem certeza que deseja excluir o produto?",
+                                contexto.getString(R.string.confirm_excluir_titulo),
                                 R.mipmap.ic_excluir,
                                 { handleExcluirProd(idProduto) },
-                                "Excluir",
-                                "Cancelar",
+                                contexto.getString(R.string.excluir_confirm_button),
+                                contexto.getString(R.string.cancel_button),
                                 Color(0xFFD93D3D)
                             )
                         },
@@ -249,14 +257,14 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
                     )
                     Spacer(modifier = Modifier.width(18.dp))
                     ButtonComponent(
-                        titulo = "Editar",
+                        titulo = stringResource(id = R.string.editar_button_text),
                         onClick = {
                             handleAbrirModalConfirm(
-                                "Tem certeza que deseja editar o produto?",
+                                contexto.getString(R.string.confirm_editar_titulo),
                                 R.mipmap.ic_editar,
                                 { handleEditarProd(idProduto, produtoInfo) },
-                                "Editar",
-                                "Cancelar",
+                                contexto.getString(R.string.editar_confirm_button),
+                                contexto.getString(R.string.cancel_button),
                                 Color(0xFFBEA54C)
                             )
                         },

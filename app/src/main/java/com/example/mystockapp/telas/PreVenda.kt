@@ -42,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mystockapp.modais.ModalAdicionar
@@ -56,6 +57,7 @@ import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 import com.example.mystockapp.telas.componentes.MenuDrawer
+import com.example.mystockapp.R
 import kotlinx.coroutines.launch
 
 class PreVenda : ComponentActivity() {
@@ -107,7 +109,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     var isModalMaisInfo by remember { mutableStateOf(false) }
 
-    MenuDrawer(titulo = "Pré Venda") {
+    MenuDrawer(titulo = stringResource(R.string.pre_venda)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -142,7 +144,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "Resumo da Venda", fontSize = 16.sp)
+                            Text(text = stringResource(R.string.resumo_venda), fontSize = 16.sp)
 
                             Row {
                                 // Botões com bordas arredondadas
@@ -157,7 +159,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                     shape = RoundedCornerShape(5.dp),
                                     contentPadding = PaddingValues(0.dp) // Ajusta o padding
                                 ) {
-                                    Text(text = "AddDisc", fontSize = 12.sp)
+                                    Text(text = stringResource(R.string.adicionar_desconto), fontSize = 12.sp)
                                 }
 
                                 if (isModalAdicionarDesconto) {
@@ -165,8 +167,9 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                         vendaDetalhes = viewModel.vendaDetalhes,
                                         isDescontoProduto = false,
                                         onDismissRequest = { isModalAdicionarDesconto = false },
-                                        onSalvarDesconto = {  desconto, porcentagemDesconto ->
-                                            viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)}
+                                        onSalvarDesconto = { desconto, porcentagemDesconto ->
+                                            viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)
+                                        }
                                     )
                                 }
 
@@ -181,9 +184,9 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                     ),
                                     contentPadding = PaddingValues(0.dp)
                                 ) {
-                                    Text(text = "+", fontSize = 22.sp, color = Color.White) // Define a cor do texto
+                                    Text(text = stringResource(R.string.mais_info), fontSize = 22.sp, color = Color.White)
                                 }
-                                if(isModalMaisInfo){
+                                if (isModalMaisInfo) {
                                     ModalResumoVenda(
                                         detalhes = viewModel.vendaDetalhes,
                                         onDismissRequest = { isModalMaisInfo = false }
@@ -206,7 +209,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text = "Valor da Venda", fontSize = 14.sp)
+                                Text(text = stringResource(R.string.valor_venda), fontSize = 14.sp)
                                 Text(text = "R$ " + formatarPreco(viewModel.vendaDetalhes.valorTotal.toString().replace(".",",")), fontSize = 14.sp)
                             }
 
@@ -217,7 +220,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text = "Quantidade de Itens", fontSize = 14.sp)
+                                Text(text = stringResource(R.string.quantidade_itens), fontSize = 14.sp)
                                 Text(text = viewModel.vendaDetalhes.totalItens.toString(), fontSize = 14.sp)
                             }
 
@@ -252,7 +255,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "Carrinho", fontSize = 20.sp, color = Color.Black)
+                            Text(text = stringResource(R.string.carrinho), fontSize = 20.sp, color = Color.Black)
 
                             Row {
                                 Button(
@@ -266,7 +269,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                         containerColor = Color(0xFF355070)
                                     )
                                 ) {
-                                    Text(text = "Código", color = Color.White, fontSize = 12.sp)
+                                    Text(text = stringResource(R.string.codigo), color = Color.White, fontSize = 12.sp)
                                 }
 
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -284,7 +287,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                         containerColor = Color(0xFF355070)
                                     )
                                 ) {
-                                    Text(text = "Add Prod.", color = Color.White, fontSize = 12.sp)
+                                    Text(text = stringResource(R.string.add_prod), color = Color.White, fontSize = 12.sp)
                                 }
 
                                 if (isModalAddProdCarrinho) {
@@ -305,19 +308,19 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                         onConfirmarAdd = {quantidade -> viewModel.adicionar(quantidade)},
                                     )
                                 }
-                            }
                         }
+                    }
 
-                        // Tabela dentro da caixa grande
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(0.95f)
-                                .height(310.dp)
-                                .background(Color(0xFF355070))
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .align(Alignment.CenterHorizontally)
-                        ) {
+                    // Tabela dentro da caixa grande
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(0.95f)
+                            .height(310.dp)
+                            .background(Color(0xFF355070))
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .align(Alignment.CenterHorizontally)
+                    ) {
 
                             Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")
                             ScreenTable(
@@ -345,7 +348,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                     ) {
 
                         FormFieldRowComponent(
-                            label = "Código",
+                            label = stringResource(R.string.codigo),
                             fieldType = KeyboardType.Number,
                             textValue = if (codigo <= 0 || codigo == null) "" else codigo.toString(),
                             onValueChange = { codigo = it.toInt() },
@@ -354,7 +357,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         )
 
                         FormFieldSelectRowComponent(
-                            label = "Tipo Venda",
+                            label = stringResource(R.string.tipo_venda),
                             selectedOption = tipoVenda.tipo,
                             options = viewModel.tipoVendas.map { it.tipo},
                             onOptionSelected = {
@@ -373,12 +376,22 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         if( codigo <= 0 || tipoVenda.id <= 0){
                             showError = true
                         } else {
+                            Log.d("PreVenda", "Código: $codigo, Tipo Venda: ${tipoVenda.tipo}")
                             coroutineScope.launch {
                                 try {
+                                    Log.d("PreVenda", "Atualizando informações da venda")
+                                    Log.d("PreVenda - AQUI", "Tipo Venda: ${tipoVenda.id}, Código Vendedor: $codigo")
                                     viewModel.atualizarVendaInfo(tipoVendaId = tipoVenda.id, codigoVendedor = codigo)
                                     viewModel.realizarVenda()
                                 } catch (e: Exception) {
                                     Log.e("PreVenda", "Erro ao executar ação: ${e.message}")
+                                } finally {
+                                    tipoVenda = TipoVendasDataClass(
+                                        id = 0,
+                                        tipo = "",
+                                        desconto = 0.0
+                                    )
+                                    codigo = 0
                                 }
                                 tipoVenda = TipoVendasDataClass(
                                     id = 0,
@@ -396,7 +409,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         containerColor = Color(0xFF355070)
                     )
                 ) {
-                    Text(text = "Finalizar Venda", color = Color.White, fontSize = 16.sp)
+                    Text(text = stringResource(R.string.finalizar_venda), color = Color.White, fontSize = 16.sp)
                 }
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -228,7 +229,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ModalHeaderComponent(onDismissRequest = onDismissRequest, "Novo Produto")
+                ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.novo_produto))
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -244,26 +245,25 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 com.example.mystockapp.modais.FormField(
-                                    label = "Codigo:",
+                                    label = stringResource(id = R.string.codigo_label2),
                                     textValue = codigo,
                                     fieldType = KeyboardType.Number,
                                     onValueChange = { codigo = it },
                                     error = showError && codigo.isEmpty()
                                 )
                                 SelectField(
-                                    label = "Modelo:",
+                                    label = stringResource(id = R.string.modelo_label),
                                     selectedOption = modelo.nome,
-                                    options = modelosOptions.map {it.nome},
-                                    onOptionSelected = {
-                                        modeloNome ->
+                                    options = modelosOptions.map { it.nome },
+                                    onOptionSelected = { modeloNome ->
                                         val selectedModelo = modelosOptions.find { it.nome == modeloNome }
                                         selectedModelo?.let { modelo = it }
                                     },
                                     error = showError && modelo.id == -1
                                 )
                                 SelectField(
-                                    label = "Tamanho:",
-                                    selectedOption = if(tamanho.numero == -1) "" else tamanho.numero.toString(),
+                                    label = stringResource(id = R.string.tamanho_label),
+                                    selectedOption = if (tamanho.numero == -1) "" else tamanho.numero.toString(),
                                     options = tamanhosOptions.map { it.numero.toString() },
                                     onOptionSelected = { tamanhoNome ->
                                         val selectedTamanho = tamanhosOptions.find { it.numero.toString() == tamanhoNome }
@@ -272,31 +272,30 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                     error = showError && tamanho.id == -1
                                 )
                                 SelectField(
-                                    label = "Cor:",
+                                    label = stringResource(id = R.string.cor_label2),
                                     selectedOption = cor.nome,
-                                    options = coresOptions.map{ it.nome},
-                                    onOptionSelected = {
-                                            corSelected ->
+                                    options = coresOptions.map { it.nome },
+                                    onOptionSelected = { corSelected ->
                                         val selectedCor = coresOptions.find { it.nome == corSelected }
                                         selectedCor?.let { cor = it }
                                     },
                                     error = showError && cor.id == -1
                                 )
                                 com.example.mystockapp.components.FormFieldCheck(
-                                    label = "Item Promocional",
+                                    label = stringResource(id = R.string.item_promocional_label),
                                     isChecked = isPromocional,
                                     onCheckedChange = { isPromocional = it }
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
                                 com.example.mystockapp.modais.FormField(
-                                    label = "Nome:",
+                                    label = stringResource(id = R.string.nome_label2),
                                     textValue = nome,
                                     onValueChange = { nome = it },
                                     error = showError && nome.isEmpty()
                                 )
                                 com.example.mystockapp.modais.FormField(
-                                    label = "Preço Custo:",
+                                    label = stringResource(id = R.string.preco_custo_label),
                                     textValue = precoCusto,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { input ->
@@ -305,7 +304,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                     error = showError && precoCusto.isEmpty()
                                 )
                                 com.example.mystockapp.modais.FormField(
-                                    label = "Preço Venda:",
+                                    label = stringResource(id = R.string.preco_venda_label),
                                     textValue = precoVenda,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { input ->
@@ -314,7 +313,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                     error = showError && precoVenda.isEmpty()
                                 )
                                 com.example.mystockapp.modais.FormField(
-                                    label = "N. Itens:",
+                                    label = stringResource(id = R.string.n_itens_label),
                                     textValue = nItens,
                                     fieldType = KeyboardType.Number,
                                     onValueChange = { nItens = it },
@@ -332,7 +331,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                     horizontalArrangement = Arrangement.End
                 ) {
                     ButtonComponent(
-                        titulo = "Limpar",
+                        titulo = stringResource(id = R.string.limpar),
                         onClick ={
                             codigo = ""
                             modelo = Modelo(-1, "", "", "")
@@ -348,22 +347,22 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                     )
                     Spacer(modifier = Modifier.width(18.dp))
                     ButtonComponent(
-                        titulo = "Salvar",
+                        titulo = stringResource(id = R.string.salvar),
                         onClick = {
                             if (codigo.isNotEmpty() && modelo.id != -1 && tamanho.id != -1 && nome.isNotEmpty() && precoCusto.isNotEmpty() && precoVenda.isNotEmpty() && cor.id != -1 && nItens.isNotEmpty()) {
                                 coroutineScope.launch {
-                                        handleSaveProduto(
-                                            codigo,
-                                            cor,
-                                            modelo,
-                                            tamanho,
-                                            nome,
-                                            loja,
-                                            precoCusto.toDouble(),
-                                            precoVenda.toDouble(),
-                                            isPromocional,
-                                            nItens.toInt()
-                                        )
+                                    handleSaveProduto(
+                                        codigo,
+                                        cor,
+                                        modelo,
+                                        tamanho,
+                                        nome,
+                                        loja,
+                                        precoCusto.toDouble(),
+                                        precoVenda.toDouble(),
+                                        isPromocional,
+                                        nItens.toInt()
+                                    )
                                 }
                             } else {
                                 showError = true
@@ -379,7 +378,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     }
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = confirmarTitulo,
+            titulo = stringResource(id = R.string.produto_salvo_com_sucesso),
             onDismiss = {
                 showSucessoDialog = false
                 onDismissRequest()
@@ -390,10 +389,11 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
             },
             btnConfirmColor = Color(0xFF355070),
             imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
-            btnConfirmTitulo = "OK"
+            btnConfirmTitulo = stringResource(id = R.string.ok)
         )
     }
 }
+
 @Preview
 @Composable
 fun NovoProdutoDialogPreview() {
