@@ -349,7 +349,26 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                     ButtonComponent(
                         titulo = stringResource(id = R.string.salvar),
                         onClick = {
-                            // Lógica de salvar...
+                            if (codigo.isNotEmpty() && modelo.id != -1 && tamanho.id != -1 && nome.isNotEmpty() && precoCusto.isNotEmpty() && precoVenda.isNotEmpty() && cor.id != -1 && nItens.isNotEmpty()) {
+                                coroutineScope.launch {
+                                    handleSaveProduto(
+                                        codigo,
+                                        cor,
+                                        modelo,
+                                        tamanho,
+                                        nome,
+                                        loja,
+                                        precoCusto.toDouble(),
+                                        precoVenda.toDouble(),
+                                        isPromocional,
+                                        nItens.toInt()
+                                    )
+                                }
+                            } else {
+                                showError = true
+                                errorMessage = "Preencha todos os campos"
+                                imgCasoDeErro = R.mipmap.ic_excluir
+                            }
                         },
                         containerColor = Color(0xFF355070),
                     )

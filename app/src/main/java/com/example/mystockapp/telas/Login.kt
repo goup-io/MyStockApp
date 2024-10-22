@@ -70,6 +70,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var passwordState by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val authService = AuthService(RetrofitInstance.authApi)
     val viewModelFactory = AuthViewModelFactory(authService, LocalContext.current)
@@ -225,6 +226,23 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 shape = RoundedCornerShape(50.dp)
             ) {
                 Text(text = stringResource(id = R.string.enter_button), color = Color(0xFF355070), fontSize = 22.sp)
+            }
+
+            // Observa o estado do login
+            when (loginState) {
+                is AuthViewModel.LoginState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is AuthViewModel.LoginState.Success -> {
+                    onLoginSuccess()
+                }
+
+                is AuthViewModel.LoginState.Error -> {
+                    showError = true
+                    errorMessage = (loginState as AuthViewModel.LoginState.Error).message
+                }
+                else -> {}
             }
 
             if (showError) {

@@ -137,6 +137,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
     var tamanhosOptions by remember { mutableStateOf<List<Tamanho>>(emptyList()) }
     var precoOptions by remember { mutableStateOf(listOf(50.0,100.0,200.0))}
 
+    val contexto = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.fetchProdutos()
@@ -433,7 +434,11 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     androidx.compose.material3.Button(
-                        onClick = { /* Ação do primeiro botão */},
+                        onClick = {
+                            val telaBip = Intent(contexto, BipScreen::class.java)
+                            telaBip.putExtra("contextoBusca", "estoque")
+                            contexto.startActivity(telaBip)
+                                  },
 
                         modifier = Modifier
                             .weight(1f)
