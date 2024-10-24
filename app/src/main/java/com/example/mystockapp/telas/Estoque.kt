@@ -2,14 +2,12 @@ package com.example.mystockapp.telas
 
 import InformacoesProdutoDialog
 import NovoProdutoDialog
-import ProductTable
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,18 +16,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -38,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +50,6 @@ import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
-import com.example.mystockapp.api.lojaApi.LojaService
 import com.example.mystockapp.api.produtoApi.CorService
 import com.example.mystockapp.api.produtoApi.ModeloService
 import com.example.mystockapp.api.produtoApi.TamanhoService
@@ -68,18 +60,13 @@ import com.example.mystockapp.modais.ModalNovoModeloDialog
 import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.SelectField
 import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
-import com.example.mystockapp.modais.viewModels.EstoqueViewModel
+import com.example.mystockapp.telas.viewModels.EstoqueViewModel
 import com.example.mystockapp.models.produtos.Cor
 import com.example.mystockapp.models.produtos.Modelo
-import com.example.mystockapp.models.produtos.Produto
-import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.models.produtos.Tamanho
-import com.example.mystockapp.telas.componentes.Header
 import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.componentes.MenuDrawer
-import com.example.mystockapp.telas.componentes.Spinner
 import com.example.mystockapp.ui.theme.MyStockAppTheme
-import com.example.mystockapp.ui.theme.Cores
 import kotlinx.coroutines.launch
 
 
@@ -421,7 +408,21 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                        ScreenTable(viewModel.produtos, { product -> }, false)
+                        ScreenTable(
+                            products = viewModel.produtos,
+                            verMaisAction = {
+                                product ->
+                                viewModel.escolherProduto(product)
+                            },
+                            isPreVenda = false
+                        )
+
+                        if (viewModel.produtoSelecionado != null) {
+                            InformacoesProdutoDialog(
+                                onDismissRequest = { viewModel.desescolherProduto() },
+                                idProduto = viewModel.produtoSelecionado!!.id,
+                            )
+                        }
 
                     }
                 }

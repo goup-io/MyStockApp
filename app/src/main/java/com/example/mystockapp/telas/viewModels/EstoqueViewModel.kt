@@ -1,4 +1,4 @@
-package com.example.mystockapp.modais.viewModels
+package com.example.mystockapp.telas.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -12,10 +12,13 @@ import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
 import com.example.mystockapp.api.produtoApi.ProdutoService
+import com.example.mystockapp.modais.viewModels.ProdutoViewModel
+import com.example.mystockapp.models.produtos.Produto
 import com.example.mystockapp.models.produtos.ProdutoTable
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
-class EstoqueViewModel(private val idLoja: Int) : ViewModel() {
+class EstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
@@ -25,6 +28,8 @@ class EstoqueViewModel(private val idLoja: Int) : ViewModel() {
 
     var isSearching by mutableStateOf(false)
         private set
+
+    val gson = Gson()
 
     private val produtoService = ProdutoService(RetrofitInstance.produtoApi)
 
@@ -123,6 +128,39 @@ class EstoqueViewModel(private val idLoja: Int) : ViewModel() {
                 return EstoqueViewModel(idLoja) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+
+    var _produtoSelecionado = mutableStateOf<ProdutoTable?>(null)
+
+    override var produtoSelecionado: ProdutoTable?
+        get() = _produtoSelecionado.value
+        set(value) {
+            _produtoSelecionado.value = value
+        }
+
+
+    override fun escolherProduto(produto: ProdutoTable) {
+        produtoSelecionado = produto
+    }
+
+    override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
+        Log.d("Produto", "Pesquisando produto por id: $idEtp")
+
+        return try {
+            val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+            val produtoBuscado = produtoService.fetchEtpPorId(idEtp)
+            Log.d("Produto", "Produto encontrado: ${gson.toJson(produtoBuscado)}")
+            produtoBuscado
+        } catch (e: ApiException) {
+            errorMessage = "${e.message}"
+            null
+        } catch (e: NetworkException) {
+            errorMessage = "Network Error: ${e.message}"
+            null
+        } catch (e: GeneralException) {
+            errorMessage = "${e.message}"
+            null
         }
     }
 }
