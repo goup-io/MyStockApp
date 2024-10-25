@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -168,27 +169,28 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                 modelo = Modelo(-1, "", "", "")
                 cor = Cor(id = -1, nome = "")
                 tamanho = Tamanho(id = -1, numero = -1)
+                preco = 0.0
             }
 
 // Filtros
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(6.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
-                        .height(172.dp)
+                        .height(175.dp)
                         .shadow(8.dp, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(10.dp)
                     ) {
                         // Primeira linha (label e input)
                         Row(
@@ -197,6 +199,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         ) {
                             // SelectField para Modelo
                             SelectField(
+                                fieldHeight = 30.dp,
                                 label = stringResource(id = R.string.label_modelo),
                                 selectedOption = modelo.nome,
                                 options = modelosOptions.map { it.nome },
@@ -207,10 +210,11 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 modifier = Modifier.weight(1.4f)
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
+                            Spacer(modifier = Modifier.width(6.dp)) // Espaço entre os grupos
 
                             // SelectField para Cor
                             SelectField(
+                                fieldHeight = 30.dp,
                                 label = stringResource(id = R.string.label_cor),
                                 selectedOption = cor.nome,
                                 options = coresOptions.map { it.nome },
@@ -228,6 +232,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         ) {
                             // SelectField para Tamanho
                             SelectField(
+                                fieldHeight = 30.dp,
                                 label = stringResource(id = R.string.label_tamanho),
                                 selectedOption = if (tamanho.numero == -1) "" else tamanho.numero.toString(),
                                 options = tamanhosOptions.map { it.numero.toString() },
@@ -241,6 +246,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
                             // SelectField para Preço
                             SelectField(
+                                fieldHeight = 30.dp,
                                 label = stringResource(id = R.string.label_preco),
                                 selectedOption = if(preco == 0.0) "" else preco.toString(),
                                 options = precoOptions,
@@ -365,20 +371,27 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
                                 // Input para pesquisa
                                 Box(
+                                    contentAlignment = Alignment.CenterStart, // Alinha o conteúdo verticalmente ao centro na Box
                                     modifier = Modifier
-                                        .width(105.dp)
-                                        .height(20.dp)
-                                        .border(1.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                                        .width(107.dp)
+                                        .height(24.dp)
+                                        .border(0.5.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                                         .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                                        .padding(start = 8.dp) // Adiciona um padding à esquerda
                                 ) {
                                     BasicTextField(
                                         value = queryPesquisa,
                                         onValueChange = { queryPesquisa = it },
                                         singleLine = true,
-                                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
+                                        textStyle = androidx.compose.ui.text.TextStyle(
+                                            fontSize = 12.sp,
+                                            textAlign = TextAlign.Start // Alinha o texto à esquerda
+                                        ),
                                         modifier = Modifier.fillMaxSize()
                                     )
                                 }
+
+
 
                                 // Botão com ícone
                                 androidx.compose.material3.Button(
@@ -393,7 +406,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 },
                                     modifier = Modifier
                                         .width(30.dp)
-                                        .height(20.dp),
+                                        .height(24.dp),
                                     shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp),
                                     contentPadding = PaddingValues(0.dp),
                                     colors = ButtonDefaults.buttonColors(
