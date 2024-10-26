@@ -383,8 +383,10 @@ fun ModalAdicionar(
                                         onClick = {
                                             if (quantidadeAdd < produtoInfo.quantidade && isPreVenda) {
                                                 quantidadeAdd += 1
-                                            } else {
+                                            } else if(!isPreVenda){
                                                 quantidadeAdd +=1
+                                            } else {
+                                                quantidadeAdd
                                             }
                                         },
                                         modifier = Modifier

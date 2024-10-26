@@ -112,6 +112,11 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         carrinho = carrinho.copy(itensCarrinho = mutableListOf())
     }
 
+    fun verificarSeEstaCarrinho(produto: ProdutoTable):Boolean {
+        val itemEncontrado = carrinho.itensCarrinho.find { it.id == produto.id }
+        return itemEncontrado != null;
+    }
+
     fun adicionar(quantidade: Int) {
         atualizarQuantidadeProduto(quantidade)
 
@@ -126,6 +131,10 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 } else {
                     novosItensCarrinho.add(produto.copy(quantidadeToAdd = produto.quantidadeToAdd))
                 }
+            }
+            if (verificarSeEstaCarrinho(produto) && produto.quantidadeToAdd == 0){
+                val itemCarrinho = novosItensCarrinho.find { it.id == produto.id }
+                novosItensCarrinho.remove(itemCarrinho)
             }
         }
 
