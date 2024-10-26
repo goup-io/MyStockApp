@@ -376,12 +376,22 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         if( codigo <= 0 || tipoVenda.id <= 0){
                             showError = true
                         } else {
+                            Log.d("PreVenda", "Código: $codigo, Tipo Venda: ${tipoVenda.tipo}")
                             coroutineScope.launch {
                                 try {
+                                    Log.d("PreVenda", "Atualizando informações da venda")
+                                    Log.d("PreVenda - AQUI", "Tipo Venda: ${tipoVenda.id}, Código Vendedor: $codigo")
                                     viewModel.atualizarVendaInfo(tipoVendaId = tipoVenda.id, codigoVendedor = codigo)
                                     viewModel.realizarVenda()
                                 } catch (e: Exception) {
                                     Log.e("PreVenda", "Erro ao executar ação: ${e.message}")
+                                } finally {
+                                    tipoVenda = TipoVendasDataClass(
+                                        id = 0,
+                                        tipo = "",
+                                        desconto = 0.0
+                                    )
+                                    codigo = 0
                                 }
                                 tipoVenda = TipoVendasDataClass(
                                     id = 0,

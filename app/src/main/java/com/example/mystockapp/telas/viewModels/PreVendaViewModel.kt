@@ -47,6 +47,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         private set
 
     fun atualizarVendaInfo(tipoVendaId: Int, codigoVendedor: Int){
+        Log.d("Venda", "Atualizando vendaInfo: $tipoVendaId, $codigoVendedor")
         carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(tipoVendaId = tipoVendaId, codigoVendedor = codigoVendedor))
     }
 
