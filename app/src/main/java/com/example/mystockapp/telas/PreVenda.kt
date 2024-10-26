@@ -428,12 +428,6 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                     )
                                     codigo = 0
                                 }
-                                tipoVenda = TipoVendasDataClass(
-                                    id = 0,
-                                    tipo = "",
-                                    desconto = 0.0
-                                )
-                                codigo = 0
                             }
                         } },
                     modifier = Modifier

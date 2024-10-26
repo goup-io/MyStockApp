@@ -70,7 +70,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
