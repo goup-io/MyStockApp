@@ -55,17 +55,17 @@ fun ResumoLista(detalhes: VendaDetalhes) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ResumoItem(stringResource(id = R.string.total_de_itens), detalhes.totalItens.toString())
+        ResumoItem(stringResource(id = R.string.total_de_itens), "R$ %.2f".format(detalhes.totalItens.toFloat()))
         DottedLineComponent()
-        ResumoItem(stringResource(id = R.string.subtotal_1), detalhes.subtotal1.toString())
+        ResumoItem(stringResource(id = R.string.subtotal_1), "R$ %.2f".format(detalhes.subtotal1.toFloat()))
         DottedLineComponent()
-        ResumoItem(stringResource(id = R.string.desconto_em_produtos), detalhes.valorDescontoProdutos.toString())
+        ResumoItem(stringResource(id = R.string.desconto_em_produtos), "R$ %.2f".format(detalhes.valorDescontoProdutos.toFloat()))
         DottedLineComponent()
-        ResumoItem(stringResource(id = R.string.subtotal_2), detalhes.subtotal2.toString())
+        ResumoItem(stringResource(id = R.string.subtotal_2), "R$ %.2f".format(detalhes.subtotal2.toFloat()))
         DottedLineComponent()
-        ResumoItem(stringResource(id = R.string.desconto_na_venda), detalhes.valorDescontoVenda.toString())
+        ResumoItem(stringResource(id = R.string.desconto_na_venda), "R$ %.2f".format(detalhes.valorDescontoVenda.toFloat()))
         DottedLineComponent()
-        ResumoItem(stringResource(id = R.string.valor_total), detalhes.valorTotal.toString(), fontWeight = FontWeight.Bold)
+        ResumoItem(stringResource(id = R.string.valor_total), "R$ %.2f".format(detalhes.valorTotal.toFloat()), fontWeight = FontWeight.Bold)
     }
 }
 

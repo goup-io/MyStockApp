@@ -38,13 +38,14 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
 
     var _produtoSelecionado = mutableStateOf<ProdutoTable?>(null)
 
+    var abrirModalAdicionarMinimizado by mutableStateOf(false)
+
     var carrinho by mutableStateOf(
         Carrinho(
             vendaInfo = VendaInfo(0.0, -1, -100),
             itensCarrinho = mutableListOf()
         )
     )
-        private set
 
     fun atualizarVendaInfo(tipoVendaId: Int, codigoVendedor: Int){
         Log.d("Venda", "Atualizando vendaInfo: $tipoVendaId, $codigoVendedor")
@@ -109,7 +110,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
 
     fun limparProdutos() {
         produtos = produtos
-            .map { it.copy(quantidadeToAdd = 0) }
+            .map { it.copy(quantidadeToAdd = 0, valorDesconto = 0.0) }
             .filter { it.quantidadeToAdd > 0 }
     }
 
@@ -182,20 +183,28 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     fun adicionarDescontoVenda(valorDesconto: Double, porcentagemDesconto: Double){
-        Log.d("Desconto", "FUI CHAMADO COM O VALOR: $valorDesconto")
         vendaDetalhes = vendaDetalhes.copy(valorDescontoVenda = valorDesconto)
         vendaDetalhes = vendaDetalhes.copy(porcentagemDesconto = porcentagemDesconto)
         carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = valorDesconto))
         atualizarVendaDetalhes()
     }
 
-    fun adicionarDescontoProd(ProdutoTable: ProdutoTable, valorDesconto: Double){
-//        val itemCarrinho = carrinho.itensCarrinho.find { it.id == ProdutoTable.id }
-//        if (itemCarrinho != null) {
-//            val updatedItem = itemCarrinho.copy(valorDesconto = valorDesconto)
-//            carrinho.itensCarrinho[carrinho.itensCarrinho.indexOf(itemCarrinho)] = updatedItem
-//        }
-//        atualizarVendaDetalhes()
+    fun adicionarDescontoProd(produtoParaAtualizar: ProdutoTable, valorDesconto: Double) {
+        val novosItensCarrinho = carrinho.itensCarrinho.toMutableList()
+
+        produtos.forEach { produto ->
+            val itemCarrinho = novosItensCarrinho.find { it.id == produtoParaAtualizar.id }
+            if (itemCarrinho != null) {
+                val updatedItem = itemCarrinho.copy(valorDesconto = valorDesconto)
+                novosItensCarrinho[novosItensCarrinho.indexOf(itemCarrinho)] = updatedItem
+            } else {
+                produto
+            }
+        }
+
+        carrinho = carrinho.copy(itensCarrinho = novosItensCarrinho)
+
+        atualizarVendaDetalhes()
     }
 
     suspend fun fetchProdutos() {
@@ -233,7 +242,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                     ProdutoVendaReq(
                         etpId = it.id,
                         quantidade = it.quantidadeToAdd,
-                        desconto = it.valorDesconto
+                        desconto = it.valorDesconto * it.quantidadeToAdd
                     )
                 }
                 val vendaReq = VendaPost(

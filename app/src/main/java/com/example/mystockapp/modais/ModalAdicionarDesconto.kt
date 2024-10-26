@@ -40,7 +40,8 @@ fun ModalAdicionarDesconto(
     vendaDetalhes: VendaDetalhes = VendaDetalhes(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
     produtoInfo: ProdutoTable = ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0),
     isDescontoProduto: Boolean,
-    onSalvarDesconto: (Double, Double) -> Unit,
+    onSalvarDescontoVenda: (Double, Double) -> Unit,
+    onSalvarDescontoProduto:(Double) -> Unit,
     fontSize: TextUnit = 12.sp,
     onDismissRequest: () -> Unit
 ) {
@@ -55,11 +56,13 @@ fun ModalAdicionarDesconto(
     // Inicialize as variáveis de acordo com a condição
     if (!isDescontoProduto) {
         porcentagem = vendaDetalhes.porcentagemDesconto.toString()
-        valorAtual = "R$ %.2f".format(vendaDetalhes.subtotal1)
+        valorAtual = "R$ %.2f".format(vendaDetalhes.subtotal2)
         valorCalculado = "R$ %.2f".format(vendaDetalhes.valorDescontoVenda)
     } else {
-        porcentagem = vendaDetalhes.valorDescontoProdutos.toString()
-        valorAtual = "R$ %.2f".format(produtoInfo.preco)
+        Log.d("ModalAdicionarDesconto", "produtoInfo: $produtoInfo")
+        porcentagem = (((produtoInfo.valorDesconto * produtoInfo.quantidadeToAdd) / (produtoInfo.preco * produtoInfo.quantidadeToAdd)) * 100.0f).toString()
+        valorAtual = "R$ %.2f".format((produtoInfo.preco * produtoInfo.quantidadeToAdd))
+        valorCalculado = "R$ %.2f".format(produtoInfo.valorDesconto * produtoInfo.quantidadeToAdd)
     }
 
     // Função para calcular o valor após aplicar a porcentagem
@@ -121,7 +124,7 @@ fun ModalAdicionarDesconto(
                                 FormField(
                                     label = stringResource(id = R.string.porcentagem_label),
                                     placeholder = "0.0",
-                                    textValue = if (porcentagem == "0.0") "" else porcentagem,
+                                    textValue = if (porcentagem == "0.0" || porcentagem.isNullOrBlank() || porcentagem == "NaN" || porcentagem == "00,00" || porcentagem == "0,00" || porcentagem == "0.00" || porcentagem.toFloat() <= 0.0) "" else "%.2f".format(porcentagem.toFloat()),
                                     width = 300.dp,
                                     fieldType = KeyboardType.Number,
                                     onValueChange = { input ->
@@ -174,7 +177,25 @@ fun ModalAdicionarDesconto(
                                         fontWeight = FontWeight.Normal
                                     )
                                     Text(
-                                        text = valorPosDesconto,
+                                        text = "R$ %.2f".format(produtoInfo.preco),
+                                        fontSize = fontSize,
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                DottedLineComponent() // Linha pontilhada
+                                Spacer(modifier = Modifier.height(3.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.valor_unitario_com_desconto),
+                                        fontSize = fontSize,
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                    Text(
+                                        text = if (porcentagem == "0.0" || porcentagem.isNullOrBlank() || porcentagem == "NaN") "R$ %.2f".format(produtoInfo.preco) else "R$ %.2f".format((produtoInfo.preco * (1 - (porcentagem.toFloat() / 100)))),
                                         fontSize = fontSize,
                                         fontWeight = FontWeight.Normal
                                     )
@@ -238,11 +259,17 @@ fun ModalAdicionarDesconto(
                             ButtonComponent(
                                 titulo = stringResource(id = R.string.salvar_button),
                                 onClick = {
-                                    val valorCalculadoDouble = valorCalculado
-                                        .replace("[^\\d,.]".toRegex(), "")
-                                        .replace(",", ".")
-                                        .toDoubleOrNull() ?: 0.0
-                                    onSalvarDesconto(valorCalculadoDouble, porcentagem.toDouble())
+                                    if (isDescontoProduto){
+                                       val valorUnitDesconto = produtoInfo.preco - (produtoInfo.preco * (1 - (porcentagem.toFloat() / 100)))
+                                        Log.d("ModalAdicionarDesconto", "Chegamos aqui dentro: $valorUnitDesconto")
+                                        onSalvarDescontoProduto(valorUnitDesconto)
+                                    } else {
+                                        val valorCalculadoDouble = valorCalculado
+                                            .replace("[^\\d,.]".toRegex(), "")
+                                            .replace(",", ".")
+                                            .toDoubleOrNull() ?: 0.0
+                                        onSalvarDescontoVenda(valorCalculadoDouble, porcentagem.toDouble())
+                                    }
                                     onDismissRequest()
                                 },
                                 containerColor = Color(0xFF355070),
@@ -271,9 +298,9 @@ fun ModalAdicionarDescontoPreview() {
     // Simulando o comportamento de dismiss para visualização no preview
     ModalAdicionarDesconto(
         vendaDetalhes = VendaDetalhes(0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0),
-        isDescontoProduto = true,
-        onSalvarDesconto = { _, _ -> },
+        isDescontoProduto = false,
+        onSalvarDescontoVenda = { _, _ -> },
         onDismissRequest = {},
-
+        onSalvarDescontoProduto = { _ -> }
     )
 }
