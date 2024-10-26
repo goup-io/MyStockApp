@@ -393,7 +393,12 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             label = stringResource(R.string.codigo),
                             fieldType = KeyboardType.Number,
                             textValue = if (codigo <= 0 || codigo == null) "" else codigo.toString(),
-                            onValueChange = { codigo = it.toInt() },
+                            onValueChange = {
+                                input ->
+                                val novoTexto = input
+                                    .replace("\\D".toRegex(), "")
+                                codigo = if (novoTexto == "") 0 else novoTexto.toInt()
+                                            },
                             width = 120.dp,
                             error = showError && codigo <= 0 || codigo == null
                         )
