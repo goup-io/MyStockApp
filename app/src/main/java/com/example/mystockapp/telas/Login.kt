@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -69,12 +70,24 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val authService = AuthService(RetrofitInstance.authApi)
     val viewModelFactory = AuthViewModelFactory(authService, LocalContext.current)
     val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val loginState by viewModel.loginState.collectAsState()
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is AuthViewModel.LoginState.Success -> onLoginSuccess()
+            is AuthViewModel.LoginState.Error -> {
+                showError = true
+                errorMessage = (loginState as AuthViewModel.LoginState.Error).message
+            }
+            else -> showError = false
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -128,7 +141,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         if (showError && emailState.isEmpty()) Color.Red else Color.Transparent,
                         RoundedCornerShape(50.dp)
                     ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                singleLine = true,
+                maxLines = 1,
                 placeholder = { Text(stringResource(id = R.string.user_placeholder)) },
                 leadingIcon = {
                     Icon(
@@ -172,7 +187,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         RoundedCornerShape(50.dp)
                     ),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                singleLine = true,
+                maxLines = 1,
                 placeholder = { Text(stringResource(id = R.string.password_placeholder)) },
                 leadingIcon = {
                     Icon(
@@ -207,12 +224,15 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 )
             )
 
+            var msgEmptyField = stringResource(id = R.string.error_message_empty_fields)
+
             Button(
                 onClick = {
                     if (emailState.isNotEmpty() && passwordState.isNotEmpty()) {
                         viewModel.login(emailState, passwordState)
                     } else {
                         showError = true
+                        errorMessage = msgEmptyField
                     }
                 },
                 modifier = Modifier
@@ -229,7 +249,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
             if (showError) {
                 Text(
-                    text = stringResource(id = R.string.error_message_empty_fields),
+                    text = errorMessage,
                     color = Color(0xFFEF233C),
                     modifier = Modifier.padding(top = 8.dp),
                     style = TextStyle(

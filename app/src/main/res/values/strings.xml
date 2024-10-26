@@ -24,6 +24,7 @@
     <string name="user_placeholder">usuário</string>
     <string name="password_placeholder">*****</string>
     <string name="error_message_empty_fields">Por favor, preencha todos os campos.</string>
+    <string name="error_message_invalid_credentials">Usuário e/ou senha inválidos</string>
 
     <!-- Strings for Pré-Venda -->
     <string name="pre_venda">Pré Venda</string>
