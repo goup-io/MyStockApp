@@ -162,6 +162,7 @@
     <string name="valor_calculado_label">Valor Calculado:</string>
     <string name="valor_unitario_label">Valor Unitário</string>
     <string name="valor_atual_label">Valor Atual</string>
+    <string name="valor_unitario_com_desconto">Valor Unit. com Desconto</string>
     <string name="valor_apos_desconto_label">Valor Após o Desconto</string>
 
     <string name="add_produto_estoque_title">Add Produto no Estoque</string>
@@ -173,6 +174,7 @@
 
     <string name="adicionar_carrinho">Adicionar no Carrinho</string>
     <string name="adicionar_estoque">Adicionar no Estoque</string>
+    <string name="mais_informacoes">Mais Informações</string>
     <string name="preco">Preço:</string>
     <string name="preco_total">R$ %1$s</string>
     <string name="diminuir_quantidade">Diminuir Quantidade</string>

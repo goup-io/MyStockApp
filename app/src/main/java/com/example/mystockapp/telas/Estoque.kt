@@ -523,6 +523,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                         onConfirmarAdd = { quantidade ->
                             addProdEstoqueViewModel.adicionarNoEstoque(quantidade)
                         },
+                        isMinimized = false,
+                        titulo = stringResource(R.string.adicionar_estoque)
                     )
                 }
 

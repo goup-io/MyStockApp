@@ -38,16 +38,16 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
 
     var _produtoSelecionado = mutableStateOf<ProdutoTable?>(null)
 
+    var abrirModalAdicionarMinimizado by mutableStateOf(false)
+
     var carrinho by mutableStateOf(
         Carrinho(
             vendaInfo = VendaInfo(0.0, -1, -100),
             itensCarrinho = mutableListOf()
         )
     )
-        private set
 
     fun atualizarVendaInfo(tipoVendaId: Int, codigoVendedor: Int){
-        Log.d("Venda", "Atualizando vendaInfo: $tipoVendaId, $codigoVendedor")
         carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(tipoVendaId = tipoVendaId, codigoVendedor = codigoVendedor))
     }
 
@@ -74,12 +74,9 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
-        Log.d("Produto", "Pesquisando produto por id: $idEtp")
-
         return try {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
             val produtoBuscado = produtoService.fetchEtpPorId(idEtp)
-            Log.d("Produto", "Produto encontrado: ${gson.toJson(produtoBuscado)}")
             produtoBuscado
         } catch (e: ApiException) {
             errorMessage = "${e.message}"
@@ -94,7 +91,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     fun atualizarQuantidadeProduto(quantidade: Int){
-        Log.d("Produto", "Atualizando quantidade do produto: $_produtoSelecionado")
         produtoSelecionado = produtoSelecionado?.copy(quantidadeToAdd = quantidade)
         produtos = produtos.map {
             if (it.id == produtoSelecionado!!.id) {
@@ -103,18 +99,22 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 it
             }
         }
-        Log.d("Produto", "Produto atualizado: ${gson.toJson(produtoSelecionado)}")
     }
 
 
     fun limparProdutos() {
         produtos = produtos
-            .map { it.copy(quantidadeToAdd = 0) }
+            .map { it.copy(quantidadeToAdd = 0, valorDesconto = 0.0) }
             .filter { it.quantidadeToAdd > 0 }
     }
 
     fun limparCarrinho(){
         carrinho = carrinho.copy(itensCarrinho = mutableListOf())
+    }
+
+    fun verificarSeEstaCarrinho(produto: ProdutoTable):Boolean {
+        val itemEncontrado = carrinho.itensCarrinho.find { it.id == produto.id }
+        return itemEncontrado != null;
     }
 
     fun adicionar(quantidade: Int) {
@@ -132,10 +132,13 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                     novosItensCarrinho.add(produto.copy(quantidadeToAdd = produto.quantidadeToAdd))
                 }
             }
+            if (verificarSeEstaCarrinho(produto) && produto.quantidadeToAdd == 0){
+                val itemCarrinho = novosItensCarrinho.find { it.id == produto.id }
+                novosItensCarrinho.remove(itemCarrinho)
+            }
         }
 
         carrinho = carrinho.copy(itensCarrinho = novosItensCarrinho)
-
         atualizarVendaDetalhes()
     }
 
@@ -153,7 +156,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     fun atualizarPosVenda(){
         vendaDetalhes = vendaDetalhes.copy(valorDescontoVenda = 0.0)
         vendaDetalhes = vendaDetalhes.copy(porcentagemDesconto = 0.0)
-        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = 0.0))
+        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = 0.0, codigoVendedor = 0, tipoVendaId = 0))
         atualizarVendaDetalhes()
     }
     private fun calcularValorTotal(): Double {
@@ -161,7 +164,10 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     private fun calcularValorDescontoVenda(): Double {
-        return vendaDetalhes.valorDescontoVenda
+        val porcentagemDescAtual = vendaDetalhes.porcentagemDesconto
+        val novoValorVenda = (porcentagemDescAtual / 100) * calcularSubtotal1()
+        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = novoValorVenda))
+        return novoValorVenda;
     }
 
     private fun calcularSubtotal2(): Double {
@@ -182,30 +188,34 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     fun adicionarDescontoVenda(valorDesconto: Double, porcentagemDesconto: Double){
-        Log.d("Desconto", "FUI CHAMADO COM O VALOR: $valorDesconto")
         vendaDetalhes = vendaDetalhes.copy(valorDescontoVenda = valorDesconto)
         vendaDetalhes = vendaDetalhes.copy(porcentagemDesconto = porcentagemDesconto)
         carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = valorDesconto))
         atualizarVendaDetalhes()
     }
 
-    fun adicionarDescontoProd(ProdutoTable: ProdutoTable, valorDesconto: Double){
-//        val itemCarrinho = carrinho.itensCarrinho.find { it.id == ProdutoTable.id }
-//        if (itemCarrinho != null) {
-//            val updatedItem = itemCarrinho.copy(valorDesconto = valorDesconto)
-//            carrinho.itensCarrinho[carrinho.itensCarrinho.indexOf(itemCarrinho)] = updatedItem
-//        }
-//        atualizarVendaDetalhes()
+    fun adicionarDescontoProd(produtoParaAtualizar: ProdutoTable, valorDesconto: Double) {
+        val novosItensCarrinho = carrinho.itensCarrinho.toMutableList()
+
+        produtos.forEach { produto ->
+            val itemCarrinho = novosItensCarrinho.find { it.id == produtoParaAtualizar.id }
+            if (itemCarrinho != null) {
+                val updatedItem = itemCarrinho.copy(valorDesconto = valorDesconto)
+                novosItensCarrinho[novosItensCarrinho.indexOf(itemCarrinho)] = updatedItem
+            } else {
+                produto
+            }
+        }
+
+        carrinho = carrinho.copy(itensCarrinho = novosItensCarrinho)
+
+        atualizarVendaDetalhes()
     }
 
     suspend fun fetchProdutos() {
         try {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
             val produtosBuscados = produtoService.fetchProdutosTabela(idLoja = idLoja)
-
-            val produtosAtuais = produtos
-            Log.d("FetchProdutos", "fetchProdutos: ${gson.toJson(produtosAtuais)}")
-            Log.d("FetchProdutos", "fetchProdutos: ${gson.toJson(produtos)}")
 
             produtos = produtosBuscados.map { produtoBuscado ->
                 val produtoExistente = produtos.find { it.id == produtoBuscado.id }
@@ -233,16 +243,14 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                     ProdutoVendaReq(
                         etpId = it.id,
                         quantidade = it.quantidadeToAdd,
-                        desconto = it.valorDesconto
+                        desconto = it.valorDesconto * it.quantidadeToAdd
                     )
                 }
                 val vendaReq = VendaPost(
                     vendaReq = carrinho.vendaInfo,
-
                     produtosVendaReq = produtosVendaReq
                 )
                 val vendaRes = vendaService.createVenda(vendaReq)
-                Log.d("Venda", "Venda realizada com sucesso: ${vendaRes}")
                 limparCarrinho()
                 limparProdutos()
                 atualizarPosVenda()

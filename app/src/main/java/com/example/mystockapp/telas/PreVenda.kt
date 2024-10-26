@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,6 +56,7 @@ import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.R
+import com.example.mystockapp.models.produtos.ProdutoTable
 import kotlinx.coroutines.launch
 
 class PreVenda : ComponentActivity() {
@@ -108,6 +107,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
     var isModalAdicionarDesconto by remember { mutableStateOf(false) }
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     var isModalMaisInfo by remember { mutableStateOf(false) }
+    var isDescontoProduto by remember {mutableStateOf(false)}
 
     MenuDrawer(titulo = stringResource(R.string.pre_venda)) {
         Column(
@@ -150,6 +150,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 // Botões com bordas arredondadas
                                 Button(
                                     onClick = {
+                                        isDescontoProduto = false
                                         isModalAdicionarDesconto = true
                                     },
                                     modifier = Modifier
@@ -165,10 +166,20 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 if (isModalAdicionarDesconto) {
                                     ModalAdicionarDesconto(
                                         vendaDetalhes = viewModel.vendaDetalhes,
-                                        isDescontoProduto = false,
-                                        onDismissRequest = { isModalAdicionarDesconto = false },
-                                        onSalvarDesconto = { desconto, porcentagemDesconto ->
+                                        isDescontoProduto = isDescontoProduto,
+                                        produtoInfo = viewModel.produtoSelecionado ?: ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0),
+                                        onDismissRequest = {
+                                            viewModel.desescolherProduto()
+                                            isModalAdicionarDesconto = false
+                                        },
+                                        onSalvarDescontoVenda = { desconto, porcentagemDesconto ->
                                             viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)
+                                        },
+                                        onSalvarDescontoProduto = { valorDesconto ->
+                                            viewModel.adicionarDescontoProd(
+                                                viewModel.produtoSelecionado ?: ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0) ,
+                                                valorDesconto
+                                            )
                                         }
                                     )
                                 }
@@ -299,13 +310,15 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                     )
                                 }
 
-                                if (viewModel.produtoSelecionado != null){
+                                if (viewModel.produtoSelecionado != null && !viewModel.abrirModalAdicionarMinimizado && !isModalAdicionarDesconto) {
                                     isModalAddProdCarrinho = false
                                     ModalAdicionar(
                                         onDismissRequest = { viewModel.desescolherProduto() },
                                         viewModel = viewModel,
                                         isPreVenda = true,
                                         onConfirmarAdd = {quantidade -> viewModel.adicionar(quantidade)},
+                                        isMinimized = false,
+                                        titulo = stringResource(R.string.adicionar_produto)
                                     )
                                 }
                         }
@@ -322,12 +335,32 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                            Log.d("Composable", "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}")
-                            ScreenTable(
-                                products = viewModel.carrinho.itensCarrinho,
-                                verMaisAction = { },
-                                isPreVenda = true
+                        ScreenTable(
+                            products = viewModel.carrinho.itensCarrinho,
+                            verMaisAction = { produto ->
+                                viewModel.escolherProduto(produto)
+                                viewModel.abrirModalAdicionarMinimizado = true
+                            },
+                            isPreVenda = true,
+                        )
+                        if (viewModel.produtoSelecionado != null && viewModel.abrirModalAdicionarMinimizado) {
+                            ModalAdicionar(
+                                onDismissRequest = { viewModel.desescolherProduto() },
+                                viewModel = viewModel,
+                                isPreVenda = true,
+                                onConfirmarAdd = { quantidade -> viewModel.adicionar(quantidade) },
+                                isMinimized = true,
+                                titulo = stringResource(R.string.mais_informacoes),
+                                abrirDesconto = {
+                                    isDescontoProduto = true
+                                    isModalAdicionarDesconto = true
+                                    viewModel.abrirModalAdicionarMinimizado = false
+                                },
+                                abrirAdicionarCarrinho = {
+                                    viewModel.abrirModalAdicionarMinimizado = false
+                                                         },
                             )
+                        }
                         }
                     }
                 }
@@ -351,7 +384,12 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             label = stringResource(R.string.codigo),
                             fieldType = KeyboardType.Number,
                             textValue = if (codigo <= 0 || codigo == null) "" else codigo.toString(),
-                            onValueChange = { codigo = it.toInt() },
+                            onValueChange = {
+                                input ->
+                                val novoTexto = input
+                                    .replace("\\D".toRegex(), "")
+                                codigo = if (novoTexto == "") 0 else novoTexto.toInt()
+                                            },
                             width = 120.dp,
                             error = showError && codigo <= 0 || codigo == null
                         )
@@ -376,11 +414,8 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                         if( codigo <= 0 || tipoVenda.id <= 0){
                             showError = true
                         } else {
-                            Log.d("PreVenda", "Código: $codigo, Tipo Venda: ${tipoVenda.tipo}")
                             coroutineScope.launch {
                                 try {
-                                    Log.d("PreVenda", "Atualizando informações da venda")
-                                    Log.d("PreVenda - AQUI", "Tipo Venda: ${tipoVenda.id}, Código Vendedor: $codigo")
                                     viewModel.atualizarVendaInfo(tipoVendaId = tipoVenda.id, codigoVendedor = codigo)
                                     viewModel.realizarVenda()
                                 } catch (e: Exception) {
