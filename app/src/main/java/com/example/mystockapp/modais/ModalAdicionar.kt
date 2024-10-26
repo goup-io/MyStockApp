@@ -106,8 +106,6 @@ fun ModalAdicionar(
                 produtoInfo = produtoSelecionado
                 quantidadeAdd = viewModel.produtoSelecionado?.quantidadeToAdd ?: 0
                 tempPreco = formatarPreco(produtoInfo.preco.toString().replace(".", ","))
-                Log.d("ModalAdicionar", "Produto selecionado: ${viewModel.produtoSelecionado}")
-                Log.d("ModalAdicionar", "quantidade que já tem: ${viewModel.produtoSelecionado?.quantidadeToAdd}")
             } else {
                 Log.d("ModalAdicionar", "Produto não encontrado.")
             }
@@ -383,8 +381,10 @@ fun ModalAdicionar(
 
                                     IconButton(
                                         onClick = {
-                                            if (quantidadeAdd < produtoInfo.quantidade) {
+                                            if (quantidadeAdd < produtoInfo.quantidade && isPreVenda) {
                                                 quantidadeAdd += 1
+                                            } else {
+                                                quantidadeAdd +=1
                                             }
                                         },
                                         modifier = Modifier

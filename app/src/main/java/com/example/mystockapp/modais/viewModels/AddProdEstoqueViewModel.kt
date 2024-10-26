@@ -117,19 +117,24 @@ class AddProdEstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoVie
                 Log.d("AddProdEstoqueViewModel", "produtosParaAdd: ${gson.toJson(produtosParaAdd)}")
                 produtoService.addProdutosEstoque(produtosParaAdd, idLoja)
                 sucessoDialogTitulo = "Produto adicionado com sucesso!"
+                imgCasoDeErro = R.mipmap.ic_sucesso
                 showSucessoDialog = true
             } catch (e: ApiException) {
-                sucessoDialogTitulo = "Erro ao adicionar produto"
+                if (quantidade <=0 ){
+                    sucessoDialogTitulo = "Quantidade de produtos precisa ser maior que 0"
+                } else {
+                    sucessoDialogTitulo = "Erro ao adicionar produto"
+                }
                 imgCasoDeErro = R.mipmap.ic_excluir
-                throw e
+                showSucessoDialog = true
             } catch (e: NetworkException) {
                 imgCasoDeErro = R.mipmap.ic_excluir
                 sucessoDialogTitulo = "Erro ao adicionar produto"
-                throw e
+                showSucessoDialog = true
             } catch (e: GeneralException) {
                 imgCasoDeErro = R.mipmap.ic_excluir
                 sucessoDialogTitulo = "Erro ao adicionar produto"
-                throw e
+                showSucessoDialog = true
             }
         }
     }
