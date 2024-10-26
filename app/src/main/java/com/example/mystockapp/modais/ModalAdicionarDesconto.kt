@@ -46,8 +46,6 @@ fun ModalAdicionarDesconto(
     onDismissRequest: () -> Unit
 ) {
 
-    Log.i("ModalAdicionarDesconto", "vendaDetalhes: $vendaDetalhes")
-
     // Declare as variáveis fora do bloco if-else
     var porcentagem by remember { mutableStateOf("") }
     var valorCalculado by remember { mutableStateOf("R$ 0,00") } // Valor inicial ajustado
@@ -59,7 +57,6 @@ fun ModalAdicionarDesconto(
         valorAtual = "R$ %.2f".format(vendaDetalhes.subtotal2)
         valorCalculado = "R$ %.2f".format(vendaDetalhes.valorDescontoVenda)
     } else {
-        Log.d("ModalAdicionarDesconto", "produtoInfo: $produtoInfo")
         porcentagem = (((produtoInfo.valorDesconto * produtoInfo.quantidadeToAdd) / (produtoInfo.preco * produtoInfo.quantidadeToAdd)) * 100.0f).toString()
         valorAtual = "R$ %.2f".format((produtoInfo.preco * produtoInfo.quantidadeToAdd))
         valorCalculado = "R$ %.2f".format(produtoInfo.valorDesconto * produtoInfo.quantidadeToAdd)
@@ -261,7 +258,6 @@ fun ModalAdicionarDesconto(
                                 onClick = {
                                     if (isDescontoProduto){
                                        val valorUnitDesconto = produtoInfo.preco - (produtoInfo.preco * (1 - (porcentagem.toFloat() / 100)))
-                                        Log.d("ModalAdicionarDesconto", "Chegamos aqui dentro: $valorUnitDesconto")
                                         onSalvarDescontoProduto(valorUnitDesconto)
                                     } else {
                                         val valorCalculadoDouble = valorCalculado

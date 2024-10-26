@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -154,7 +152,6 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                     onClick = {
                                         isDescontoProduto = false
                                         isModalAdicionarDesconto = true
-                                        Log.d("Prevenda", "oie")
                                     },
                                     modifier = Modifier
                                         .padding(end = 8.dp)
@@ -167,8 +164,6 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 }
 
                                 if (isModalAdicionarDesconto) {
-                                    Log.d("PreVenda", "To abrido")
-                                    Log.d("Venda", "Desgraçaaaaaaaaaaaaaa ${viewModel.produtoSelecionado}")
                                     ModalAdicionarDesconto(
                                         vendaDetalhes = viewModel.vendaDetalhes,
                                         isDescontoProduto = isDescontoProduto,
@@ -340,10 +335,6 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                             .align(Alignment.CenterHorizontally)
                     ) {
 
-                        Log.d(
-                            "Composable",
-                            "Recomposing with items: ${gson.toJson(viewModel.carrinho.itensCarrinho)}"
-                        )
                         ScreenTable(
                             products = viewModel.carrinho.itensCarrinho,
                             verMaisAction = { produto ->

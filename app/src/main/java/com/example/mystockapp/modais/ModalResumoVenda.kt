@@ -55,7 +55,7 @@ fun ResumoLista(detalhes: VendaDetalhes) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ResumoItem(stringResource(id = R.string.total_de_itens), "R$ %.2f".format(detalhes.totalItens.toFloat()))
+        ResumoItem(stringResource(id = R.string.total_de_itens), detalhes.totalItens.toString())
         DottedLineComponent()
         ResumoItem(stringResource(id = R.string.subtotal_1), "R$ %.2f".format(detalhes.subtotal1.toFloat()))
         DottedLineComponent()

@@ -48,7 +48,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     )
 
     fun atualizarVendaInfo(tipoVendaId: Int, codigoVendedor: Int){
-        Log.d("Venda", "Atualizando vendaInfo: $tipoVendaId, $codigoVendedor")
         carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(tipoVendaId = tipoVendaId, codigoVendedor = codigoVendedor))
     }
 
@@ -75,12 +74,9 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     override suspend fun pesquisarProdutoPorId(idEtp: Int): Produto? {
-        Log.d("Produto", "Pesquisando produto por id: $idEtp")
-
         return try {
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
             val produtoBuscado = produtoService.fetchEtpPorId(idEtp)
-            Log.d("Produto", "Produto encontrado: ${gson.toJson(produtoBuscado)}")
             produtoBuscado
         } catch (e: ApiException) {
             errorMessage = "${e.message}"
@@ -95,7 +91,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     fun atualizarQuantidadeProduto(quantidade: Int){
-        Log.d("Produto", "Atualizando quantidade do produto: $_produtoSelecionado")
         produtoSelecionado = produtoSelecionado?.copy(quantidadeToAdd = quantidade)
         produtos = produtos.map {
             if (it.id == produtoSelecionado!!.id) {
@@ -104,7 +99,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 it
             }
         }
-        Log.d("Produto", "Produto atualizado: ${gson.toJson(produtoSelecionado)}")
     }
 
 
@@ -136,7 +130,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         }
 
         carrinho = carrinho.copy(itensCarrinho = novosItensCarrinho)
-
         atualizarVendaDetalhes()
     }
 
@@ -154,7 +147,7 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     fun atualizarPosVenda(){
         vendaDetalhes = vendaDetalhes.copy(valorDescontoVenda = 0.0)
         vendaDetalhes = vendaDetalhes.copy(porcentagemDesconto = 0.0)
-        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = 0.0))
+        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = 0.0, codigoVendedor = 0, tipoVendaId = 0))
         atualizarVendaDetalhes()
     }
     private fun calcularValorTotal(): Double {
@@ -162,7 +155,10 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
     }
 
     private fun calcularValorDescontoVenda(): Double {
-        return vendaDetalhes.valorDescontoVenda
+        val porcentagemDescAtual = vendaDetalhes.porcentagemDesconto
+        val novoValorVenda = (porcentagemDescAtual / 100) * calcularSubtotal1()
+        carrinho = carrinho.copy(vendaInfo = carrinho.vendaInfo.copy(desconto = novoValorVenda))
+        return novoValorVenda;
     }
 
     private fun calcularSubtotal2(): Double {
@@ -212,10 +208,6 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
             val produtoService = ProdutoService(RetrofitInstance.produtoApi)
             val produtosBuscados = produtoService.fetchProdutosTabela(idLoja = idLoja)
 
-            val produtosAtuais = produtos
-            Log.d("FetchProdutos", "fetchProdutos: ${gson.toJson(produtosAtuais)}")
-            Log.d("FetchProdutos", "fetchProdutos: ${gson.toJson(produtos)}")
-
             produtos = produtosBuscados.map { produtoBuscado ->
                 val produtoExistente = produtos.find { it.id == produtoBuscado.id }
                 if (produtoExistente != null) {
@@ -247,11 +239,9 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 }
                 val vendaReq = VendaPost(
                     vendaReq = carrinho.vendaInfo,
-
                     produtosVendaReq = produtosVendaReq
                 )
                 val vendaRes = vendaService.createVenda(vendaReq)
-                Log.d("Venda", "Venda realizada com sucesso: ${vendaRes}")
                 limparCarrinho()
                 limparProdutos()
                 atualizarPosVenda()
