@@ -24,6 +24,8 @@ import com.example.mystockapp.models.vendas.VendaInfo
 import com.example.mystockapp.models.vendas.VendaPost
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
     var errorMessage by mutableStateOf<String?>(null)
@@ -194,13 +196,25 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         atualizarVendaDetalhes()
     }
 
+    // Função para formatar um valor Double para duas casas decimais
+    private fun formatarParaDuasCasasDecimais(valor: Double): Double {
+        if (valor.isNaN() || valor.isInfinite()) {
+            return 0.0
+        }
+
+        // Usando BigDecimal para formatação precisa
+        val valorFormatado = BigDecimal(valor).setScale(2, RoundingMode.HALF_UP).toDouble()
+
+        return valorFormatado
+    }
+
     fun adicionarDescontoProd(produtoParaAtualizar: ProdutoTable, valorDesconto: Double) {
         val novosItensCarrinho = carrinho.itensCarrinho.toMutableList()
 
         produtos.forEach { produto ->
             val itemCarrinho = novosItensCarrinho.find { it.id == produtoParaAtualizar.id }
             if (itemCarrinho != null) {
-                val updatedItem = itemCarrinho.copy(valorDesconto = valorDesconto)
+                val updatedItem = itemCarrinho.copy(valorDesconto = formatarParaDuasCasasDecimais(valorDesconto))
                 novosItensCarrinho[novosItensCarrinho.indexOf(itemCarrinho)] = updatedItem
             } else {
                 produto
