@@ -378,7 +378,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     }
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = stringResource(id = R.string.produto_salvo_com_sucesso),
+            titulo = confirmarTitulo,
             onDismiss = {
                 showSucessoDialog = false
                 onDismissRequest()
