@@ -31,6 +31,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -210,7 +212,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 modifier = Modifier.weight(1.4f)
                             )
 
-                            Spacer(modifier = Modifier.width(6.dp)) // Espaço entre os grupos
+                            Spacer(modifier = Modifier.width(16.dp)) // Espaço entre os grupos
 
                             // SelectField para Cor
                             SelectField(
@@ -378,6 +380,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                         .border(0.5.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                                         .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                                         .padding(start = 8.dp) // Adiciona um padding à esquerda
+                                        .align(alignment = Alignment.CenterVertically)
                                 ) {
                                     BasicTextField(
                                         value = queryPesquisa,
@@ -385,9 +388,11 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                         singleLine = true,
                                         textStyle = androidx.compose.ui.text.TextStyle(
                                             fontSize = 12.sp,
-                                            textAlign = TextAlign.Start // Alinha o texto à esquerda
+                                            textAlign = TextAlign.Start // Alinha o texto à esquerda,
                                         ),
-                                        modifier = Modifier.fillMaxSize()
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(vertical = 4.dp) // Adiciona padding vertical para centralizar o texto
                                     )
                                 }
 
@@ -406,7 +411,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 },
                                     modifier = Modifier
                                         .width(30.dp)
-                                        .height(24.dp),
+                                        .height(24.dp)
+                                        .padding(0.dp),
                                     shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp),
                                     contentPadding = PaddingValues(0.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -414,10 +420,11 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                     )
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.mipmap.search),
+//                                        painter = painterResource(id = R.mipmap.search),
+                                        imageVector = Icons.Default.Search,
                                         contentDescription = stringResource(id = R.string.descricao_pesquisar),
                                         tint = Color.White,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
                             }
