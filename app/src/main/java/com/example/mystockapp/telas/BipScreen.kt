@@ -144,7 +144,6 @@ fun Screen(
 
     Log.d("ETP-BipScreen", contexto.getString(R.string.etp_bip_screen, etp))
 
-    MenuDrawer(titulo = contexto.getString(R.string.busca)) {
         if (isScanning) {
             Column(
                 modifier = Modifier
@@ -172,361 +171,291 @@ fun Screen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                MenuDrawer(titulo = contexto.getString(R.string.busca)) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Color(0xFFFFFFFF),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .heightIn(min = 100.dp, max = 200.dp)
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
                     ) {
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth(0.75f)
-                                .height(150.dp),
+                                .fillMaxWidth()
+                                .background(
+                                    Color(0xFFFFFFFF),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .heightIn(min = 100.dp, max = 200.dp)
+                                .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceAround
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Box(
+                            Column(
                                 modifier = Modifier
-                                    .size(250.dp)
-                                    .height(150.dp)
-                                    .background(Color.Transparent),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth(0.75f)
+                                    .height(150.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.SpaceAround
                             ) {
-                                Canvas(modifier = Modifier.fillMaxSize()) {
-                                    val strokeWidth = 4.dp.toPx()
-                                    val cornerLength = 40.dp.toPx()
-
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(0f, 0f),
-                                        end = Offset(cornerLength, 0f),
-                                        strokeWidth = strokeWidth
-                                    )
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(0f, 0f),
-                                        end = Offset(0f, cornerLength),
-                                        strokeWidth = strokeWidth
-                                    )
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(size.width, 0f),
-                                        end = Offset(size.width - cornerLength, 0f),
-                                        strokeWidth = strokeWidth
-                                    )
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(size.width, 0f),
-                                        end = Offset(size.width, cornerLength),
-                                        strokeWidth = strokeWidth
-                                    )
-
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(0f, size.height),
-                                        end = Offset(cornerLength, size.height),
-                                        strokeWidth = strokeWidth
-                                    )
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(0f, size.height),
-                                        end = Offset(0f, size.height - cornerLength),
-                                        strokeWidth = strokeWidth
-                                    )
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(size.width, size.height),
-                                        end = Offset(size.width - cornerLength, size.height),
-                                        strokeWidth = strokeWidth
-                                    )
-                                    drawLine(
-                                        color = Color(0xFF355070),
-                                        start = Offset(size.width, size.height),
-                                        end = Offset(size.width, size.height - cornerLength),
-                                        strokeWidth = strokeWidth
-                                    )
-                                }
-
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                Box(
+                                    modifier = Modifier
+                                        .size(250.dp)
+                                        .height(150.dp)
+                                        .background(Color.Transparent),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Image(
-                                        painter = painterResource(id = R.mipmap.barcode_image),
-                                        contentDescription = contexto.getString(R.string.codigo_de_barras),
-                                        contentScale = ContentScale.Fit,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(100.dp)
-                                    )
+                                    Canvas(modifier = Modifier.fillMaxSize()) {
+                                        val strokeWidth = 4.dp.toPx()
+                                        val cornerLength = 40.dp.toPx()
 
-                                    BasicTextField(
-                                        value = barcodeNumber,
-                                        onValueChange = { barcodeNumber = it },
-                                        textStyle = TextStyle(
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
-                                            textAlign = TextAlign.Center
-                                        ),
-                                        modifier = Modifier
-                                            .background(Color.White)
-                                            .width(200.dp)
-                                            .padding(3.dp)
-                                            .align(Alignment.CenterHorizontally)
-                                            .border(
-                                                1.dp,
-                                                Color(0xFF355070),
-                                                RoundedCornerShape(3.dp)
-                                            )
-                                    )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(0f, 0f),
+                                            end = Offset(cornerLength, 0f),
+                                            strokeWidth = strokeWidth
+                                        )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(0f, 0f),
+                                            end = Offset(0f, cornerLength),
+                                            strokeWidth = strokeWidth
+                                        )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(size.width, 0f),
+                                            end = Offset(size.width - cornerLength, 0f),
+                                            strokeWidth = strokeWidth
+                                        )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(size.width, 0f),
+                                            end = Offset(size.width, cornerLength),
+                                            strokeWidth = strokeWidth
+                                        )
+
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(0f, size.height),
+                                            end = Offset(cornerLength, size.height),
+                                            strokeWidth = strokeWidth
+                                        )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(0f, size.height),
+                                            end = Offset(0f, size.height - cornerLength),
+                                            strokeWidth = strokeWidth
+                                        )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(size.width, size.height),
+                                            end = Offset(size.width - cornerLength, size.height),
+                                            strokeWidth = strokeWidth
+                                        )
+                                        drawLine(
+                                            color = Color(0xFF355070),
+                                            start = Offset(size.width, size.height),
+                                            end = Offset(size.width, size.height - cornerLength),
+                                            strokeWidth = strokeWidth
+                                        )
+                                    }
+
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.mipmap.barcode_image),
+                                            contentDescription = contexto.getString(R.string.codigo_de_barras),
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(100.dp)
+                                        )
+
+                                        BasicTextField(
+                                            value = barcodeNumber,
+                                            onValueChange = { barcodeNumber = it },
+                                            textStyle = TextStyle(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Black,
+                                                textAlign = TextAlign.Center
+                                            ),
+                                            modifier = Modifier
+                                                .background(Color.White)
+                                                .width(200.dp)
+                                                .padding(3.dp)
+                                                .align(Alignment.CenterHorizontally)
+                                                .border(
+                                                    1.dp,
+                                                    Color(0xFF355070),
+                                                    RoundedCornerShape(3.dp)
+                                                )
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .background(
-                            Color(0xFFE7E7E7),
-                            shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
-                        )
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Card(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = contexto.getString(R.string.informacoes),
-                                fontSize = 19.sp,
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold
+                            .fillMaxHeight()
+                            .background(
+                                Color(0xFFE7E7E7),
+                                shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                            if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.codigo),
-                                        value = codigo.toString(),
-                                        onValueChange = { codigo = it },
-                                        editable = contextoBusca != "pre-venda",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.nome),
-                                        value = nome,
-                                        onValueChange = { nome = it },
-                                        editable = contextoBusca != "pre-venda",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = contexto.getString(R.string.informacoes),
+                                    fontSize = 19.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.modelo),
-                                        value = modelo,
-                                        onValueChange = { modelo = it },
-                                        editable = contextoBusca == "estoque",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.cor),
-                                        value = cor,
-                                        onValueChange = { cor = it },
-                                        editable = contextoBusca == "estoque",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.tamanho),
-                                        value = tamanho.toString(),
-                                        onValueChange = { tamanho = it.toInt() },
-                                        editable = contextoBusca == "estoque",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.quantidade_est),
-                                        value = quantidadeEstoque.toString(),
-                                        onValueChange = { quantidadeEstoque = it.toInt() },
-                                        editable = contextoBusca != "pre-venda",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-
-                                if (contextoBusca == "pre-venda") {
-                                    InfoTextField(
-                                        label = contexto.getString(R.string.quantidade_venda),
-                                        value = quantidadeVenda.toString(),
-                                        onValueChange = {
-                                            val newValue = it.toIntOrNull() ?: 0
-                                            if (newValue in 0..quantidadeEstoque) {
-                                                quantidadeVenda = newValue
-                                            }
-                                        },
-                                        editable = true,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                }
-
-                                if (contextoBusca != "pre-venda") {
+                                if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         InfoTextField(
-                                            label = contexto.getString(R.string.preco_custo),
-                                            value = String.format("%.2f", precoCusto),
-                                            onValueChange = { precoCusto = it.toDouble() },
+                                            label = contexto.getString(R.string.codigo),
+                                            value = codigo.toString(),
+                                            onValueChange = { codigo = it },
                                             editable = contextoBusca != "pre-venda",
                                             modifier = Modifier.weight(1f)
                                         )
                                         InfoTextField(
-                                            label = contexto.getString(R.string.preco_revenda),
-                                            value = String.format("%.2f", precoRevenda),
-                                            onValueChange = { precoRevenda = it.toDouble() },
+                                            label = contexto.getString(R.string.nome),
+                                            value = nome,
+                                            onValueChange = { nome = it },
                                             editable = contextoBusca != "pre-venda",
                                             modifier = Modifier.weight(1f)
                                         )
                                     }
-                                }
 
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(0.dp)
-                                ) {
-                                    Checkbox(
-                                        checked = itemPromocional,
-                                        onCheckedChange = { itemPromocional = it },
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        InfoTextField(
+                                            label = contexto.getString(R.string.modelo),
+                                            value = modelo,
+                                            onValueChange = { modelo = it },
+                                            editable = contextoBusca == "estoque",
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        InfoTextField(
+                                            label = contexto.getString(R.string.cor),
+                                            value = cor,
+                                            onValueChange = { cor = it },
+                                            editable = contextoBusca == "estoque",
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        InfoTextField(
+                                            label = contexto.getString(R.string.tamanho),
+                                            value = tamanho.toString(),
+                                            onValueChange = { tamanho = it.toInt() },
+                                            editable = contextoBusca == "estoque",
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        InfoTextField(
+                                            label = contexto.getString(R.string.quantidade_est),
+                                            value = quantidadeEstoque.toString(),
+                                            onValueChange = { quantidadeEstoque = it.toInt() },
+                                            editable = contextoBusca != "pre-venda",
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+
+                                    if (contextoBusca == "pre-venda") {
+                                        InfoTextField(
+                                            label = contexto.getString(R.string.quantidade_venda),
+                                            value = quantidadeVenda.toString(),
+                                            onValueChange = {
+                                                val newValue = it.toIntOrNull() ?: 0
+                                                if (newValue in 0..quantidadeEstoque) {
+                                                    quantidadeVenda = newValue
+                                                }
+                                            },
+                                            editable = true,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+
+                                    if (contextoBusca != "pre-venda") {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            InfoTextField(
+                                                label = contexto.getString(R.string.preco_custo),
+                                                value = String.format("%.2f", precoCusto),
+                                                onValueChange = { precoCusto = it.toDouble() },
+                                                editable = contextoBusca != "pre-venda",
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            InfoTextField(
+                                                label = contexto.getString(R.string.preco_revenda),
+                                                value = String.format("%.2f", precoRevenda),
+                                                onValueChange = { precoRevenda = it.toDouble() },
+                                                editable = contextoBusca != "pre-venda",
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        }
+                                    }
+
+                                    Row(
                                         modifier = Modifier
-                                            .align(Alignment.Top)
+                                            .fillMaxWidth()
                                             .padding(0.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(2.dp))
-                                    Text(
-                                        text = contexto.getString(R.string.item_promocional),
-                                        fontSize = 16.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .padding(start = 0.dp)
-                                    )
+                                    ) {
+                                        Checkbox(
+                                            checked = itemPromocional,
+                                            onCheckedChange = { itemPromocional = it },
+                                            modifier = Modifier
+                                                .align(Alignment.Top)
+                                                .padding(0.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(2.dp))
+                                        Text(
+                                            text = contexto.getString(R.string.item_promocional),
+                                            fontSize = 16.sp,
+                                            color = Color.Black,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterVertically)
+                                                .padding(start = 0.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                    Button(
-                        onClick = { isScanning = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .height(35.dp),
-                        shape = RoundedCornerShape(5.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                    ) {
-                        Text(
-                            text = contexto.getString(R.string.ler_referencia),
-                            color = Color.White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                        onClick = { viewModel.buscarEtpPorCodigo(barcodeNumber) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .height(35.dp),
-                        shape = RoundedCornerShape(5.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                    ) {
-                        Text(
-                            text = contexto.getString(R.string.buscar_ref_digitada),
-                            color = Color.White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    if (contextoBusca == "pre-venda") {
                         Button(
-                            onClick = {
-                                if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
-                                    precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0) {
-
-                                    Toast.makeText(
-                                        contexto,
-                                        contexto.getString(R.string.preencha_todos_os_campos),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-
-                                } else if (quantidadeVenda <= 0){
-                                    Toast.makeText(
-                                        contexto,
-                                        contexto.getString(R.string.informe_quantidade),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    val telaPreVenda = Intent(contexto, PreVenda::class.java)
-
-                                    val jsonProduto = JSONObject().apply {
-                                        put("codigo", codigo)
-                                        put("nome", nome)
-                                        put("modelo", modelo)
-                                        put("precoCusto", precoCusto)
-                                        put("precoRevenda", precoRevenda)
-                                        put("tamanho", tamanho)
-                                        put("cor", cor)
-                                        put("quantidadeEstoque", quantidadeEstoque)
-                                        put("itemPromocional", itemPromocional)
-                                        put("quantidadeVenda", quantidadeVenda)
-                                    }
-
-                                    val jsonString = jsonProduto.toString()
-                                    telaPreVenda.putExtra("produtoAdicionado", jsonString)
-                                    contexto.startActivity(telaPreVenda)
-                                }
-                            },
+                            onClick = { isScanning = true },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
@@ -535,17 +464,89 @@ fun Screen(
                             colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                         ) {
                             Text(
-                                text = contexto.getString(R.string.adicionar_produto),
+                                text = contexto.getString(R.string.ler_referencia),
                                 color = Color.White
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(15.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Button(
+                            onClick = { viewModel.buscarEtpPorCodigo(barcodeNumber) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .height(35.dp),
+                            shape = RoundedCornerShape(5.dp),
+                            colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                        ) {
+                            Text(
+                                text = contexto.getString(R.string.buscar_ref_digitada),
+                                color = Color.White
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        if (contextoBusca == "pre-venda") {
+                            Button(
+                                onClick = {
+                                    if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
+                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
+                                    ) {
+
+                                        Toast.makeText(
+                                            contexto,
+                                            contexto.getString(R.string.preencha_todos_os_campos),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                    } else if (quantidadeVenda <= 0) {
+                                        Toast.makeText(
+                                            contexto,
+                                            contexto.getString(R.string.informe_quantidade),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        val telaPreVenda = Intent(contexto, PreVenda::class.java)
+
+                                        val jsonProduto = JSONObject().apply {
+                                            put("codigo", codigo)
+                                            put("nome", nome)
+                                            put("modelo", modelo)
+                                            put("precoCusto", precoCusto)
+                                            put("precoRevenda", precoRevenda)
+                                            put("tamanho", tamanho)
+                                            put("cor", cor)
+                                            put("quantidadeEstoque", quantidadeEstoque)
+                                            put("itemPromocional", itemPromocional)
+                                            put("quantidadeVenda", quantidadeVenda)
+                                        }
+
+                                        val jsonString = jsonProduto.toString()
+                                        telaPreVenda.putExtra("produtoAdicionado", jsonString)
+                                        contexto.startActivity(telaPreVenda)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .height(35.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                            ) {
+                                Text(
+                                    text = contexto.getString(R.string.adicionar_produto),
+                                    color = Color.White
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(15.dp))
+                    }
                 }
             }
         }
-    }
 }
 
 @Composable
