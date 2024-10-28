@@ -2,10 +2,12 @@ package com.example.mystockapp.telas
 
 import DottedLineComponent
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,9 +42,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.mystockapp.modais.ModalAdicionar
 import com.example.mystockapp.modais.ModalAdicionarDesconto
 import com.example.mystockapp.modais.ModalResumoVenda
@@ -56,36 +65,72 @@ import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.R
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.produtoApi.EtpViewModel
+import com.example.mystockapp.api.produtoApi.EtpViewModelFactory
 import com.example.mystockapp.models.produtos.ProdutoTable
 import kotlinx.coroutines.launch
 
 class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Inicializando o ViewModel com a factory personalizada
+
+        val viewModelETP: EtpViewModel by viewModels {
+            EtpViewModelFactory(RetrofitInstance.etpApi, this)
+        }
+
+        val viewModelPreVenda: PreVendaViewModel by lazy {
+            val sharedPreferences = getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+            val idLoja = sharedPreferences.getInt("idLoja", -1)
+
+            // Usando a Factory para criar o ViewModel
+            ViewModelProvider(this, PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja))
+                .get(PreVendaViewModel::class.java)
+        }
+
         setContent {
             MyStockAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    PreVendaScreen()
+                    // Inicializando o NavController
+                    val navController = rememberNavController()
+
+                    NavHost(navController = navController, startDestination = "pre_venda") {
+                        viewModelETP.setContextoBusca("pre-venda")
+                        composable("pre_venda") { PreVendaScreen(
+                            viewModel = viewModelPreVenda,
+                            navController = navController
+                        ) }
+                        composable("tela_bip") { Screen(
+                            contextoBusca = "pre-venda",
+                            navController = navController,
+                            viewModel = viewModelETP,
+                            preVendaViewModel = viewModelPreVenda
+                        ) }
+                    }
                 }
             }
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.current) {
+fun PreVendaScreen(
+    context: Context = androidx.compose.ui.platform.LocalContext.current,
+    navController: NavHostController,
+    viewModel: PreVendaViewModel
+) {
 
     val coroutineScope = rememberCoroutineScope()
-
-    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
-    val idLoja = sharedPreferences.getInt("idLoja", -1)
-
-    val viewModel: PreVendaViewModel = viewModel(
-        factory = PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja = idLoja)
-    )
+//
+//    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+//    val idLoja = sharedPreferences.getInt("idLoja", -1)
+//
+//    val viewModel: PreVendaViewModel = viewModel(
+//        factory = PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja = idLoja)
+//    )
 
     var showError by remember { mutableStateOf(false) }
 
@@ -108,6 +153,8 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     var isModalMaisInfo by remember { mutableStateOf(false) }
     var isDescontoProduto by remember {mutableStateOf(false)}
+
+    val contexto = LocalContext.current
 
     MenuDrawer(titulo = stringResource(R.string.pre_venda)) {
         Column(
@@ -270,7 +317,12 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
 
                             Row {
                                 Button(
-                                    onClick = { /* Ação do botão 1 */ },
+                                    onClick = {
+                                        navController.navigate("tela_bip")
+//                                        val telaBip = Intent(contexto, BipScreen::class.java)
+//                                        telaBip.putExtra("contextoBusca", "pre-venda")
+//                                        contexto.startActivity(telaBip)
+                                    },
                                     modifier = Modifier
                                         .width(65.dp)
                                         .height(25.dp),
@@ -448,7 +500,9 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
+    val navController = rememberNavController()
+
     MyStockAppTheme {
-        PreVendaScreen()
+        PreVendaScreen(navController = navController, viewModel = PreVendaViewModel(1))
     }
 }

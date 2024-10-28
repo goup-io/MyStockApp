@@ -92,6 +92,10 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
         }
     }
 
+    fun pesquisarNoCarrinho(idEtp: Int): ProdutoTable? {
+        return carrinho.itensCarrinho.find { it.id == idEtp }
+    }
+
     fun atualizarQuantidadeProduto(quantidade: Int){
         produtoSelecionado = produtoSelecionado?.copy(quantidadeToAdd = quantidade)
         produtos = produtos.map {

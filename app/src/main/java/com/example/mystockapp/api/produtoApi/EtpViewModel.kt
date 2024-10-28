@@ -1,6 +1,8 @@
 package com.example.mystockapp.api.produtoApi
 
 import android.content.Context
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,5 +27,12 @@ class EtpViewModel(private val etpApi: EtpApi, private val context: Context) : V
                 }
             }
         }
+    }
+
+    private val _contextoBusca = mutableStateOf("")
+    val contextoBusca: State<String> get() = _contextoBusca
+
+    fun setContextoBusca(value: String) {
+        _contextoBusca.value = value
     }
 }
