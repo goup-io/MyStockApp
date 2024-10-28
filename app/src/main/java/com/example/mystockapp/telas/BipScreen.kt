@@ -1,6 +1,7 @@
 package com.example.mystockapp.telas
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -43,6 +44,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.mystockapp.models.produtos.ProdutoTable
+import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import org.json.JSONObject
 
 class BipScreen : ComponentActivity() {
@@ -65,18 +72,19 @@ class BipScreen : ComponentActivity() {
 
         setContent {
             MyStockAppTheme {
-//                MenuDrawer(titulo = "Busca") {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Screen(
-                            modifier = Modifier.padding(innerPadding),
-                            contextoBusca = contextoBusca,
-                            viewModel = viewModel
-                        )
-                    }
-//                }
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Screen(
+                        modifier = Modifier.padding(innerPadding),
+                        viewModel = viewModel,
+                        navController = rememberNavController(),
+                        contextoBusca = contextoBusca,
+                        preVendaViewModel = PreVendaViewModel(-1)
+                    )
+                }
             }
+        }
 
-            when {
+        when {
                 ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.CAMERA
@@ -91,17 +99,19 @@ class BipScreen : ComponentActivity() {
             }
         }
     }
-}
 
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
     contextoBusca: String,
+    navController: NavHostController,
+    preVendaViewModel: PreVendaViewModel,
     viewModel: EtpViewModel
 ) {
     var barcodeNumber by remember { mutableStateOf("AB1234567890") }
     var isScanning by remember { mutableStateOf(false) }
 
+    var id by remember { mutableStateOf(0) }
     var codigo by remember { mutableStateOf("0") }
     var nome by remember { mutableStateOf("") }
     var modelo by remember { mutableStateOf("") }
@@ -117,6 +127,8 @@ fun Screen(
 
     // contexto local (a tela atual)
     val contexto = LocalContext.current
+    var contextoBusca = if(viewModel.contextoBusca.value == "") contextoBusca else viewModel.contextoBusca.value
+    Log.d("ETP-BipScreen", "Contexto passado: ${contextoBusca}")
 
     LaunchedEffect(barcodeNumber) {
         if (barcodeNumber.isNotEmpty()) {
@@ -127,6 +139,7 @@ fun Screen(
 
     LaunchedEffect(etp) {
         etp?.let {
+            id = it.id
             codigo = it.codigo ?: "0"
             nome = it.produto ?: ""
             modelo = it.modelo ?: ""
@@ -507,24 +520,24 @@ fun Screen(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
-                                    val telaPreVenda = Intent(contexto, PreVenda::class.java)
-
-                                    val jsonProduto = JSONObject().apply {
-                                        put("codigo", codigo)
-                                        put("nome", nome)
-                                        put("modelo", modelo)
-                                        put("precoCusto", precoCusto)
-                                        put("precoRevenda", precoRevenda)
-                                        put("tamanho", tamanho)
-                                        put("cor", cor)
-                                        put("quantidadeEstoque", quantidadeEstoque)
-                                        put("itemPromocional", itemPromocional)
-                                        put("quantidadeVenda", quantidadeVenda)
-                                    }
-
-                                    val jsonString = jsonProduto.toString()
-                                    telaPreVenda.putExtra("produtoAdicionado", jsonString)
-                                    contexto.startActivity(telaPreVenda)
+                                    val produto =
+                                        preVendaViewModel.pesquisarNoCarrinho(id) ?:
+                                        ProdutoTable(
+                                        id = id,
+                                        codigo = codigo,
+                                        nome = nome,
+                                        modelo = modelo,
+                                        preco = precoRevenda,
+                                        tamanho = tamanho,
+                                        cor = cor,
+                                        quantidade = quantidadeEstoque,
+                                        quantidadeToAdd = 0,
+                                        valorDesconto = 0.0
+                                        )
+                                    preVendaViewModel.escolherProduto(produto)
+                                    preVendaViewModel.adicionar(quantidadeVenda)
+                                    preVendaViewModel.desescolherProduto()
+                                    navController.navigate("pre_venda")
                                 }
                             },
                             modifier = Modifier
