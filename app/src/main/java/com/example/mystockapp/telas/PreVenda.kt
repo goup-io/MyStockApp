@@ -1,12 +1,14 @@
 package com.example.mystockapp.telas
 
-import ProductTable
+import DottedLineComponent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,15 +18,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-//import androidx.compose.material3.ButtonColors
-//import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-//import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,271 +31,348 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.layout.ContentScale
-//import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.mystockapp.modais.ModalAdicionar
+import com.example.mystockapp.modais.ModalAdicionarDesconto
+import com.example.mystockapp.modais.ModalResumoVenda
+import com.example.mystockapp.modais.componentes.FormFieldRowComponent
+import com.example.mystockapp.modais.componentes.FormFieldSelectRowComponent
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
+import com.example.mystockapp.modais.modalAddProdCarrinho
+import com.example.mystockapp.models.vendas.TipoVendasDataClass
+import com.example.mystockapp.telas.componentes.ScreenTable
+import com.example.mystockapp.telas.viewModels.PreVendaViewModel
+import com.google.gson.Gson
+import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.R
-import com.example.mystockapp.dtos.ProdutoTable
+import com.example.mystockapp.api.RetrofitInstance
+import com.example.mystockapp.api.produtoApi.EtpViewModel
+import com.example.mystockapp.api.produtoApi.EtpViewModelFactory
+import com.example.mystockapp.models.produtos.ProdutoTable
+import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class PreVenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Inicializando o ViewModel com a factory personalizada
+
+        val viewModelETP: EtpViewModel by viewModels {
+            EtpViewModelFactory(RetrofitInstance.etpApi, this)
+        }
+
+        val viewModelPreVenda: PreVendaViewModel by lazy {
+            val sharedPreferences = getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+            val idLoja = sharedPreferences.getInt("idLoja", -1)
+
+            // Usando a Factory para criar o ViewModel
+            ViewModelProvider(this, PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja))
+                .get(PreVendaViewModel::class.java)
+        }
+
         setContent {
             MyStockAppTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
                 ) {
-                    PreVendaScreen()
+                    // Inicializando o NavController
+                    val navController = rememberNavController()
+
+                    NavHost(navController = navController, startDestination = "pre_venda") {
+                        viewModelETP.setContextoBusca("pre-venda")
+                        composable("pre_venda") { PreVendaScreen(
+                            viewModel = viewModelPreVenda,
+                            navController = navController
+                        ) }
+                        composable("tela_bip") { Screen(
+                            contextoBusca = "pre-venda",
+                            navController = navController,
+                            viewModel = viewModelETP,
+                            preVendaViewModel = viewModelPreVenda
+                        ) }
+                    }
                 }
             }
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreVendaScreen() {
+fun PreVendaScreen(
+    context: Context = androidx.compose.ui.platform.LocalContext.current,
+    navController: NavHostController,
+    viewModel: PreVendaViewModel
+) {
 
-    var codigo by remember { mutableStateOf("") }
-    var tipoVenda by remember { mutableStateOf("") }
-    val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", "300,00", "37", "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15")
-    )
+    val coroutineScope = rememberCoroutineScope()
+//
+//    val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+//    val idLoja = sharedPreferences.getInt("idLoja", -1)
+//
+//    val viewModel: PreVendaViewModel = viewModel(
+//        factory = PreVendaViewModel.AddProdCarrinhoViewModelFactory(idLoja = idLoja)
+//    )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF355070))
-    ) {
-        Row(
+    var showError by remember { mutableStateOf(false) }
+
+    LaunchedEffect (Unit) {
+        viewModel.getTiposVenda()
+    }
+
+
+    val gson = Gson()
+
+    var codigo by remember { mutableStateOf(0) }
+    var tipoVenda by remember { mutableStateOf(
+        TipoVendasDataClass(
+            id = 0,
+            tipo = "",
+            desconto = 0.0
+        )
+    ) }
+    var isModalAdicionarDesconto by remember { mutableStateOf(false) }
+    var isModalAddProdCarrinho by remember { mutableStateOf(false) }
+    var isModalMaisInfo by remember { mutableStateOf(false) }
+    var isDescontoProduto by remember {mutableStateOf(false)}
+
+    val contexto = LocalContext.current
+
+    MenuDrawer(titulo = stringResource(R.string.pre_venda)) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .height(52.dp)
-                .padding(16.dp)
-                .padding(start = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .background(Color(0xFF355070))
         ) {
-            // Botão de menu o
-            Button(
-                onClick = { /*TODO*/ },
+
+            // Resumo da venda
+            Row(
                 modifier = Modifier
-                    .width(30.dp)
-                    .height(55.dp)
-                    .clip(RoundedCornerShape(5.dp)),
-                shape = RoundedCornerShape(5.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent, // Botão com cor transparente
-                    contentColor = Color.White // Cor do texto e ícones dentro do botão
-                ),
-                contentPadding = PaddingValues(0.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = R.mipmap.menu),
-                    contentDescription = "menu",
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp)
-                )
-            }
-
-
-
-            // Título no centro
-            Text(
-                text = "Pré Venda",
-                color = Color.White,
-                fontSize = 20.sp
-            )
-
-            // Imagem da logo da empresa na direita
-            Image(
-                painter = painterResource(id = R.mipmap.mystock),
-                contentDescription = "Logo da Empresa",
-                modifier = Modifier.size(40.dp)
-            )
-        }
-
-        // Resumo da venda
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(172.dp)
-                    .shadow(8.dp, RoundedCornerShape(8.dp))
-                    .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                        .fillMaxWidth(0.95f)
+                        .height(172.dp)
+                        .shadow(8.dp, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-                    // Header da Caixa
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Resumo da Venda", fontSize = 16.sp)
-
-                        Row {
-                            // Botões com bordas arredondadas
-                            Button(
-                                onClick = { /* Ação do botão 1 */ },
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .width(65.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp) // Ajusta o padding
-                            ) {
-                                Text(text = "AddDisc", fontSize = 12.sp)
-                            }
-
-                            Button(
-                                onClick = { /* Ação do botão 2 */ },
-                                modifier = Modifier
-                                    .width(25.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF96BDCE) // Definindo a cor de fundo
-                                ),
-                                contentPadding = PaddingValues(0.dp)
-                            ) {
-                                Text(text = "+", fontSize = 22.sp, color = Color.White) // Define a cor do texto
-                            }
-
-                        }
-                    }
-
-                    // Conteúdo da Caixa
                     Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                        // Código da Venda
+                        // Header da Caixa
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "Código da Venda", fontSize = 14.sp)
-                            Text(text = "001", fontSize = 14.sp)
+                            Text(text = stringResource(R.string.resumo_venda), fontSize = 16.sp)
+
+                            Row {
+                                // Botões com bordas arredondadas
+                                Button(
+                                    onClick = {
+                                        isDescontoProduto = false
+                                        isModalAdicionarDesconto = true
+                                    },
+                                    modifier = Modifier
+                                        .padding(end = 8.dp)
+                                        .width(65.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    contentPadding = PaddingValues(0.dp) // Ajusta o padding
+                                ) {
+                                    Text(text = stringResource(R.string.adicionar_desconto), fontSize = 12.sp)
+                                }
+
+                                if (isModalAdicionarDesconto) {
+                                    ModalAdicionarDesconto(
+                                        vendaDetalhes = viewModel.vendaDetalhes,
+                                        isDescontoProduto = isDescontoProduto,
+                                        produtoInfo = viewModel.produtoSelecionado ?: ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0),
+                                        onDismissRequest = {
+                                            viewModel.desescolherProduto()
+                                            isModalAdicionarDesconto = false
+                                        },
+                                        onSalvarDescontoVenda = { desconto, porcentagemDesconto ->
+                                            viewModel.adicionarDescontoVenda(desconto, porcentagemDesconto)
+                                        },
+                                        onSalvarDescontoProduto = { valorDesconto ->
+                                            viewModel.adicionarDescontoProd(
+                                                viewModel.produtoSelecionado ?: ProdutoTable(0, "", "", "", 0.0, 0, "", 0, 0, 0.0) ,
+                                                valorDesconto
+                                            )
+                                        }
+                                    )
+                                }
+
+                                Button(
+                                    onClick = { isModalMaisInfo = true },
+                                    modifier = Modifier
+                                        .width(25.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF96BDCE) // Definindo a cor de fundo
+                                    ),
+                                    contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text(text = stringResource(R.string.mais_info), fontSize = 22.sp, color = Color.White)
+                                }
+                                if (isModalMaisInfo) {
+                                    ModalResumoVenda(
+                                        detalhes = viewModel.vendaDetalhes,
+                                        onDismissRequest = { isModalMaisInfo = false }
+                                    )
+                                }
+                            }
                         }
 
-                        Divider()
+                        // Conteúdo da Caixa
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceAround
 
-                        // Valor da Venda
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Valor da Venda", fontSize = 14.sp)
-                            Text(text = "R$ 100,00", fontSize = 14.sp)
-                        }
+                            // Código da Venda
 
-                        Divider()
 
-                        // Quantidade de Itens
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(text = "Quantidade de Itens", fontSize = 14.sp)
-                            Text(text = "5", fontSize = 14.sp)
+                            // Valor da Venda
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = stringResource(R.string.valor_venda), fontSize = 14.sp)
+                                Text(text = "R$ " + formatarPreco(viewModel.vendaDetalhes.valorTotal.toString().replace(".",",")), fontSize = 14.sp)
+                            }
+
+                            DottedLineComponent()
+
+                            // Quantidade de Itens
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = stringResource(R.string.quantidade_itens), fontSize = 14.sp)
+                                Text(text = viewModel.vendaDetalhes.totalItens.toString(), fontSize = 14.sp)
+                            }
+
+                            DottedLineComponent()
                         }
                     }
                 }
             }
-        }
 
-        // Caixa grande branca (Carrinho)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFE7E7E7))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(
+            // Caixa grande branca (Carrinho)
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(365.dp)
-                    .background(Color.White, RoundedCornerShape(8.dp))
-                .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth()
+                    .background(Color(0xFFE7E7E7))
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column {
-                    // Header da caixa grande
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Carrinho", fontSize = 20.sp, color = Color.Black)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f)
+                        .height(365.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                ) {
+                    Column {
+                        // Header da caixa grande
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = stringResource(R.string.carrinho), fontSize = 20.sp, color = Color.Black)
 
-                        Row {
-                            Button(
-                                onClick = { /* Ação do botão 1 */ },
-                                modifier = Modifier
-                                    .width(65.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
-                                )
-                            ) {
-                                Text(text = "Código", color = Color.White, fontSize = 12.sp)
-                            }
+                            Row {
+                                Button(
+                                    onClick = {
+                                        navController.navigate("tela_bip")
+//                                        val telaBip = Intent(contexto, BipScreen::class.java)
+//                                        telaBip.putExtra("contextoBusca", "pre-venda")
+//                                        contexto.startActivity(telaBip)
+                                    },
+                                    modifier = Modifier
+                                        .width(65.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF355070)
+                                    )
+                                ) {
+                                    Text(text = stringResource(R.string.codigo), color = Color.White, fontSize = 12.sp)
+                                }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
 
-                            Button(
-                                onClick = { /* Ação do botão 2 */ },
-                                modifier = Modifier
-                                    .width(70.dp)
-                                    .height(25.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF355070)
-                                )
-                            ) {
-                                Text(text = "Add Prod", color = Color.White, fontSize = 12.sp)
-                            }
+                                Button(
+                                    onClick = {
+                                        isModalAddProdCarrinho = true
+                                    },
+                                    modifier = Modifier
+                                        .width(70.dp)
+                                        .height(25.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF355070)
+                                    )
+                                ) {
+                                    Text(text = stringResource(R.string.add_prod), color = Color.White, fontSize = 12.sp)
+                                }
+
+                                if (isModalAddProdCarrinho) {
+                                    modalAddProdCarrinho(
+                                        onDismissRequest = {
+                                            isModalAddProdCarrinho = false
+                                        },
+                                        viewModel
+                                    )
+                                }
+
+                                if (viewModel.produtoSelecionado != null && !viewModel.abrirModalAdicionarMinimizado && !isModalAdicionarDesconto) {
+                                    isModalAddProdCarrinho = false
+                                    ModalAdicionar(
+                                        onDismissRequest = { viewModel.desescolherProduto() },
+                                        viewModel = viewModel,
+                                        isPreVenda = true,
+                                        onConfirmarAdd = {quantidade -> viewModel.adicionar(quantidade)},
+                                        isMinimized = false,
+                                        titulo = stringResource(R.string.adicionar_produto)
+                                    )
+                                }
                         }
                     }
 
@@ -311,80 +384,125 @@ fun PreVendaScreen() {
                             .background(Color(0xFF355070))
                             .padding(4.dp)
                             .clip(RoundedCornerShape(8.dp))
-                        .align(Alignment.CenterHorizontally)
+                            .align(Alignment.CenterHorizontally)
                     ) {
 
-ProductTable(products)
-
+                        ScreenTable(
+                            products = viewModel.carrinho.itensCarrinho,
+                            verMaisAction = { produto ->
+                                viewModel.escolherProduto(produto)
+                                viewModel.abrirModalAdicionarMinimizado = true
+                            },
+                            isPreVenda = true,
+                        )
+                        if (viewModel.produtoSelecionado != null && viewModel.abrirModalAdicionarMinimizado) {
+                            ModalAdicionar(
+                                onDismissRequest = { viewModel.desescolherProduto() },
+                                viewModel = viewModel,
+                                isPreVenda = true,
+                                onConfirmarAdd = { quantidade -> viewModel.adicionar(quantidade) },
+                                isMinimized = true,
+                                titulo = stringResource(R.string.mais_informacoes),
+                                abrirDesconto = {
+                                    isDescontoProduto = true
+                                    isModalAdicionarDesconto = true
+                                    viewModel.abrirModalAdicionarMinimizado = false
+                                },
+                                abrirAdicionarCarrinho = {
+                                    viewModel.abrirModalAdicionarMinimizado = false
+                                                         },
+                            )
+                        }
+                        }
                     }
                 }
-            }
 
-            // Caixa pequena branca com inputs
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(52.dp)
-                    .background(Color.White, RoundedCornerShape(8.dp))
-            ) {
-                Row(
+                // Caixa pequena branca com inputs
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth(0.95f)
+                        .height(52.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-                    Text(text = "Código", fontSize = 14.sp)
-
-                    OutlinedTextField(
+                    Row(
                         modifier = Modifier
-                            .width(80.dp)
-                            .height(10.dp),
-                        value = codigo,
-                        onValueChange = { codigo = it }
-                    )
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-                    Text(text = "Tipo Venda", fontSize = 14.sp)
+                        FormFieldRowComponent(
+                            label = stringResource(R.string.codigo),
+                            fieldType = KeyboardType.Number,
+                            textValue = if (codigo <= 0 || codigo == null) "" else codigo.toString(),
+                            onValueChange = {
+                                input ->
+                                val novoTexto = input
+                                    .replace("\\D".toRegex(), "")
+                                codigo = if (novoTexto == "") 0 else novoTexto.toInt()
+                                            },
+                            width = 120.dp,
+                            error = showError && codigo <= 0 || codigo == null
+                        )
 
-                    OutlinedTextField(
-                        modifier = Modifier.width(80.dp),
-                        value = codigo,
-                        onValueChange = { codigo = it }
-                    )
+                        FormFieldSelectRowComponent(
+                            label = stringResource(R.string.tipo_venda),
+                            selectedOption = tipoVenda.tipo,
+                            options = viewModel.tipoVendas.map { it.tipo},
+                            onOptionSelected = {
+                                    tipoVendaSelected ->
+                                tipoVenda = viewModel.tipoVendas.find { it.tipo == tipoVendaSelected }!!
+                            },
+                            width = 200.dp,
+                            error = showError && tipoVenda.id <= 0 || tipoVenda == null
+                        )
+                    }
                 }
-            }
 
-            // Botão azul na parte inferior
-            Button(
-                onClick = { /* Ação do botão */ },
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .height(50.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF355070)
-                )
-            ) {
-                Text(text = "Finalizar Venda", color = Color.White, fontSize = 16.sp)
+                // Botão azul na parte inferior
+                Button(
+                    onClick = {
+                        if( codigo <= 0 || tipoVenda.id <= 0){
+                            showError = true
+                        } else {
+                            coroutineScope.launch {
+                                try {
+                                    viewModel.atualizarVendaInfo(tipoVendaId = tipoVenda.id, codigoVendedor = codigo)
+                                    viewModel.realizarVenda()
+                                } catch (e: Exception) {
+                                    Log.e("PreVenda", "Erro ao executar ação: ${e.message}")
+                                } finally {
+                                    tipoVenda = TipoVendasDataClass(
+                                        id = 0,
+                                        tipo = "",
+                                        desconto = 0.0
+                                    )
+                                    codigo = 0
+                                }
+                            }
+                        } },
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355070)
+                    )
+                ) {
+                    Text(text = stringResource(R.string.finalizar_venda), color = Color.White, fontSize = 16.sp)
+                }
             }
         }
     }
 }
 
-data class Item(
-    val codigo: String,
-    val nome: String,
-    val preco: String,
-    val quantidade: String,
-    val verMaisResId: Int // Referência ao recurso da imagem
-)
-
-
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
+    val navController = rememberNavController()
+
     MyStockAppTheme {
-        PreVendaScreen()
+        PreVendaScreen(navController = navController, viewModel = PreVendaViewModel(1))
     }
 }

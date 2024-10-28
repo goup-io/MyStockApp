@@ -26,9 +26,9 @@ fun ButtonComponent(
     onClick: () -> Unit,
     containerColor: Color = Color(0xFF919191),
     textColor: Color = Color.White,
-    fontSize: TextUnit = 10.sp,
-    width: Int = 80,
-    height: Int = 25
+    fontSize: TextUnit = 14.sp,
+    width: Int = 85,
+    height: Int = 30
 ) {
     Button(
         onClick = { onClick() },

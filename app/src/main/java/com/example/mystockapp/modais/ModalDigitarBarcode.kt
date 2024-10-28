@@ -8,16 +8,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.ButtonComponent
-
 
 @Composable
 fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
@@ -27,16 +26,15 @@ fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(15.dp),
-
-            ) {
+        ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ModalHeaderComponent(onDismissRequest = onDismissRequest, "Digitar Codigo de Barras")
+                ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.digitar_codigo_barras_title))
                 Spacer(modifier = Modifier.height(6.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -52,10 +50,12 @@ fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 FormField(
-                                    label = "Codigo:",
+                                    label = stringResource(id = R.string.codigo_label),
                                     textValue = codigo,
+                                    fieldType = KeyboardType.Number,
                                     onValueChange = { codigo = it },
-                                    fieldSize = 30.dp
+                                    height = 25.dp,
+                                    width = 300.dp,
                                 )
                             }
                         }
@@ -70,7 +70,7 @@ fun ModalDigitarBarcodeDialog(onDismissRequest: () -> Unit) {
                 ) {
                     Spacer(modifier = Modifier.width(18.dp))
                     ButtonComponent(
-                        titulo = "Salvar",
+                        titulo = stringResource(id = R.string.salvar_button),
                         onClick = { onDismissRequest() },
                         containerColor = Color(0xFF355070),
                     )

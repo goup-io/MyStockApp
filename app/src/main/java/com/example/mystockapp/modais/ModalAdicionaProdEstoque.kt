@@ -1,10 +1,8 @@
 package com.example.mystockapp.modais
 
 import ProductTable
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,81 +12,66 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.mystockapp.dtos.ProdutoTable
-import com.example.mystockapp.modais.componentes.ButtonComponent
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MyStockAppTheme() {
-                AddProductToStock(onDismissRequest = {})
-            }
-        }
-    }
-}
-
+import com.example.mystockapp.R
+import com.example.mystockapp.modais.viewModels.AddProdEstoqueViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun AddProductToStock(onDismissRequest: () -> Unit) {
+fun AddProdutoEstoque(onDismissRequest: () -> Unit, viewModel: AddProdEstoqueViewModel) {
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val products = listOf(
-        ProdutoTable("Triple Black", "Air Force", "300,00", "37", "Preto",  "20"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco",  "15"),
-        ProdutoTable("Classic White", "Air Max", "400,00", "38", "Branco", "15")
-    )
+    LaunchedEffect(Unit) {
+        viewModel.fetchProdutos()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchProdutos()
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White, RoundedCornerShape(10.dp))
-                .padding(16.dp)
+                .padding(8.dp)
                 .border(0.dp, Color.Transparent, RoundedCornerShape(10.dp))
         ) {
-            ModalHeaderComponent(onDismissRequest = onDismissRequest, "Add Produto no Estoque")
+            ModalHeaderComponent(onDismissRequest = onDismissRequest, stringResource(id = R.string.add_produto_estoque_title))
             Spacer(modifier = Modifier.height(6.dp))
 
-            ProductTable(products)
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                ButtonComponent(
-                    titulo = "Excluir",
-                    onClick = { onDismissRequest() },
-                    containerColor = Color(0xFF919191),
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                ButtonComponent(
-                    titulo = "Editar",
-                    onClick = {
-                       onDismissRequest() },
-                    containerColor = Color(0xFF355070),
+            if (errorMessage != null) {
+                Text(text = errorMessage ?: "", color = Color.Red)
+            } else {
+                ProductTable(
+                    products = viewModel.produtos,
+                    viewModel = viewModel
                 )
             }
+
         }
-}
-
-
-
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     MyStockAppTheme() {
-        AddProductToStock(onDismissRequest = {})
+        AddProdutoEstoque(
+            onDismissRequest = {},
+            viewModel = AddProdEstoqueViewModel(1)
+        )
     }
 }

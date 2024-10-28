@@ -1,25 +1,32 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mystockapp.dtos.ProdutoTable
+import com.example.mystockapp.models.produtos.ProdutoTable
 import androidx.compose.ui.text.style.TextOverflow
+import com.example.mystockapp.R
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
+import com.example.mystockapp.modais.viewModels.ProdutoViewModel
 
 @Composable
-fun ProductTable(products: List<ProdutoTable>) {
+fun ProductTable(
+    products: List<ProdutoTable>,
+    viewModel: ProdutoViewModel
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -36,7 +43,8 @@ fun ProductTable(products: List<ProdutoTable>) {
                     val product = products[index]
                     ProductRow(
                         product = product,
-                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0)
+                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
+                        viewModel = viewModel
                     )
                 }
             }
@@ -54,13 +62,11 @@ fun TableHeader() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        HeaderText("Nome", Modifier.weight(2f))
-        HeaderText("Modelo", Modifier.weight(2f))
-        HeaderText("Preço", Modifier.weight(1.2f)) // Ajustar o peso para dar mais espaço
-        HeaderText("Tamanho", Modifier.weight(1.5f))
-        HeaderText("Cor", Modifier.weight(1f))
-        HeaderText("N. Itens", Modifier.weight(1f))
-        HeaderText("Add", Modifier.weight(1.3f)) // Ajustar o peso para dar mais espaço
+        HeaderText(stringResource(id = R.string.nome_label), Modifier.weight(2f))
+        HeaderText(stringResource(id = R.string.preco_label), Modifier.weight(1.2f))
+        HeaderText(stringResource(id = R.string.tamanho_label), Modifier.weight(1.5f))
+        HeaderText(stringResource(id = R.string.cor_label), Modifier.weight(1f))
+        HeaderText(stringResource(id = R.string.add_label), Modifier.weight(1.2f))
     }
 }
 
@@ -71,15 +77,20 @@ fun HeaderText(text: String, modifier: Modifier) {
         modifier = modifier,
         textAlign = TextAlign.Center,
         color = Color.White,
-        fontSize = 7.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Bold,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
+fun ProductRow(
+    product: ProdutoTable,
+    backgroundColor: Color,
+    viewModel: ProdutoViewModel,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -89,110 +100,83 @@ fun ProductRow(product: ProdutoTable, backgroundColor: Color) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            product.name,
+        Column(
             modifier = Modifier.weight(2f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.model,
-            modifier = Modifier.weight(2f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.price,
-            modifier = Modifier.weight(1.2f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.size,
-            modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.color,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-        Text(
-            product.quantity,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            fontSize = 7.sp
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(1.5.dp),
-            modifier = Modifier.weight(1.3f)
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = { /* TODO: Handle button click */ },
-                modifier = Modifier
-                    .size(12.dp), // Removed align modifier
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Black
-                ),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("-", fontSize = 7.sp, color = Color.Black, lineHeight = 16.sp)
-                }
-            }
-            BasicTextField(
-                value = "100",
-                onValueChange = { /* TODO: Handle value change */ },
-                modifier = Modifier
-                    .size(16.dp)
-                    .height(12.dp)
-                    .border(1.dp, Color(0xFF355070), RoundedCornerShape(50))
-                    .background(Color.Transparent),
-                textStyle = LocalTextStyle.current.copy(
-                    fontSize = 8.sp,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 16.sp
-                ),
-                singleLine = true,
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .clipToBounds()
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        innerTextField()
-                    }
-                }
+            Text(
+                product.nome,
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 14.sp
             )
-            Button(
-                onClick = { /* TODO: Handle button click */ },
-                modifier = Modifier
-                    .size(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Black
-                ),
-                contentPadding = PaddingValues(0.dp)
+        }
+        Column(
+            modifier = Modifier.weight(1.2f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                formatarPreco(product.preco.toString().replace(".", ",")),
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 14.sp
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1.5f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.tamanho.toString(),
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 14.sp
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.cor,
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Clip,
+                lineHeight = 12.sp
+            )
+        }
+        Column (
+            modifier = Modifier.weight(1.2f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            IconButton(
+                onClick = {
+                    Log.d("ProductTableComponent", "Escolhendo produto ${product}")
+                    viewModel.escolherProduto(product)
+                },
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("+", fontSize = 8.sp, color = Color.Black, lineHeight = 16.sp)
-                }
+                Icon(
+                    painter = painterResource(id = R.mipmap.vermais),
+                    contentDescription = stringResource(id = R.string.descricao_icone_adicionar),
+                    modifier = Modifier.size(20.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(4.dp))
-
         }
     }
 }

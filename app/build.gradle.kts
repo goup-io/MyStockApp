@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.mlkit.text.recognition.common)
     implementation(libs.play.services.mlkit.text.recognition)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,7 +87,20 @@ dependencies {
     implementation( libs.androidx.material.icons.extended)
 
 
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    // Gson
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp - Logging
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    implementation( "androidx.navigation:navigation-compose:2.5.3")
 
     // ML Kit - Leitura de código de barras
     implementation ("com.google.mlkit:barcode-scanning:17.0.2")
+
+    // Lifecycle ViewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+
 }

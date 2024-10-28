@@ -1,66 +1,201 @@
 package com.example.mystockapp.telas.componentes
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
-import com.example.mystockapp.models.Produto
-import com.example.mystockapp.ui.theme.Cores
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.memberProperties
+import com.example.mystockapp.modais.componentes.utils.formatarPreco
+import com.example.mystockapp.models.produtos.ProdutoTable
 
 @Composable
-fun Table(
-    listItems : List<Produto>
+fun ScreenTable(
+    products: List<ProdutoTable>,
+    verMaisAction: (ProdutoTable) -> Unit,
+    isPreVenda: Boolean
 ) {
-//    val listColumns: List<String> = Produto::class.memberProperties.map { it.name }.map { it.take(7) }.filter { !it.startsWith('$') }
-    val listColumns = listOf("Código", "Nome", "Preço", "Qtd", "Ver mais")
-
-    println(listColumns[listColumns.size - 1])
-    Column (
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clip(RoundedCornerShape(4.dp)).border(width = 2.dp, color = Cores.AzulBackground)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(Color(0xFF355070))
     ) {
-        Row (modifier = Modifier.background(Cores.AzulBackground)){
-            listColumns.forEach { column ->
-                Text(text = column, textAlign = TextAlign.Center, color = Color.White, modifier = Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 2.dp))
-            }
-        }
-        listItems.forEach{ produto ->
-            Row (verticalAlignment = Alignment.CenterVertically){
-                Text(text = produto.codigo, textAlign = TextAlign.Center, modifier = Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 2.dp))
-                Text(text = produto.nome, textAlign = TextAlign.Center, modifier = Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 2.dp))
-                Text(text = produto.preco.toString(), textAlign = TextAlign.Center, modifier = Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 2.dp))
-                Text(text = produto.quantidade.toString(), textAlign = TextAlign.Center, modifier = Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 2.dp))
-                Text(text = "ICON", textAlign = TextAlign.Center, modifier = Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 2.dp))
-
+        Column (
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(Color(0xFF355070))
+        ){
+            TableHeader()
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                modifier = Modifier.fillMaxWidth()
+                    .fillMaxHeight()
+                    .background(Color(0xFF355070))
+            ) {
+                items(products.size) { index ->
+                    val product = products[index]
+                    ProductRow(
+                        product = product,
+                        verMaisAction = verMaisAction,
+                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
+                        isPreVenda = isPreVenda
+                    )
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun PreviewTable(){
-    val lista = listOf(Produto("codigo", "nome", "cor", 10.0, "modelo", 1, 40 ))
-    Table(lista)
+fun TableHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF355070), RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+            .padding(2.dp, 0.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        HeaderText(stringResource(id = R.string.codigo_label), Modifier.weight(2f))
+        HeaderText(stringResource(id = R.string.nome_label), Modifier.weight(2f))
+        HeaderText(stringResource(id = R.string.preco_label), Modifier.weight(1.2f))
+        HeaderText(stringResource(id = R.string.quantidade_itens_label), Modifier.weight(1.5f))
+        HeaderText(stringResource(id = R.string.ver_mais_label), Modifier.weight(1.3f))
+    }
+}
+
+
+@Composable
+fun HeaderText(text: String, modifier: Modifier) {
+    Text(
+        text,
+        modifier = modifier,
+        textAlign = TextAlign.Center,
+        color = Color.White,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProductRow(
+    product: ProdutoTable,
+    verMaisAction: (ProdutoTable) -> Unit,
+    backgroundColor: Color,
+    isPreVenda: Boolean
+) {
+    val quantidade = if (isPreVenda) product.quantidadeToAdd else product.quantidade
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(backgroundColor)
+            .border(1.dp, Color(0xFF355070), RoundedCornerShape(12.dp)) // Mantém a borda
+            .padding(4.dp, 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(2f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.codigo,
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+            )
+        }
+        Column(
+            modifier = Modifier.weight(2f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                product.nome,
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1.2f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                formatarPreco(product.preco.toString().replace(".", ",")),
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1.5f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                 quantidade.toString(),
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Medium,
+                fontSize = 10.sp,
+                maxLines = 2, // Limitar a 2 linhas, ou ajustar conforme necessário
+                overflow = TextOverflow.Clip, // Cortar o texto sem reticências
+                lineHeight = 12.sp // Ajustar a altura da linha para evitar espaçamento excessivo
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.weight(1.3f)
+        ) {
+            IconButton(
+                onClick = {
+                    // Ação a ser realizada quando o botão é clicado
+                    verMaisAction(product)
+                },
+            ) {
+                Icon(
+                    painter = painterResource(id = R.mipmap.vermais), // Substitua pelo ícone desejado
+                    contentDescription = stringResource(id = R.string.descricao_icone_adicionar), // Descrição acessível do ícone
+                    modifier = Modifier.size(20.dp) // Define o tamanho do ícone
+                )
+            }
+        }
+    }
 }
