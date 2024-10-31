@@ -79,7 +79,11 @@ class Estoque : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyStockAppTheme {
-                EstoqueScreen()
+                androidx.compose.material3.Scaffold { innerPadding ->
+                    EstoqueScreen(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
 
             }
         }
@@ -87,7 +91,10 @@ class Estoque : ComponentActivity() {
 }
 
 @Composable
-fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.current) {
+fun EstoqueScreen(
+    context: Context = androidx.compose.ui.platform.LocalContext.current,
+    modifier : Modifier = Modifier
+) {
 
     val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
     val idLoja = sharedPreferences.getInt("idLoja", -1)
@@ -147,9 +154,12 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
         }
     }
 
-    MenuDrawer(titulo = stringResource(id = R.string.titulo_estoque)) {
+    MenuDrawer(
+        modifier = modifier,
+        titulo = stringResource(id = R.string.titulo_estoque)) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .fillMaxSize()
                 .background(Color(0xFF355070))
         ) {

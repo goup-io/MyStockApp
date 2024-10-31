@@ -145,6 +145,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
             val response = produtoService.createProduto(objeto)
 
             confirmarTitulo = "Produto salvo com sucesso"
+            imgCasoDeErro = R.mipmap.ic_sucesso
 
             handleAbrirModalConfirm(
                 confirmarTitulo,
@@ -177,6 +178,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                 201 -> {
                     Log.d("NovoProdutoDialog", "Produto salvo com sucesso")
                     confirmarTitulo = "Produto salvo com sucesso"
+                    imgCasoDeErro = R.mipmap.ic_sucesso
                 }
 
                 400 -> {
