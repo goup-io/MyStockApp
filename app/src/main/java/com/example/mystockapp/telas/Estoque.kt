@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -150,7 +152,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
     MenuDrawer(titulo = stringResource(id = R.string.titulo_estoque)) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .background(Color(0xFF355070))
         ) {
             // Função para limpar os filtros
@@ -165,13 +167,13 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(6.dp),
+                    .padding(10.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.95f)
+                        .fillMaxWidth(1f)
                         .height(175.dp)
                         .shadow(8.dp, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
@@ -179,7 +181,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(10.dp)
+                            .fillMaxHeight()
+                            .padding(6.dp)
                     ) {
                         // Primeira linha (label e input)
                         Row(
@@ -252,7 +255,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
                         // Terceira linha (botões)
                         Row(
-                            modifier = Modifier.fillMaxWidth(0.75f).padding(start = 70.dp),
+                            modifier = Modifier.fillMaxWidth(0.75f).padding(start = 90.dp),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             // Botão Limpar
@@ -267,8 +270,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                     }
                                           }, // Chama a função limparFiltros ao clicar
                                 modifier = Modifier
-                                    .width(65.dp)
-                                    .height(25.dp),
+                                    .width(80.dp)
+                                    .height(32.dp),
                                 shape = RoundedCornerShape(5.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -294,8 +297,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                     }
                                 },
                                 modifier = Modifier
-                                    .width(65.dp)
-                                    .height(25.dp),
+                                    .width(80.dp)
+                                    .height(32.dp),
                                 shape = RoundedCornerShape(5.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -318,23 +321,25 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFFE7E7E7))
-                    .padding(16.dp),
+                    .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(365.dp)
-                        .background(Color.White, RoundedCornerShape(8.dp))
-                        .clip(RoundedCornerShape(8.dp))
+                        .fillMaxWidth()
+                        .height(375.dp)
+                        .background(Color(0xFFE7E7E7))
                 ) {
-                    Column {
+                    Column (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
                         // Header da caixa grande com campo de pesquisa
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),
+                                .height(46.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -342,7 +347,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                             androidx.compose.material3.Text(
                                 text = stringResource(id = R.string.titulo_produtos),
                                 fontSize = 20.sp,
-                                color = Color.Black
+                                color = Color.Black,
+                                fontWeight = FontWeight.W500,
                             )
 
                             // Campo de pesquisa e botão
@@ -350,20 +356,14 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                 modifier = Modifier.padding(0.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Texto "Buscar:"
-                                androidx.compose.material3.Text(
-                                    text = stringResource(id = R.string.label_buscar),
-                                    fontSize = 12.sp,
-                                    color = Color.Black,
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
+
 
                                 // Input para pesquisa
                                 Box(
                                     contentAlignment = Alignment.CenterStart, // Alinha o conteúdo verticalmente ao centro na Box
                                     modifier = Modifier
-                                        .width(107.dp)
-                                        .height(24.dp)
+                                        .width(145.dp)
+                                        .height(30.dp)
                                         .border(0.5.dp, Color.Gray, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                                         .background(Color.White, RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                                         .padding(start = 8.dp) // Adiciona um padding à esquerda
@@ -397,8 +397,8 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                                     }
                                 },
                                     modifier = Modifier
-                                        .width(30.dp)
-                                        .height(24.dp)
+                                        .width(40.dp)
+                                        .height(30.dp)
                                         .padding(0.dp),
                                     shape = RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp),
                                     contentPadding = PaddingValues(0.dp),
@@ -420,9 +420,9 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                     // Tabela dentro da caixa grande
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(0.95f)
-                            .height(310.dp)
-                            .background(Color(0xFF355070))
+                            .fillMaxWidth(1f)
+                            .height(325.dp)
+                            .background(Color(0xFF355070), RoundedCornerShape(8.dp))
                             .padding(4.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .align(Alignment.CenterHorizontally)
@@ -450,7 +450,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(0.95f)
+                        .fillMaxWidth(1f)
                         .height(50.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -504,7 +504,7 @@ fun EstoqueScreen(context: Context = androidx.compose.ui.platform.LocalContext.c
                 // Dois botões azuis na parte inferior
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(0.95f)
+                        .fillMaxWidth(1f)
                         .height(50.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {

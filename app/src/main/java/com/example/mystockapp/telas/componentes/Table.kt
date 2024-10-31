@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
@@ -39,19 +40,19 @@ fun ScreenTable(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(Color(0xFF355070))
+            .background(Color(0xFF355070), RoundedCornerShape(8.dp))
     ) {
         Column (
             modifier = Modifier
                 .fillMaxHeight()
-                .background(Color(0xFF355070))
+                .background(Color(0xFF355070), RoundedCornerShape(8.dp))
         ){
             TableHeader()
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth()
                     .fillMaxHeight()
-                    .background(Color(0xFF355070))
+                    .background(Color(0xFF355070), RoundedCornerShape(8.dp))
             ) {
                 items(products.size) { index ->
                     val product = products[index]
