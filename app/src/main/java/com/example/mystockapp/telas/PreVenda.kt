@@ -424,7 +424,7 @@ fun PreVendaScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
-                        .height(52.dp)
+                        .height(60.dp)
                         .background(Color.White, RoundedCornerShape(8.dp))
                 ) {
                     Row(
@@ -446,6 +446,7 @@ fun PreVendaScreen(
                                 codigo = if (novoTexto == "") 0 else novoTexto.toInt()
                                             },
                             width = 120.dp,
+                            height = 60.dp,
                             error = showError && codigo <= 0 || codigo == null
                         )
 
