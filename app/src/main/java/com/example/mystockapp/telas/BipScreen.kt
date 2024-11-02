@@ -320,18 +320,21 @@ fun Screen(
                                 shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
                             )
                             .verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Text(
-                            text = contexto.getString(R.string.informacoes),
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.W500,
-                            modifier = modifier
-                                .padding(end = 254.dp, top = 5.dp)
-                        )
+                        Row (
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(0.dp, vertical = 0.dp),
+                            horizontalArrangement = Arrangement.Start
+                        ){
+                            Text(
+                                text = contexto.getString(R.string.informacoes),
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.W500,
+                                modifier = Modifier
+                                    .padding(start = 10.dp, top = 10.dp)
+                            )
+                        }
 
                         Card(
                             modifier = Modifier
@@ -490,7 +493,7 @@ fun Screen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.size(10.dp))
 
                         Button(
                             onClick = { viewModel.buscarEtpPorCodigo(barcodeNumber) },
@@ -607,7 +610,7 @@ fun BipScreenPreview() {
 
     MyStockAppTheme {
         Screen(
-            contextoBusca = "estoque", // pode ser pesquisa, estoque ou pre-venda
+            contextoBusca = "pesquisa", // pode ser pesquisa, estoque ou pre-venda
             navController = navController,
             preVendaViewModel = preVendaViewModel,
             viewModel = etpViewModel
