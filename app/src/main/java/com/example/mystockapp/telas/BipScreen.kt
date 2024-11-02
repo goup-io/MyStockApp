@@ -42,8 +42,10 @@ import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -187,7 +189,7 @@ fun Screen(
                 MenuDrawer(titulo = contexto.getString(R.string.busca)) {
                     Column(
                         modifier = Modifier
-                            .padding(16.dp),
+                            .padding(10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Column(
@@ -322,23 +324,29 @@ fun Screen(
                     ) {
                         Spacer(modifier = Modifier.height(5.dp))
 
+                        Text(
+                            text = contexto.getString(R.string.informacoes),
+                            fontSize = 20.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.W500,
+                            modifier = modifier
+                                .padding(end = 254.dp, top = 5.dp)
+                        )
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(10.dp)
+                                .shadow(4.dp, shape = RoundedCornerShape(10.dp)), // Sombra suave com elevação de 4.dp
                             shape = RoundedCornerShape(10.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
+                        )
+                        {
                             Column(
                                 modifier = Modifier
-                                    .padding(16.dp)
+                                    .padding(10.dp)
                             ) {
-                                Text(
-                                    text = contexto.getString(R.string.informacoes),
-                                    fontSize = 19.sp,
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Bold
-                                )
+
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 if (contextoBusca == "pesquisa" || contextoBusca == "estoque" || contextoBusca == "pre-venda") {
@@ -472,7 +480,7 @@ fun Screen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .height(35.dp),
+                                .height(50.dp),
                             shape = RoundedCornerShape(5.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                         ) {
@@ -482,14 +490,14 @@ fun Screen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Button(
                             onClick = { viewModel.buscarEtpPorCodigo(barcodeNumber) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .height(35.dp),
+                                .height(50.dp),
                             shape = RoundedCornerShape(5.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                         ) {
@@ -583,18 +591,26 @@ fun InfoTextField(
             textStyle = TextStyle(color = if (editable) Color.Black else Color.DarkGray),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
+                .height(34.dp)
                 .background(backgroundColor)
                 .border(1.dp, Color(0xFF355070), RoundedCornerShape(5.dp))
                 .padding(8.dp)
         )
     }
 }
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun BipScreenPreview() {
+    val navController = rememberNavController() // Instância para o NavHostController
+    val preVendaViewModel = PreVendaViewModel(1) // Supondo que você tenha um construtor padrão ou um mock
+    val etpViewModel = EtpViewModel(RetrofitInstance.etpApi, LocalContext.current) // Da mesma forma, um construtor ou mock
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun BipScreenPreview() {
-//    MyStockAppTheme {
-//        Screen(contextoBusca = "pesquisa")
-//    }
-//}
+    MyStockAppTheme {
+        Screen(
+            contextoBusca = "pesquisa", // pode ser pesquisa, estoque ou pre-venda
+            navController = navController,
+            preVendaViewModel = preVendaViewModel,
+            viewModel = etpViewModel
+        )
+    }
+}
