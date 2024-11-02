@@ -480,7 +480,7 @@ fun Screen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .height(50.dp),
+                                .height(35.dp),
                             shape = RoundedCornerShape(5.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                         ) {
@@ -497,7 +497,7 @@ fun Screen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .height(50.dp),
+                                .height(35.dp),
                             shape = RoundedCornerShape(5.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFF355070))
                         ) {
@@ -507,7 +507,7 @@ fun Screen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         if (contextoBusca == "pre-venda") {
                             Button(
@@ -607,7 +607,7 @@ fun BipScreenPreview() {
 
     MyStockAppTheme {
         Screen(
-            contextoBusca = "pesquisa", // pode ser pesquisa, estoque ou pre-venda
+            contextoBusca = "estoque", // pode ser pesquisa, estoque ou pre-venda
             navController = navController,
             preVendaViewModel = preVendaViewModel,
             viewModel = etpViewModel
