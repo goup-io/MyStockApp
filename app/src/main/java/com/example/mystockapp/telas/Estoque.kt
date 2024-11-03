@@ -5,6 +5,7 @@ import NovoProdutoDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -70,6 +71,7 @@ import com.example.mystockapp.models.produtos.Tamanho
 import com.example.mystockapp.telas.componentes.ScreenTable
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.ui.theme.MyStockAppTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -449,7 +451,10 @@ fun EstoqueScreen(
 
                         if (viewModel.produtoSelecionado != null) {
                             InformacoesProdutoDialog(
-                                onDismissRequest = { viewModel.desescolherProduto() },
+                                onDismissRequest = {
+                                    viewModel.desescolherProduto()
+                                    viewModel.atualizarEstoque = true
+                                                   },
                                 idProduto = viewModel.produtoSelecionado!!.id,
                             )
                         }
@@ -506,7 +511,10 @@ fun EstoqueScreen(
                     }
                     if (isModalNovoProd) {
                         NovoProdutoDialog(
-                            onDismissRequest = { isModalNovoProd = false }
+                            onDismissRequest = {
+                                isModalNovoProd = false
+                                viewModel.atualizarEstoque = true
+                            }
                         )
                     }
                 }
@@ -547,12 +555,16 @@ fun EstoqueScreen(
                 if (addProdEstoqueViewModel.produtoSelecionado != null) {
                     isModalAddProd = false
                     ModalAdicionar(
-                        onDismissRequest = { addProdEstoqueViewModel.desescolherProduto() },
+                        onDismissRequest = {
+                            viewModel.atualizarEstoque()
+                            addProdEstoqueViewModel.desescolherProduto()
+                                           },
                         viewModel = addProdEstoqueViewModel,
                         isPreVenda = false,
                         onConfirmarAdd = { quantidade ->
-                            addProdEstoqueViewModel.adicionarNoEstoque(quantidade)
-                        },
+                                addProdEstoqueViewModel.adicionarNoEstoque(quantidade)
+                                viewModel.atualizarEstoque()
+                           },
                         isMinimized = false,
                         titulo = stringResource(R.string.adicionar_estoque)
                     )
@@ -577,14 +589,20 @@ fun EstoqueScreen(
                     )
                 }
 
+                    if(viewModel.atualizarEstoque){
+                        viewModel.atualizarEstoque()
+                    }
+
                 if (addProdEstoqueViewModel.showSucessoDialog) {
                     SucessoDialog(
                         titulo = addProdEstoqueViewModel.sucessoDialogTitulo,
                         onDismiss = {
                             addProdEstoqueViewModel.showSucessoDialog = false
+                            viewModel.atualizarEstoque()
                         },
                         onConfirm = {
                             addProdEstoqueViewModel.showSucessoDialog = false
+                            viewModel.atualizarEstoque()
                         },
                         btnConfirmColor = Color(0xFF355070),
                         imagem = addProdEstoqueViewModel.imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
@@ -611,7 +629,10 @@ fun EstoqueScreen(
                     }
                     if (isModalNovoModelo) {
                         ModalNovoModeloDialog(
-                            onDismissRequest = { isModalNovoModelo = false }
+                            onDismissRequest = {
+                                isModalNovoModelo = false
+                                viewModel.atualizarEstoque = true
+                            }
                         )
                     }
                 }

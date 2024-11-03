@@ -17,8 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
@@ -28,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mystockapp.R
 import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.models.produtos.ProdutoTable
-
 @Composable
 fun ScreenTable(
     products: List<ProdutoTable>,
@@ -41,24 +42,22 @@ fun ScreenTable(
             .fillMaxHeight()
             .background(Color(0xFF355070))
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .background(Color(0xFF355070))
-        ){
+        ) {
             TableHeader()
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(1),
+            LazyColumn(
                 modifier = Modifier.fillMaxWidth()
                     .fillMaxHeight()
                     .background(Color(0xFF355070))
             ) {
-                items(products.size) { index ->
-                    val product = products[index]
+                items(products) { product ->
                     ProductRow(
                         product = product,
                         verMaisAction = verMaisAction,
-                        backgroundColor = if (index % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
+                        backgroundColor = if (products.indexOf(product) % 2 == 0) Color(0xFFE7E7E7) else Color(0xFFD0D4F0),
                         isPreVenda = isPreVenda
                     )
                 }
@@ -66,6 +65,7 @@ fun ScreenTable(
         }
     }
 }
+
 
 @Composable
 fun TableHeader() {
