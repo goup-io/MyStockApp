@@ -51,7 +51,7 @@ fun FormFieldRowComponent(
     error: Boolean = false
 ) {
     Row (
-        modifier = modifier.width(width),
+        modifier = modifier.width(width).height(height),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
@@ -111,6 +111,7 @@ fun PreviewFormFieldRowComponent() {
         textValue = "ateataeet",
         fieldType = KeyboardType.Number,
         onValueChange = { },
-        error = false
+        error = false,
+        height = 100.dp
     )
 }

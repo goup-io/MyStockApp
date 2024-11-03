@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -167,16 +168,16 @@ fun PreVendaScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(10.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(172.dp)
+                        .fillMaxWidth(1f)
+                        .height(175.dp)
                         .shadow(8.dp, RoundedCornerShape(8.dp))
-                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp)) // Cor de fundo da caixa
                 ) {
                     Column(
                         modifier = Modifier
@@ -191,7 +192,7 @@ fun PreVendaScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = stringResource(R.string.resumo_venda), fontSize = 16.sp)
+                            Text(text = stringResource(R.string.resumo_venda), fontSize = 16.sp, fontWeight = FontWeight.W500)
 
                             Row {
                                 // Botões com bordas arredondadas
@@ -202,8 +203,8 @@ fun PreVendaScreen(
                                     },
                                     modifier = Modifier
                                         .padding(end = 8.dp)
-                                        .width(65.dp)
-                                        .height(25.dp),
+                                        .width(75.dp)
+                                        .height(32.dp),
                                     shape = RoundedCornerShape(5.dp),
                                     contentPadding = PaddingValues(0.dp) // Ajusta o padding
                                 ) {
@@ -234,8 +235,8 @@ fun PreVendaScreen(
                                 Button(
                                     onClick = { isModalMaisInfo = true },
                                     modifier = Modifier
-                                        .width(25.dp)
-                                        .height(25.dp),
+                                        .width(32.dp)
+                                        .height(32.dp),
                                     shape = RoundedCornerShape(5.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color(0xFF96BDCE) // Definindo a cor de fundo
@@ -293,27 +294,29 @@ fun PreVendaScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFFE7E7E7))
-                    .padding(16.dp),
+                    .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(365.dp)
-                        .background(Color.White, RoundedCornerShape(8.dp))
-                        .clip(RoundedCornerShape(8.dp))
+                        .fillMaxWidth()
+                        .height(375.dp)
+                        .background(Color(0xFFE7E7E7))
                 ) {
-                    Column {
+                    Column (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
                         // Header da caixa grande
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),
+                                .height(46.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = stringResource(R.string.carrinho), fontSize = 20.sp, color = Color.Black)
+                            Text(text = stringResource(R.string.carrinho), fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.W500)
 
                             Row {
                                 Button(
@@ -324,8 +327,8 @@ fun PreVendaScreen(
 //                                        contexto.startActivity(telaBip)
                                     },
                                     modifier = Modifier
-                                        .width(65.dp)
-                                        .height(25.dp),
+                                        .width(80.dp)
+                                        .height(30.dp),
                                     shape = RoundedCornerShape(5.dp),
                                     contentPadding = PaddingValues(0.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -342,8 +345,8 @@ fun PreVendaScreen(
                                         isModalAddProdCarrinho = true
                                     },
                                     modifier = Modifier
-                                        .width(70.dp)
-                                        .height(25.dp),
+                                        .width(80.dp)
+                                        .height(30.dp),
                                     shape = RoundedCornerShape(5.dp),
                                     contentPadding = PaddingValues(0.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -379,9 +382,9 @@ fun PreVendaScreen(
                     // Tabela dentro da caixa grande
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(0.95f)
-                            .height(310.dp)
-                            .background(Color(0xFF355070))
+                            .fillMaxWidth(1f)
+                            .height(325.dp)
+                            .background(Color(0xFF355070), RoundedCornerShape(8.dp))
                             .padding(4.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .align(Alignment.CenterHorizontally)
@@ -421,7 +424,7 @@ fun PreVendaScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
-                        .height(52.dp)
+                        .height(60.dp)
                         .background(Color.White, RoundedCornerShape(8.dp))
                 ) {
                     Row(
@@ -443,6 +446,7 @@ fun PreVendaScreen(
                                 codigo = if (novoTexto == "") 0 else novoTexto.toInt()
                                             },
                             width = 120.dp,
+                            height = 60.dp,
                             error = showError && codigo <= 0 || codigo == null
                         )
 
@@ -455,6 +459,7 @@ fun PreVendaScreen(
                                 tipoVenda = viewModel.tipoVendas.find { it.tipo == tipoVendaSelected }!!
                             },
                             width = 200.dp,
+                            fieldHeight = 70.dp,
                             error = showError && tipoVenda.id <= 0 || tipoVenda == null
                         )
                     }

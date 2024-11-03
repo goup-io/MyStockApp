@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
@@ -40,18 +41,18 @@ fun ScreenTable(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(Color(0xFF355070))
+            .background(Color(0xFF355070), RoundedCornerShape(8.dp))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(Color(0xFF355070))
+                .background(Color(0xFF355070), RoundedCornerShape(8.dp))
         ) {
             TableHeader()
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
                     .fillMaxHeight()
-                    .background(Color(0xFF355070))
+                    .background(Color(0xFF355070), RoundedCornerShape(8.dp))
             ) {
                 items(products) { product ->
                     ProductRow(
