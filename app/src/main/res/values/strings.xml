@@ -81,6 +81,7 @@
     <string name="adicionar_produto">Adicionar Produto</string>
     <string name="preencha_todos_os_campos">Preencha todos os campos corretamente.</string>
     <string name="informe_quantidade">Informe a quantidade que deseja adicionar ao carrinho.</string>
+    <string name="produto_nao_existe">Produto com o código %1$s não existe</string>
 
     <!-- Strings for Componentes -->
     <string name="codigo_label">Código</string>

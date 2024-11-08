@@ -154,8 +154,23 @@ fun Screen(
             quantidadeEstoque = it.quantidade ?: 0
             itemPromocional = it.itemPromocional ?: false
         } ?: run {
+            Toast.makeText(
+                contexto,
+                contexto.getString(R.string.produto_nao_existe, barcodeNumber),
+                Toast.LENGTH_SHORT
+            ).show()
             println(contexto.getString(R.string.etp_e_nulo))
             codigo = barcodeNumber ?: "0"
+            // Limpando os campos
+            nome = ""
+            modelo = ""
+            precoCusto = 0.0
+            precoRevenda = 0.0
+            tamanho =  0
+            cor = ""
+            quantidadeEstoque = 0
+            itemPromocional = false
+            quantidadeVenda = 0
         }
     }
 
