@@ -42,9 +42,11 @@ import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.ui.theme.MyStockAppTheme
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -400,16 +402,22 @@ fun Screen(
                                         InfoTextField(
                                             label = contexto.getString(R.string.tamanho),
                                             value = tamanho.toString(),
-                                            onValueChange = { tamanho = it.toInt() },
+                                            onValueChange = { newValue ->
+                                                tamanho = newValue.toIntOrNull() ?: 0 // Conversão  para inteiros
+                                            },
                                             editable = contextoBusca == "estoque",
-                                            modifier = Modifier.weight(1f)
+                                            modifier = Modifier.weight(1f),
+                                            isNumeric = true
                                         )
                                         InfoTextField(
                                             label = contexto.getString(R.string.quantidade_est),
                                             value = quantidadeEstoque.toString(),
-                                            onValueChange = { quantidadeEstoque = it.toInt() },
+                                            onValueChange = { newValue ->
+                                                quantidadeEstoque = newValue.toIntOrNull() ?: 0 // Conversão para inteiros
+                                            },
                                             editable = contextoBusca != "pre-venda",
-                                            modifier = Modifier.weight(1f)
+                                            modifier = Modifier.weight(1f),
+                                            isNumeric = true
                                         )
                                     }
 
@@ -419,12 +427,13 @@ fun Screen(
                                             value = quantidadeVenda.toString(),
                                             onValueChange = {
                                                 val newValue = it.toIntOrNull() ?: 0
-                                                if (newValue in 0..quantidadeEstoque) {
+                                                if (newValue >= 0 || newValue <=quantidadeEstoque) {
                                                     quantidadeVenda = newValue
                                                 }
                                             },
                                             editable = true,
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier.fillMaxWidth(),
+                                            isNumeric = true
                                         )
                                     }
 
@@ -436,17 +445,27 @@ fun Screen(
                                             InfoTextField(
                                                 label = contexto.getString(R.string.preco_custo),
                                                 value = String.format("%.2f", precoCusto),
-                                                onValueChange = { precoCusto = it.toDouble() },
+                                                onValueChange = { newValue ->
+                                                    // Substitua vírgula por ponto antes da conversão para evitar problemas
+                                                    val formattedValue = newValue.replace(',', '.')
+                                                    precoCusto = formattedValue.toDoubleOrNull() ?: 0.0 // Conversão para decimais
+                                                },
                                                 editable = contextoBusca != "pre-venda",
-                                                modifier = Modifier.weight(1f)
+                                                modifier = Modifier.weight(1f),
+                                                isNumeric = true
                                             )
                                             InfoTextField(
                                                 label = contexto.getString(R.string.preco_revenda),
                                                 value = String.format("%.2f", precoRevenda),
-                                                onValueChange = { precoRevenda = it.toDouble() },
+                                                onValueChange = { newValue ->
+                                                    val formattedValue = newValue.replace(',', '.')
+                                                    precoRevenda = formattedValue.toDoubleOrNull() ?: 0.0 // Conversão para decimais
+                                                },
                                                 editable = contextoBusca != "pre-venda",
-                                                modifier = Modifier.weight(1f)
+                                                modifier = Modifier.weight(1f),
+                                                isNumeric = true
                                             )
+
                                         }
                                     }
 
@@ -579,7 +598,8 @@ fun InfoTextField(
     value: String,
     onValueChange: (String) -> Unit,
     editable: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isNumeric: Boolean = false
 ) {
     val backgroundColor = if (editable) Color.White else Color(0xFFE7E7E7)
 
@@ -589,7 +609,12 @@ fun InfoTextField(
         Text(text = label, fontSize = 16.sp, color = Color.Black)
         BasicTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = { newValue ->
+                // Permite dígitos, ponto ou vírgula para números decimais
+                if (!isNumeric || newValue.matches(Regex("^\\d*[.,]?\\d*\$"))) {
+                    onValueChange(newValue)
+                }
+            },
             enabled = editable,
             textStyle = TextStyle(color = if (editable) Color.Black else Color.DarkGray),
             modifier = Modifier
@@ -597,10 +622,12 @@ fun InfoTextField(
                 .height(34.dp)
                 .background(backgroundColor)
                 .border(1.dp, Color(0xFF355070), RoundedCornerShape(5.dp))
-                .padding(8.dp)
+                .padding(8.dp),
+            keyboardOptions = if (isNumeric) KeyboardOptions(keyboardType = KeyboardType.Number) else KeyboardOptions.Default
         )
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun BipScreenPreview() {
