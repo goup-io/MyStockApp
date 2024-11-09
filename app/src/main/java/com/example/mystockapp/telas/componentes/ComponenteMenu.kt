@@ -13,11 +13,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuDrawer(titulo: String, content: @Composable () -> Unit) {
+fun MenuDrawer(modifier: Modifier = Modifier, titulo: String, content: @Composable () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
+        modifier = modifier,
         drawerState = drawerState,
         drawerContent = {
             Box(

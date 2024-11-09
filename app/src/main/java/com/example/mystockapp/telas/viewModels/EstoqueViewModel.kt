@@ -33,6 +33,14 @@ class EstoqueViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel 
 
     private val produtoService = ProdutoService(RetrofitInstance.produtoApi)
 
+    var atualizarEstoque by mutableStateOf(false)
+
+    fun atualizarEstoque(){
+        fetchProdutos()
+        atualizarEstoque = false
+        Log.d("Estoque", "Estoque atualizado")
+    }
+
     // Função para buscar todos os produtos inicialmente
     fun fetchProdutos() {
         viewModelScope.launch {

@@ -34,10 +34,10 @@ fun Header(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(0.95f)
-            .height(52.dp)
+            .fillMaxWidth(1f)
+            .height(55.dp)
             .padding(16.dp)
-            .padding(start = 16.dp),
+            .padding(start = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

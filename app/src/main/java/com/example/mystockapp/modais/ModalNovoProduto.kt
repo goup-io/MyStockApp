@@ -35,6 +35,7 @@ import com.example.mystockapp.modais.ModalHeaderComponent
 import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.ButtonComponent
 import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.modais.componentes.utils.desformatarPreco
 import com.example.mystockapp.modais.componentes.utils.formatarPreco
 import com.example.mystockapp.models.lojas.Loja
 import com.example.mystockapp.models.produtos.Cor
@@ -80,6 +81,9 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     val gson = Gson()
     val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
     val idLoja = sharedPreferences.getInt("idLoja", -1) // -1 é o valor padrão caso não encontre
+
+    var tempValorCusto by remember { mutableStateOf("") }
+    var tempValorVenda by remember { mutableStateOf("") }
 
     fun handleAbrirModalConfirm(
         titulo: String,
@@ -145,6 +149,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
             val response = produtoService.createProduto(objeto)
 
             confirmarTitulo = "Produto salvo com sucesso"
+            imgCasoDeErro = R.mipmap.ic_sucesso
 
             handleAbrirModalConfirm(
                 confirmarTitulo,
@@ -177,6 +182,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                 201 -> {
                     Log.d("NovoProdutoDialog", "Produto salvo com sucesso")
                     confirmarTitulo = "Produto salvo com sucesso"
+                    imgCasoDeErro = R.mipmap.ic_sucesso
                 }
 
                 400 -> {
@@ -296,19 +302,23 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                                 )
                                 com.example.mystockapp.modais.FormField(
                                     label = stringResource(id = R.string.preco_custo_label),
-                                    textValue = precoCusto,
+                                    textValue = tempValorCusto,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { input ->
-                                        precoCusto = formatarPreco(input)
+                                        val precoFormatado = formatarPreco(input)
+                                        tempValorCusto = precoFormatado
+                                        precoCusto = desformatarPreco(precoFormatado).toString()
                                     },
                                     error = showError && precoCusto.isEmpty()
                                 )
                                 com.example.mystockapp.modais.FormField(
                                     label = stringResource(id = R.string.preco_venda_label),
-                                    textValue = precoVenda,
+                                    textValue = tempValorVenda,
                                     fieldType = KeyboardType.Decimal,
                                     onValueChange = { input ->
-                                        precoVenda = formatarPreco(input)
+                                        val precoFormatado = formatarPreco(input)
+                                        tempValorVenda = precoFormatado
+                                        precoVenda = desformatarPreco(precoFormatado).toString()
                                     },
                                     error = showError && precoVenda.isEmpty()
                                 )
@@ -378,7 +388,7 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
     }
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = stringResource(id = R.string.produto_salvo_com_sucesso),
+            titulo = confirmarTitulo,
             onDismiss = {
                 showSucessoDialog = false
                 onDismissRequest()
