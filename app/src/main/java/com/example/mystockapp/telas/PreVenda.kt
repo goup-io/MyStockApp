@@ -206,7 +206,10 @@ fun PreVendaScreen(
                                         .width(75.dp)
                                         .height(32.dp),
                                     shape = RoundedCornerShape(5.dp),
-                                    contentPadding = PaddingValues(0.dp) // Ajusta o padding
+                                    contentPadding = PaddingValues(0.dp), // Ajusta o padding
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF355070) // Definindo a cor de fundo
+                                    )
                                 ) {
                                     Text(text = stringResource(R.string.adicionar_desconto), fontSize = 12.sp)
                                 }
