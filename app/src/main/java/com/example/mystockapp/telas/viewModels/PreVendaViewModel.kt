@@ -3,10 +3,13 @@ package com.example.mystockapp.telas.viewModels
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.mystockapp.R
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.api.exceptions.ApiException
 import com.example.mystockapp.api.exceptions.GeneralException
@@ -24,12 +27,17 @@ import com.example.mystockapp.models.vendas.VendaInfo
 import com.example.mystockapp.models.vendas.VendaPost
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel {
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+    var showSucessoDialog by mutableStateOf(false)
+    var sucessoDialogTitulo by  mutableStateOf("")
+    var imgCasoDeErro by  mutableStateOf<Int?>(null)
 
     val gson = Gson();
     var produtos by mutableStateOf(listOf<ProdutoTable>())
@@ -268,14 +276,78 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 limparCarrinho()
                 limparProdutos()
                 atualizarPosVenda()
+
+                sucessoDialogTitulo = "Venda realizada com sucesso!"
+                showSucessoDialog = true
+
+
             } catch (e: ApiException) {
+                Log.e("NovoProdutoDialog", "ApiException: ${e.message}")
+                val errorMessages = mutableListOf<String>()
+
+                Log.d("NovoProdutoDialog", "API Response - TUDOLOGO: ${e}")
+
+
+                val jsonObject = JSONObject(e.message)
+                // Verifique se existe a chave "errors"
+                if (jsonObject.has("errors")) {
+                    val errorsObject = jsonObject.getJSONObject("errors")
+
+                    // Itere sobre as chaves no objeto "errors" e pegue os valores
+                    errorsObject.keys().forEach { key ->
+                        // Tente pegar a mensagem de erro de forma segura
+                        val errorMessage = errorsObject.optString(key, null)
+                        if (errorMessage != null) {
+                            errorMessages.add(errorMessage)
+                        }
+                    }
+                }
+                when (e.code) {
+                    201 -> {
+                        Log.d("NovoProdutoDialog", "Venda realizada com sucesso!")
+                        sucessoDialogTitulo = "Venda realizada com sucesso!"
+                    }
+
+                    400 -> {
+                        errorMessage = errorMessages.joinToString("\n")
+                        sucessoDialogTitulo = errorMessages.joinToString("\n")
+                        imgCasoDeErro = R.mipmap.ic_excluir
+                    }
+
+                    500 -> {
+                        errorMessage = "Erro inesperado, tente novamente"
+                        sucessoDialogTitulo=
+                            "Erro inesperado, tente novamente ou entre em contato com o suporte"
+                        imgCasoDeErro = R.mipmap.ic_excluir
+                    }
+
+                    409 -> {
+                        Log.e("NovoProdutoDialog", "ERRO 409 - ${errorMessages.joinToString("\n")}")
+                        errorMessage = errorMessages.joinToString("\n")
+                        sucessoDialogTitulo = errorMessages.joinToString("\n")
+                        imgCasoDeErro = R.mipmap.ic_excluir
+                    }
+
+                    else -> {
+                        Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${e.message}")
+                    }
+                }
+                showSucessoDialog = true
                 errorMessage = "${e.message}"
             } catch (e: NetworkException) {
+                sucessoDialogTitulo = "Erro de conexão ao realizar a venda!"
+                showSucessoDialog = true
                 errorMessage = "Network Error: ${e.message}"
             } catch (e: GeneralException) {
+                sucessoDialogTitulo = "Erro ao realizar venda!"
+                showSucessoDialog = true
                 errorMessage = "${e.message}"
             }
+
+
+
         }
+
     }
 
     suspend fun getTiposVenda() {

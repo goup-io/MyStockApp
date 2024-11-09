@@ -1,6 +1,7 @@
 package com.example.mystockapp.telas
 
 import DottedLineComponent
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,6 +58,7 @@ import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import com.google.gson.Gson
 import com.example.mystockapp.telas.componentes.MenuDrawer
 import com.example.mystockapp.R
+import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.models.produtos.ProdutoTable
 import kotlinx.coroutines.launch
 
@@ -74,6 +77,7 @@ class PreVenda : ComponentActivity() {
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.current) {
@@ -94,6 +98,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
     }
 
 
+
     val gson = Gson()
 
     var codigo by remember { mutableStateOf(0) }
@@ -108,6 +113,9 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
     var isModalAddProdCarrinho by remember { mutableStateOf(false) }
     var isModalMaisInfo by remember { mutableStateOf(false) }
     var isDescontoProduto by remember {mutableStateOf(false)}
+
+    var showSucessoDialog by mutableStateOf(false)
+
 
     MenuDrawer(titulo = stringResource(R.string.pre_venda)) {
         Column(
@@ -164,6 +172,7 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                                 }
 
                                 if (isModalAdicionarDesconto) {
+
                                     ModalAdicionarDesconto(
                                         vendaDetalhes = viewModel.vendaDetalhes,
                                         isDescontoProduto = isDescontoProduto,
@@ -439,6 +448,20 @@ fun PreVendaScreen(context: Context = androidx.compose.ui.platform.LocalContext.
                     )
                 ) {
                     Text(text = stringResource(R.string.finalizar_venda), color = Color.White, fontSize = 16.sp)
+                }
+                if (showSucessoDialog) {
+                    SucessoDialog(
+                        titulo = viewModel.sucessoDialogTitulo,
+                        onDismiss = {
+                            showSucessoDialog = false
+                        },
+                        onConfirm = {
+                            showSucessoDialog = false
+                        },
+                        btnConfirmColor = Color(0xFF355070),
+                        imagem = viewModel.imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+                        btnConfirmTitulo = stringResource(id = R.string.ok)
+                    )
                 }
             }
         }
