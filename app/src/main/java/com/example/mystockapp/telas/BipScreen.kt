@@ -52,10 +52,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.NetworkException
+import com.example.mystockapp.api.produtoApi.ProdutoService
 import com.example.mystockapp.models.produtos.ProdutoEdit
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+
+import com.example.mystockapp.modais.ConfirmacaoDialog
+import com.example.mystockapp.modais.SucessoDialog
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -113,7 +120,7 @@ fun Screen(
     preVendaViewModel: PreVendaViewModel,
     viewModel: EtpViewModel
 ) {
-    var barcodeNumber by remember { mutableStateOf("AB1234567890") }
+    var barcodeNumber by remember { mutableStateOf("ABC1234567890") }
     var isScanning by remember { mutableStateOf(false) }
 
     var id by remember { mutableStateOf(0) }
@@ -136,6 +143,19 @@ fun Screen(
     Log.d("ETP-BipScreen", "Contexto passado: ${contextoBusca}")
 
     var existeProduto by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+    var errorMessage by remember { mutableStateOf("") }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showSucessoDialog by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
+    var confirmarTitulo by remember { mutableStateOf("") }
+    var confirmarImagem by remember { mutableStateOf<Int?>(null) }
+    var actionToPerform by remember { mutableStateOf<suspend () -> Unit>({}) } // Variável para armazenar a ação
+    var confirmarBtnTitulo by remember { mutableStateOf("") }
+    var recusarBtnTitulo by remember { mutableStateOf("") }
+    var bgCorBtn by remember { mutableStateOf(Color(0xFF355070)) }
+    var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(barcodeNumber) {
         if (barcodeNumber.isNotEmpty()) {
@@ -180,6 +200,24 @@ fun Screen(
     }
 
     Log.d("ETP-BipScreen", contexto.getString(R.string.etp_bip_screen, etp))
+
+    // Função que controla a exibição do modal
+    fun handleAbrirModalConfirm(
+        titulo: String,
+        imagemResId: Int,
+        action: suspend () -> Unit,
+        confirmarTexto: String,
+        recusarTexto: String,
+        corBtn: Color
+    ) {
+        confirmarTitulo = titulo
+        confirmarImagem = imagemResId
+        showConfirmDialog = true
+        actionToPerform = action
+        confirmarBtnTitulo = confirmarTexto
+        recusarBtnTitulo = recusarTexto
+        bgCorBtn = corBtn
+    }
 
         if (isScanning) {
             Column(
@@ -608,6 +646,7 @@ fun Screen(
                         if (contextoBusca == "estoque") {
                             Button(
                                 onClick = {
+                                    // Validação dos campos
                                     if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
                                         precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
                                     ) {
@@ -616,21 +655,51 @@ fun Screen(
                                             contexto.getString(R.string.preencha_todos_os_campos),
                                             Toast.LENGTH_SHORT
                                         ).show()
-
                                     } else {
-                                        val produto =
-                                            ProdutoEdit(
-                                                codigo = codigo,
-                                                nome = nome,
-                                                valorCusto = precoCusto,
-                                                valorRevenda = precoRevenda,
-                                                itemPromocional = {
-                                                    if (itemPromocional) "SIM" else "NAO"
-                                                }.toString(),
-                                                quantidade = quantidadeEstoque,
-                                            )
+                                        // Criando o objeto de edição
+                                        val produtoEditDto = ProdutoEdit(
+                                            codigo = codigo,
+                                            nome = nome,
+                                            valorCusto = precoCusto,
+                                            valorRevenda = precoRevenda,
+                                            itemPromocional = if (itemPromocional) "SIM" else "NAO",
+                                            quantidade = quantidadeEstoque
+                                        )
 
+                                        // Função para realizar a ação de atualização, mas apenas quando o modal for confirmado
+                                        handleAbrirModalConfirm(
+                                            titulo = contexto.getString(R.string.confirm_editar_titulo),
+                                            imagemResId = R.mipmap.ic_editar,
+                                            action = {
+                                                coroutineScope.launch {
+                                                    try {
+                                                        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+                                                        val response = produtoService.editarEtp(id, produtoEditDto)
 
+                                                        // Sucesso - mostrar modal de sucesso
+                                                        showSucessoDialog = true
+                                                    } catch (e: ApiException) {
+                                                        Log.e("AtualizarProduto", "ApiException: ${e.message}")
+                                                        errorMessage = contexto.getString(R.string.erro_atualizar_produto)
+                                                        imgCasoDeErro = R.mipmap.ic_excluir // Ou qualquer imagem de erro
+                                                        showError = true
+                                                    } catch (e: NetworkException) {
+                                                        Log.e("AtualizarProduto", "NetworkException: ${e.message}")
+                                                        errorMessage = contexto.getString(R.string.erro_conexao)
+                                                        imgCasoDeErro = R.mipmap.ic_excluir
+                                                        showError = true
+                                                    } catch (e: Exception) {
+                                                        Log.e("AtualizarProduto", "Exception: ${e.message}")
+                                                        errorMessage = contexto.getString(R.string.erro_inesperado)
+                                                        imgCasoDeErro = R.mipmap.ic_excluir
+                                                        showError = true
+                                                    }
+                                                }
+                                            },
+                                            confirmarTexto = contexto.getString(R.string.editar_confirm_button),
+                                            recusarTexto = contexto.getString(R.string.cancel_button),
+                                            corBtn = Color(0xFFBEA54C)
+                                        )
                                     }
                                 },
                                 modifier = Modifier
@@ -694,6 +763,48 @@ fun Screen(
                 }
             }
         }
+
+    if (showConfirmDialog) {
+        ConfirmacaoDialog(
+            titulo = confirmarTitulo,
+            confirmarBtnTitulo = confirmarBtnTitulo,
+            recusarBtnTitulo = recusarBtnTitulo,
+            imagem = painterResource(id = confirmarImagem!!),
+            onConfirm = {
+                coroutineScope.launch {
+                    try {
+                        actionToPerform()
+                        showConfirmDialog = false
+                        showSucessoDialog = true
+                    } catch (e: Exception) {
+                        Log.e("InformacoesProdutoDialog", "Erro ao executar ação: ${e.message}")
+                        imgCasoDeErro = R.mipmap.ic_excluir
+                    }
+                }
+            },
+            onDismiss = {
+                showConfirmDialog = false
+            },
+            btnConfirmColor = bgCorBtn
+        )
+    }
+
+    if (showSucessoDialog) {
+        SucessoDialog(
+            titulo = contexto.getString(R.string.produto_atualizado_sucesso),
+            onDismiss = {
+                showSucessoDialog = false
+//                onDismissRequest()
+            },
+            onConfirm = {
+                showSucessoDialog = false
+//                onDismissRequest()
+            },
+            btnConfirmColor = Color(0xFF355070),
+            imagem = imgCasoDeErro?.let { painterResource(id = it) } ?: painterResource(id = R.mipmap.ic_sucesso),
+            btnConfirmTitulo = "OK"
+        )
+    }
 }
 
 @Composable

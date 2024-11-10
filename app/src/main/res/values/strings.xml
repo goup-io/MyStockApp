@@ -183,4 +183,9 @@
     <string name="diminuir_quantidade">Diminuir Quantidade</string>
     <string name="aumentar_quantidade">Aumentar Quantidade</string>
     <string name="confirmar_adicao">Confirmar Adição do Produto</string>
+
+    <string name="erro_atualizar_produto">Ocorreu um erro ao atualizar produto.</string>
+    <string name="erro_conexao">Ocorreu um erro de conexão.</string>
+    <string name="produto_atualizado_sucesso">Produto atualizado sucesso!</string>
+
 </resources>
