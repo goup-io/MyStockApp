@@ -52,6 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mystockapp.models.produtos.ProdutoEdit
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
 import org.json.JSONObject
@@ -134,6 +135,8 @@ fun Screen(
     var contextoBusca = if(viewModel.contextoBusca.value == "") contextoBusca else viewModel.contextoBusca.value
     Log.d("ETP-BipScreen", "Contexto passado: ${contextoBusca}")
 
+    var existeProduto by remember { mutableStateOf(false) }
+
     LaunchedEffect(barcodeNumber) {
         if (barcodeNumber.isNotEmpty()) {
             println(contexto.getString(R.string.buscando_etp_por_codigo, barcodeNumber))
@@ -142,6 +145,7 @@ fun Screen(
     }
 
     LaunchedEffect(etp) {
+        existeProduto = true
         etp?.let {
             id = it.id
             codigo = it.codigo ?: "0"
@@ -154,6 +158,7 @@ fun Screen(
             quantidadeEstoque = it.quantidade ?: 0
             itemPromocional = it.itemPromocional ?: false
         } ?: run {
+            existeProduto = false
             Toast.makeText(
                 contexto,
                 contexto.getString(R.string.produto_nao_existe, barcodeNumber),
@@ -398,14 +403,14 @@ fun Screen(
                                             label = contexto.getString(R.string.modelo),
                                             value = modelo,
                                             onValueChange = { modelo = it },
-                                            editable = contextoBusca == "estoque",
+                                            editable = contextoBusca == "estoque" && !existeProduto,
                                             modifier = Modifier.weight(1f)
                                         )
                                         InfoTextField(
                                             label = contexto.getString(R.string.cor),
                                             value = cor,
                                             onValueChange = { cor = it },
-                                            editable = contextoBusca == "estoque",
+                                            editable = contextoBusca == "estoque" && !existeProduto,
                                             modifier = Modifier.weight(1f)
                                         )
                                     }
@@ -420,7 +425,7 @@ fun Screen(
                                             onValueChange = { newValue ->
                                                 tamanho = newValue.toIntOrNull() ?: 0 // Conversão  para inteiros
                                             },
-                                            editable = contextoBusca == "estoque",
+                                            editable = contextoBusca == "estoque" && !existeProduto,
                                             modifier = Modifier.weight(1f),
                                             isNumeric = true
                                         )
@@ -559,46 +564,130 @@ fun Screen(
                                             Toast.LENGTH_SHORT
                                         ).show()
 
-                                } else if (quantidadeVenda <= 0){
-                                    Toast.makeText(
-                                        contexto,
-                                        contexto.getString(R.string.informe_quantidade),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    val produto =
-                                        preVendaViewModel.pesquisarNoCarrinho(id) ?:
-                                        ProdutoTable(
-                                        id = id,
-                                        codigo = codigo,
-                                        nome = nome,
-                                        modelo = modelo,
-                                        preco = precoRevenda,
-                                        tamanho = tamanho,
-                                        cor = cor,
-                                        quantidade = quantidadeEstoque,
-                                        quantidadeToAdd = 0,
-                                        valorDesconto = 0.0
-                                        )
-                                    preVendaViewModel.escolherProduto(produto)
-                                    preVendaViewModel.adicionar(quantidadeVenda)
-                                    preVendaViewModel.desescolherProduto()
-                                    navController.navigate("pre_venda")
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .height(35.dp),
-                            shape = RoundedCornerShape(5.dp),
-                            colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                        ) {
-                            Text(
-                                text = contexto.getString(R.string.adicionar_produto),
-                                color = Color.White
-                            )
+                                    } else if (quantidadeVenda <= 0){
+                                        Toast.makeText(
+                                            contexto,
+                                            contexto.getString(R.string.informe_quantidade),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        val produto =
+                                            preVendaViewModel.pesquisarNoCarrinho(id) ?:
+                                            ProdutoTable(
+                                            id = id,
+                                            codigo = codigo,
+                                            nome = nome,
+                                            modelo = modelo,
+                                            preco = precoRevenda,
+                                            tamanho = tamanho,
+                                            cor = cor,
+                                            quantidade = quantidadeEstoque,
+                                            quantidadeToAdd = 0,
+                                            valorDesconto = 0.0
+                                            )
+                                        preVendaViewModel.escolherProduto(produto)
+                                        preVendaViewModel.adicionar(quantidadeVenda)
+                                        preVendaViewModel.desescolherProduto()
+                                        navController.navigate("pre_venda")
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .height(35.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                            ) {
+                                Text(
+                                    text = contexto.getString(R.string.adicionar_produto),
+                                    color = Color.White
+                                )
+                            }
                         }
-                    }
+
+                        if (contextoBusca == "estoque") {
+                            Button(
+                                onClick = {
+                                    if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
+                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
+                                    ) {
+                                        Toast.makeText(
+                                            contexto,
+                                            contexto.getString(R.string.preencha_todos_os_campos),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                    } else {
+                                        val produto =
+                                            ProdutoEdit(
+                                                codigo = codigo,
+                                                nome = nome,
+                                                valorCusto = precoCusto,
+                                                valorRevenda = precoRevenda,
+                                                itemPromocional = {
+                                                    if (itemPromocional) "SIM" else "NAO"
+                                                }.toString(),
+                                                quantidade = quantidadeEstoque,
+                                            )
+
+
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .height(35.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                            ) {
+                                Text(
+                                    text = contexto.getString(R.string.atualizar_produto),
+                                    color = Color.White
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Button(
+                                onClick = {
+                                    if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
+                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
+                                    ) {
+
+                                        Toast.makeText(
+                                            contexto,
+                                            contexto.getString(R.string.preencha_todos_os_campos),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                    } else {
+                                        val produto =
+                                            ProdutoTable(
+                                                id = id,
+                                                codigo = codigo,
+                                                nome = nome,
+                                                modelo = modelo,
+                                                preco = precoRevenda,
+                                                tamanho = tamanho,
+                                                cor = cor,
+                                                quantidade = quantidadeEstoque,
+                                                valorDesconto = 0.0
+                                            )
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .height(35.dp),
+                                shape = RoundedCornerShape(5.dp),
+                                colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                            ) {
+                                Text(
+                                    text = contexto.getString(R.string.cadastrar_produto),
+                                    color = Color.White
+                                )
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(15.dp))
                     }

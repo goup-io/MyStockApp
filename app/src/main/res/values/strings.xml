@@ -79,6 +79,8 @@
     <string name="ler_referencia">Ler Referência</string>
     <string name="buscar_ref_digitada">Buscar Ref. Digitada</string>
     <string name="adicionar_produto">Adicionar Produto</string>
+    <string name="atualizar_produto">Atualizar Produto</string>
+    <string name="cadastrar_produto">Cadastrar Novo Produto</string>
     <string name="preencha_todos_os_campos">Preencha todos os campos corretamente.</string>
     <string name="informe_quantidade">Informe a quantidade que deseja adicionar ao carrinho.</string>
     <string name="produto_nao_existe">Produto com o código %1$s não existe</string>
