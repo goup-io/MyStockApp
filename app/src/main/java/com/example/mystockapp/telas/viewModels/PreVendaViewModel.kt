@@ -282,30 +282,23 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                 atualizarPosVenda()
 
                 sucessoDialogTitulo = "Venda realizada com sucesso!"
+                imgCasoDeErro = R.mipmap.ic_sucesso
                 showSucessoDialog = true
 
-
             } catch (e: ApiException) {
-                Log.e("NovoProdutoDialog", "ApiException: ${e.message}")
                 val errorMessages = mutableListOf<String>()
 
-                Log.d("NovoProdutoDialog", "API Response - TUDOLOGO: ${e}")
-
-
                 val jsonObject = JSONObject(e.message)
-                // Verifique se existe a chave "errors"
-                if (jsonObject.has("errors")) {
-                    val errorsObject = jsonObject.getJSONObject("errors")
 
-                    // Itere sobre as chaves no objeto "errors" e pegue os valores
-                    errorsObject.keys().forEach { key ->
-                        // Tente pegar a mensagem de erro de forma segura
-                        val errorMessage = errorsObject.optString(key, null)
-                        if (errorMessage != null) {
-                            errorMessages.add(errorMessage)
-                        }
-                    }
+
+                if (jsonObject.has("message")) {
+
+                    val message = jsonObject.getString("message")
+                    errorMessages.add(message)
+
+                    Log.d("PreVendaViewModel", "Mensagem do erro: $message")
                 }
+
                 when (e.code) {
                     201 -> {
                         Log.d("NovoProdutoDialog", "Venda realizada com sucesso!")
@@ -317,7 +310,11 @@ class PreVendaViewModel(private val idLoja: Int) : ViewModel(), ProdutoViewModel
                         sucessoDialogTitulo = errorMessages.joinToString("\n")
                         imgCasoDeErro = R.mipmap.ic_excluir
                     }
-
+                    404 -> {
+                        errorMessage = errorMessages.joinToString("\n")
+                        sucessoDialogTitulo = errorMessages.joinToString("\n")
+                        imgCasoDeErro = R.mipmap.ic_excluir
+                    }
                     500 -> {
                         errorMessage = "Erro inesperado, tente novamente"
                         sucessoDialogTitulo=
