@@ -70,7 +70,9 @@ import com.example.mystockapp.modais.SucessoDialog
 import com.example.mystockapp.modais.componentes.SelectField
 import com.example.mystockapp.models.lojas.Loja
 import com.example.mystockapp.models.produtos.Cor
+import com.example.mystockapp.models.produtos.ItemPromocional
 import com.example.mystockapp.models.produtos.Modelo
+import com.example.mystockapp.models.produtos.ProdutoCreate
 import com.example.mystockapp.models.produtos.Tamanho
 import com.google.gson.Gson
 
@@ -262,6 +264,117 @@ fun Screen(
         bgCorBtn = corBtn
     }
 
+    suspend fun handleSaveProduto(
+        codigo: String,
+        cor: Cor,
+        modelo: Modelo,
+        tamanho: Tamanho,
+        nome: String,
+        loja: Loja,
+        valorCusto: Double,
+        valorRevenda: Double,
+        itemPromocional: Boolean,
+        quantidade: Int
+    ) {
+        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
+        try {
+            val objeto = ProdutoCreate(
+                codigo = codigo,
+                idCor = cor.id,
+                idModelo = modelo.id,
+                nome = nome,
+                valorCusto = valorCusto,
+                valorRevenda = valorRevenda,
+                tamanho = tamanho.numero,
+                itemPromocional = if (itemPromocional) ItemPromocional.SIM.name else ItemPromocional.NAO.name,
+                idLoja = loja.id,
+                quantidade = quantidade
+            )
+            Log.e("NovoProdutoDialog", "OBJETO DE INPUT: ${gson.toJson(objeto)}")
+            val response = produtoService.createProduto(objeto)
+
+            confirmarTitulo = "Produto salvo com sucesso"
+            imgCasoDeErro = R.mipmap.ic_sucesso
+
+            handleAbrirModalConfirm(
+                titulo= confirmarTitulo,
+                imagemResId = R.mipmap.ic_sucesso,
+                action = { showSucessoDialog = true },
+                confirmarTexto = "Ok",
+                recusarTexto = "",
+                corBtn = Color(0xFF355070)
+            )
+            existeProduto = true
+        } catch (e: ApiException) {
+            existeProduto = false
+            Log.e("NovoProdutoDialog", "ApiException: ${e.message}")
+            val errorMessages = mutableListOf<String>()
+
+            Log.d("NovoProdutoDialog", "API Response - TUDOLOGO: ${e.message}")
+
+            val jsonObject = JSONObject(e.message)
+            // Verifique se existe a chave "errors"
+            if (jsonObject.has("errors")) {
+                val errorsObject = jsonObject.getJSONObject("errors")
+
+                // Itere sobre as chaves no objeto "errors" e pegue os valores
+                errorsObject.keys().forEach { key ->
+                    // Tente pegar a mensagem de erro de forma segura
+                    val errorMessage = errorsObject.optString(key, null)
+                    if (errorMessage != null) {
+                        errorMessages.add(errorMessage)
+                    }
+                }
+            }
+            when (e.code) {
+                201 -> {
+                    Log.d("NovoProdutoDialog", "Produto salvo com sucesso")
+                    confirmarTitulo = "Produto salvo com sucesso"
+                    imgCasoDeErro = R.mipmap.ic_sucesso
+                    existeProduto = true
+                }
+
+                400 -> {
+                    errorMessage = errorMessages.joinToString("\n")
+                    confirmarTitulo = errorMessages.joinToString("\n")
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+
+                500 -> {
+                    errorMessage = "Erro inesperado, tente novamente"
+                    confirmarTitulo =
+                        "Erro inesperado, tente novamente ou entre em contato com o suporte"
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+
+                409 -> {
+                    Log.e("NovoProdutoDialog", "ERRO 409 - ${errorMessages.joinToString("\n")}")
+                    errorMessage = errorMessages.joinToString("\n")
+                    confirmarTitulo = errorMessages.joinToString("\n")
+                    imgCasoDeErro = R.mipmap.ic_excluir
+                }
+
+                else -> {
+                    Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${e.message}")
+                }
+            }
+            handleAbrirModalConfirm(
+                titulo = confirmarTitulo,
+                imagemResId = R.mipmap.ic_sucesso,
+                action = { showSucessoDialog = true },
+                confirmarTexto = "Ok",
+                recusarTexto = "",
+                corBtn = Color(0xFF355070)
+            )
+        }catch (e: NetworkException) {
+            Log.e("NovoProdutoDialog", "NetworkException: ${e.message}")
+            existeProduto = false
+        } catch (e: GeneralException) {
+            Log.e("NovoProdutoDialog", "GeneralException: ${e.message}")
+            existeProduto = false
+        }
+    }
+
         if (isScanning) {
             Column(
                 modifier = Modifier
@@ -442,8 +555,7 @@ fun Screen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp)
-                                .shadow(4.dp, shape = RoundedCornerShape(10.dp)), // Sombra suave com elevação de 4.dp
+                                .padding(10.dp),
                             shape = RoundedCornerShape(10.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         )
@@ -462,7 +574,7 @@ fun Screen(
                                     ) {
                                         InfoTextField(
                                             label = contexto.getString(R.string.codigo),
-                                            value = codigo.toString(),
+                                            value = codigo,
                                             onValueChange = { codigo = it },
                                             editable = contextoBusca != "pre-venda",
                                             modifier = Modifier.weight(1f)
@@ -808,10 +920,9 @@ fun Screen(
 
                             Button(
                                 onClick = {
-                                    if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
-                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
+                                    if (codigo.isEmpty() || modeloObj.id == -1 && tamanhoObj.id == -1 || nome.isEmpty() ||
+                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || corObj.id == -1 || quantidadeEstoque <= 0
                                     ) {
-
                                         Toast.makeText(
                                             contexto,
                                             contexto.getString(R.string.preencha_todos_os_campos),
@@ -819,18 +930,20 @@ fun Screen(
                                         ).show()
 
                                     } else {
-                                        val produto =
-                                            ProdutoTable(
-                                                id = id,
-                                                codigo = codigo,
-                                                nome = nome,
-                                                modelo = modelo,
-                                                preco = precoRevenda,
-                                                tamanho = tamanho,
-                                                cor = cor,
-                                                quantidade = quantidadeEstoque,
-                                                valorDesconto = 0.0
+                                        coroutineScope.launch {
+                                            handleSaveProduto(
+                                                codigo,
+                                                corObj,
+                                                modeloObj,
+                                                tamanhoObj,
+                                                nome,
+                                                loja,
+                                                precoCusto.toDouble(),
+                                                precoRevenda.toDouble(),
+                                                itemPromocional,
+                                                quantidadeEstoque.toInt()
                                             )
+                                        }
                                     }
                                 },
                                 modifier = Modifier
