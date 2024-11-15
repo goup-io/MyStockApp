@@ -2,7 +2,6 @@ package com.example.mystockapp.telas
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -53,8 +52,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mystockapp.api.exceptions.ApiException
+import com.example.mystockapp.api.exceptions.GeneralException
 import com.example.mystockapp.api.exceptions.NetworkException
+import com.example.mystockapp.api.lojaApi.LojaService
+import com.example.mystockapp.api.produtoApi.CorService
+import com.example.mystockapp.api.produtoApi.ModeloService
 import com.example.mystockapp.api.produtoApi.ProdutoService
+import com.example.mystockapp.api.produtoApi.TamanhoService
 import com.example.mystockapp.models.produtos.ProdutoEdit
 import com.example.mystockapp.models.produtos.ProdutoTable
 import com.example.mystockapp.telas.viewModels.PreVendaViewModel
@@ -63,6 +67,12 @@ import org.json.JSONObject
 
 import com.example.mystockapp.modais.ConfirmacaoDialog
 import com.example.mystockapp.modais.SucessoDialog
+import com.example.mystockapp.modais.componentes.SelectField
+import com.example.mystockapp.models.lojas.Loja
+import com.example.mystockapp.models.produtos.Cor
+import com.example.mystockapp.models.produtos.Modelo
+import com.example.mystockapp.models.produtos.Tamanho
+import com.google.gson.Gson
 
 class BipScreen : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -135,12 +145,24 @@ fun Screen(
     var itemPromocional by remember { mutableStateOf(false) }
     var quantidadeVenda by remember { mutableStateOf(0) }
 
+    var modeloObj by remember { mutableStateOf(Modelo(-1, "", "", "")) }
+    var tamanhoObj by remember { mutableStateOf(Tamanho(-1, -1)) }
+    var corObj by remember { mutableStateOf(Cor(-1, "")) }
+    var modelosOptions by remember { mutableStateOf<List<Modelo>>(emptyList()) }
+    var coresOptions by remember { mutableStateOf<List<Cor>>(emptyList()) }
+    var tamanhosOptions by remember { mutableStateOf<List<Tamanho>>(emptyList()) }
+
     val etp by viewModel.etp.observeAsState()
 
     // contexto local (a tela atual)
     val contexto = LocalContext.current
     var contextoBusca = if(viewModel.contextoBusca.value == "") contextoBusca else viewModel.contextoBusca.value
     Log.d("ETP-BipScreen", "Contexto passado: ${contextoBusca}")
+
+    var loja by remember { mutableStateOf(Loja()) }
+    val gson = Gson()
+    val sharedPreferences = contexto.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
+    val idLoja = sharedPreferences.getInt("idLoja", -1) // -1 é o valor padrão caso não encontre
 
     var existeProduto by remember { mutableStateOf(false) }
 
@@ -200,6 +222,27 @@ fun Screen(
     }
 
     Log.d("ETP-BipScreen", contexto.getString(R.string.etp_bip_screen, etp))
+
+    if (contextoBusca == "estoque" && !existeProduto) {
+        LaunchedEffect(Unit) {
+            val modeloSerivce = ModeloService(RetrofitInstance.modeloApi)
+            val tamanhoService = TamanhoService(RetrofitInstance.tamanhoApi)
+            val corService = CorService(RetrofitInstance.corApi)
+            val lojaService = LojaService(RetrofitInstance.lojaApi)
+            try {
+                modelosOptions = modeloSerivce.fetchModelos()
+                tamanhosOptions = tamanhoService.fetchTamanhos()
+                coresOptions = corService.fetchCores()
+                loja = lojaService.fetchLojaById(idLoja);
+            } catch (e: ApiException) {
+                errorMessage = "${e.message}"
+            } catch (e: NetworkException) {
+                errorMessage = "Network Error: ${e.message}"
+            } catch (e: GeneralException) {
+                errorMessage = "${e.message}"
+            }
+        }
+    }
 
     // Função que controla a exibição do modal
     fun handleAbrirModalConfirm(
@@ -437,36 +480,82 @@ fun Screen(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        InfoTextField(
-                                            label = contexto.getString(R.string.modelo),
-                                            value = modelo,
-                                            onValueChange = { modelo = it },
-                                            editable = contextoBusca == "estoque" && !existeProduto,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        InfoTextField(
-                                            label = contexto.getString(R.string.cor),
-                                            value = cor,
-                                            onValueChange = { cor = it },
-                                            editable = contextoBusca == "estoque" && !existeProduto,
-                                            modifier = Modifier.weight(1f)
-                                        )
+                                        if (contextoBusca == "estoque" && !existeProduto){
+                                            SelectField(
+                                                label = stringResource(id = R.string.modelo),
+                                                selectedOption = if (modeloObj.nome != "") modeloObj.nome else stringResource(id = R.string.select_option_label2),
+                                                options = modelosOptions.map { it.nome },
+                                                onOptionSelected = { modeloNome ->
+                                                    val selectedModelo = modelosOptions.find { it.nome == modeloNome }
+                                                    selectedModelo?.let { modeloObj = it }
+                                                },
+                                                error = showError && modeloObj.id == -1,
+                                                labelFontSize = 16.sp,
+                                                fieldHeight = 34.dp,
+                                                width = 180.dp
+                                            )
+                                            SelectField(
+                                                label = stringResource(id = R.string.cor),
+                                                selectedOption = if(corObj.nome != "") corObj.nome else stringResource(id = R.string.select_option_label2),
+                                                options = coresOptions.map { it.nome },
+                                                onOptionSelected = { corSelected ->
+                                                    val selectedCor = coresOptions.find { it.nome == corSelected }
+                                                    selectedCor?.let { corObj = it }
+                                                },
+                                                error = showError && corObj.id == -1,
+                                                labelFontSize = 16.sp,
+                                                fieldHeight = 34.dp,
+                                                width = 180.dp
+                                            )
+                                        } else {
+                                            InfoTextField(
+                                                label = contexto.getString(R.string.modelo),
+                                                value = modelo,
+                                                onValueChange = { modelo = it },
+                                                editable = false,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            InfoTextField(
+                                                label = contexto.getString(R.string.cor),
+                                                value = cor,
+                                                onValueChange = { cor = it },
+                                                editable = false,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        }
                                     }
 
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        InfoTextField(
-                                            label = contexto.getString(R.string.tamanho),
-                                            value = tamanho.toString(),
-                                            onValueChange = { newValue ->
-                                                tamanho = newValue.toIntOrNull() ?: 0 // Conversão  para inteiros
-                                            },
-                                            editable = contextoBusca == "estoque" && !existeProduto,
-                                            modifier = Modifier.weight(1f),
-                                            isNumeric = true
-                                        )
+                                        if (contextoBusca == "estoque" && !existeProduto){
+                                            SelectField(
+                                                label = stringResource(id = R.string.tamanho),
+                                                selectedOption = if (tamanhoObj.numero == -1) stringResource(id = R.string.select_option_label2) else tamanhoObj.numero.toString(),
+                                                options = tamanhosOptions.map { it.numero.toString() },
+                                                onOptionSelected = { tamanhoNome ->
+                                                    val selectedTamanho = tamanhosOptions.find { it.numero.toString() == tamanhoNome }
+                                                    selectedTamanho?.let { tamanhoObj = it }
+                                                },
+                                                error = showError && tamanhoObj.id == -1,
+                                                labelFontSize = 16.sp,
+                                                fieldHeight = 34.dp,
+                                                width = 180.dp
+                                            )
+                                        } else {
+                                            InfoTextField(
+                                                label = contexto.getString(R.string.tamanho),
+                                                value = tamanho.toString(),
+                                                onValueChange = { newValue ->
+                                                    tamanho = newValue.toIntOrNull()
+                                                        ?: 0 // Conversão  para inteiros
+                                                },
+                                                editable = false,
+                                                modifier = Modifier.weight(1f),
+                                                isNumeric = true
+                                            )
+                                        }
                                         InfoTextField(
                                             label = contexto.getString(R.string.quantidade_est),
                                             value = quantidadeEstoque.toString(),

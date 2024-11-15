@@ -117,6 +117,7 @@
     <string name="add_label">Add</string>
 
     <string name="select_option_label">Selecione uma opção</string>
+    <string name="select_option_label2">Selecione...</string>
     <string name="dropdown_icon_description">Ícone de Dropdown</string>
 
     <string name="menu_item_estoque">Estoque</string>
