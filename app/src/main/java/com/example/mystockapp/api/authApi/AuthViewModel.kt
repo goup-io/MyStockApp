@@ -1,11 +1,14 @@
 package com.example.mystockapp.api.authApi
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mystockapp.api.RetrofitInstance
 import com.example.mystockapp.models.auth.LoginRequest
 import com.example.mystockapp.models.auth.LoginResponse
+import com.example.mystockapp.util.DataStoreUtils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,6 +28,9 @@ class AuthViewModel(private val authService: AuthService, private val context: C
                     // Salvar o idLoja no SharedPreferences
                     val sharedPreferences = context.getSharedPreferences("MyStockPrefs", Context.MODE_PRIVATE)
                     sharedPreferences.edit().putInt("idLoja", response.idLoja).apply()
+
+                    DataStoreUtils.salvarUsuarioOffline(user, senha, response.token, context)
+                    Log.d("LoginViewModel", "Token: ${response.token} User: $user Senha: $senha")
 
                     _loginState.value = LoginState.Success(response)
                 }
