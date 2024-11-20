@@ -108,7 +108,4 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.0")
     implementation("androidx.datastore:datastore-core:1.1.0")
 
-    // Koin
-    implementation("io.insert-koin:koin-android:4.0.0")
-
 }
