@@ -845,118 +845,138 @@ fun Screen(
                         }
 
                         if (contextoBusca == "estoque") {
-                            Button(
-                                onClick = {
-                                    // Validação dos campos
-                                    if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
-                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
-                                    ) {
-                                        Toast.makeText(
-                                            contexto,
-                                            contexto.getString(R.string.preencha_todos_os_campos),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        // Criando o objeto de edição
-                                        val produtoEditDto = ProdutoEdit(
-                                            codigo = codigo,
-                                            nome = nome,
-                                            valorCusto = precoCusto,
-                                            valorRevenda = precoRevenda,
-                                            itemPromocional = if (itemPromocional) "SIM" else "NAO",
-                                            quantidade = quantidadeEstoque
-                                        )
+                            if (existeProduto) {
+                                Button(
+                                    onClick = {
+                                        // Validação dos campos
+                                        if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
+                                            precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
+                                        ) {
+                                            Toast.makeText(
+                                                contexto,
+                                                contexto.getString(R.string.preencha_todos_os_campos),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            // Criando o objeto de edição
+                                            val produtoEditDto = ProdutoEdit(
+                                                codigo = codigo,
+                                                nome = nome,
+                                                valorCusto = precoCusto,
+                                                valorRevenda = precoRevenda,
+                                                itemPromocional = if (itemPromocional) "SIM" else "NAO",
+                                                quantidade = quantidadeEstoque
+                                            )
 
-                                        // Função para realizar a ação de atualização, mas apenas quando o modal for confirmado
-                                        handleAbrirModalConfirm(
-                                            titulo = contexto.getString(R.string.confirm_editar_titulo),
-                                            imagemResId = R.mipmap.ic_editar,
-                                            action = {
-                                                coroutineScope.launch {
-                                                    try {
-                                                        val produtoService = ProdutoService(RetrofitInstance.produtoApi)
-                                                        val response = produtoService.editarEtp(id, produtoEditDto)
+                                            // Função para realizar a ação de atualização, mas apenas quando o modal for confirmado
+                                            handleAbrirModalConfirm(
+                                                titulo = contexto.getString(R.string.confirm_editar_titulo),
+                                                imagemResId = R.mipmap.ic_editar,
+                                                action = {
+                                                    coroutineScope.launch {
+                                                        try {
+                                                            val produtoService =
+                                                                ProdutoService(RetrofitInstance.produtoApi)
+                                                            val response = produtoService.editarEtp(
+                                                                id,
+                                                                produtoEditDto
+                                                            )
 
-                                                        // Sucesso - mostrar modal de sucesso
-                                                        showSucessoDialog = true
-                                                    } catch (e: ApiException) {
-                                                        Log.e("AtualizarProduto", "ApiException: ${e.message}")
-                                                        errorMessage = contexto.getString(R.string.erro_atualizar_produto)
-                                                        imgCasoDeErro = R.mipmap.ic_excluir // Ou qualquer imagem de erro
-                                                        showError = true
-                                                    } catch (e: NetworkException) {
-                                                        Log.e("AtualizarProduto", "NetworkException: ${e.message}")
-                                                        errorMessage = contexto.getString(R.string.erro_conexao)
-                                                        imgCasoDeErro = R.mipmap.ic_excluir
-                                                        showError = true
-                                                    } catch (e: Exception) {
-                                                        Log.e("AtualizarProduto", "Exception: ${e.message}")
-                                                        errorMessage = contexto.getString(R.string.erro_inesperado)
-                                                        imgCasoDeErro = R.mipmap.ic_excluir
-                                                        showError = true
+                                                            // Sucesso - mostrar modal de sucesso
+                                                            showSucessoDialog = true
+                                                        } catch (e: ApiException) {
+                                                            Log.e(
+                                                                "AtualizarProduto",
+                                                                "ApiException: ${e.message}"
+                                                            )
+                                                            errorMessage =
+                                                                contexto.getString(R.string.erro_atualizar_produto)
+                                                            imgCasoDeErro =
+                                                                R.mipmap.ic_excluir // Ou qualquer imagem de erro
+                                                            showError = true
+                                                        } catch (e: NetworkException) {
+                                                            Log.e(
+                                                                "AtualizarProduto",
+                                                                "NetworkException: ${e.message}"
+                                                            )
+                                                            errorMessage =
+                                                                contexto.getString(R.string.erro_conexao)
+                                                            imgCasoDeErro = R.mipmap.ic_excluir
+                                                            showError = true
+                                                        } catch (e: Exception) {
+                                                            Log.e(
+                                                                "AtualizarProduto",
+                                                                "Exception: ${e.message}"
+                                                            )
+                                                            errorMessage =
+                                                                contexto.getString(R.string.erro_inesperado)
+                                                            imgCasoDeErro = R.mipmap.ic_excluir
+                                                            showError = true
+                                                        }
                                                     }
-                                                }
-                                            },
-                                            confirmarTexto = contexto.getString(R.string.editar_confirm_button),
-                                            recusarTexto = contexto.getString(R.string.cancel_button),
-                                            corBtn = Color(0xFFBEA54C)
-                                        )
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                                    .height(35.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                            ) {
-                                Text(
-                                    text = contexto.getString(R.string.atualizar_produto),
-                                    color = Color.White
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Button(
-                                onClick = {
-                                    if (codigo.isEmpty() || modeloObj.id == -1 && tamanhoObj.id == -1 || nome.isEmpty() ||
-                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || corObj.id == -1 || quantidadeEstoque <= 0
-                                    ) {
-                                        Toast.makeText(
-                                            contexto,
-                                            contexto.getString(R.string.preencha_todos_os_campos),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-
-                                    } else {
-                                        coroutineScope.launch {
-                                            handleSaveProduto(
-                                                codigo,
-                                                corObj,
-                                                modeloObj,
-                                                tamanhoObj,
-                                                nome,
-                                                loja,
-                                                precoCusto.toDouble(),
-                                                precoRevenda.toDouble(),
-                                                itemPromocional,
-                                                quantidadeEstoque.toInt()
+                                                },
+                                                confirmarTexto = contexto.getString(R.string.editar_confirm_button),
+                                                recusarTexto = contexto.getString(R.string.cancel_button),
+                                                corBtn = Color(0xFFBEA54C)
                                             )
                                         }
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                                    .height(35.dp),
-                                shape = RoundedCornerShape(5.dp),
-                                colors = ButtonDefaults.buttonColors(Color(0xFF355070))
-                            ) {
-                                Text(
-                                    text = contexto.getString(R.string.cadastrar_produto),
-                                    color = Color.White
-                                )
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                        .height(35.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                                ) {
+                                    Text(
+                                        text = contexto.getString(R.string.atualizar_produto),
+                                        color = Color.White
+                                    )
+                                }
+                            } else {
+
+//                            Spacer(modifier = Modifier.height(10.dp))
+
+                                Button(
+                                    onClick = {
+                                        if (codigo.isEmpty() || modeloObj.id == -1 && tamanhoObj.id == -1 || nome.isEmpty() ||
+                                            precoCusto <= 0.0 || precoRevenda <= 0.0 || corObj.id == -1 || quantidadeEstoque <= 0
+                                        ) {
+                                            Toast.makeText(
+                                                contexto,
+                                                contexto.getString(R.string.preencha_todos_os_campos),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                        } else {
+                                            coroutineScope.launch {
+                                                handleSaveProduto(
+                                                    codigo,
+                                                    corObj,
+                                                    modeloObj,
+                                                    tamanhoObj,
+                                                    nome,
+                                                    loja,
+                                                    precoCusto.toDouble(),
+                                                    precoRevenda.toDouble(),
+                                                    itemPromocional,
+                                                    quantidadeEstoque.toInt()
+                                                )
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                        .height(35.dp),
+                                    shape = RoundedCornerShape(5.dp),
+                                    colors = ButtonDefaults.buttonColors(Color(0xFF355070))
+                                ) {
+                                    Text(
+                                        text = contexto.getString(R.string.cadastrar_produto),
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
 
