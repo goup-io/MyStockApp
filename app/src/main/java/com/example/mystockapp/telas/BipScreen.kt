@@ -181,6 +181,13 @@ fun Screen(
     var bgCorBtn by remember { mutableStateOf(Color(0xFF355070)) }
     var imgCasoDeErro by remember { mutableStateOf<Int?>(null) }
 
+    // Função para atualizar o modelo, cor e tamanho após o cadastro
+    fun updateObjToVar(novoModelo: String, novaCor: String, novoTamanho: Int) {
+        modelo = novoModelo
+        cor = novaCor
+        tamanho = novoTamanho
+    }
+
     LaunchedEffect(barcodeNumber) {
         if (barcodeNumber.isNotEmpty()) {
             println(contexto.getString(R.string.buscando_etp_por_codigo, barcodeNumber))
@@ -293,17 +300,22 @@ fun Screen(
             Log.e("NovoProdutoDialog", "OBJETO DE INPUT: ${gson.toJson(objeto)}")
             val response = produtoService.createProduto(objeto)
 
-            confirmarTitulo = "Produto salvo com sucesso"
+            confirmarTitulo = R.string.produto_salvo_com_sucesso.toString()
             imgCasoDeErro = R.mipmap.ic_sucesso
 
-            handleAbrirModalConfirm(
-                titulo= confirmarTitulo,
-                imagemResId = R.mipmap.ic_sucesso,
-                action = { showSucessoDialog = true },
-                confirmarTexto = "Ok",
-                recusarTexto = "",
-                corBtn = Color(0xFF355070)
-            )
+//            handleAbrirModalConfirm(
+//                titulo= confirmarTitulo,
+//                imagemResId = R.mipmap.ic_sucesso,
+//                action = { showSucessoDialog = true },
+//                confirmarTexto = "Ok",
+//                recusarTexto = "",
+//                corBtn = Color(0xFF355070)
+//            )
+
+            updateObjToVar(modelo.nome, cor.nome, tamanho.numero)
+
+            errorMessage = contexto.getString(R.string.produto_salvo_com_sucesso)
+            showSucessoDialog = true
             existeProduto = true
         } catch (e: ApiException) {
             existeProduto = false
@@ -883,6 +895,8 @@ fun Screen(
                                                             )
 
                                                             // Sucesso - mostrar modal de sucesso
+                                                            errorMessage = contexto.getString(R.string.produto_atualizado_sucesso)
+                                                            imgCasoDeErro = R.mipmap.ic_sucesso
                                                             showSucessoDialog = true
                                                         } catch (e: ApiException) {
                                                             Log.e(
@@ -1013,7 +1027,7 @@ fun Screen(
 
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = contexto.getString(R.string.produto_atualizado_sucesso),
+            titulo = errorMessage,
             onDismiss = {
                 showSucessoDialog = false
 //                onDismissRequest()

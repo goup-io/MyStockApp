@@ -301,7 +301,7 @@ fun InformacoesProdutoDialog(onDismissRequest: () -> Unit, idProduto: Int) {
 
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = "Ação realizada com sucesso!",
+            titulo = contexto.getString(R.string.acao_sucesso_titulo),
             onDismiss = {
                 showSucessoDialog = false
                 onDismissRequest()
