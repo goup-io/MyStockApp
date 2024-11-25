@@ -10,5 +10,5 @@ data class EtpRes (
     val quantidade: Int,
     val valorCusto: Double,
     val valorRevenda: Double,
-    val itemPromocional: Boolean
+    val itemPromocional: String
 )

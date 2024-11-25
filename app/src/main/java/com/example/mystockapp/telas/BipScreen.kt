@@ -207,7 +207,7 @@ fun Screen(
             tamanho = it.tamanho ?: 0
             cor = it.cor ?: ""
             quantidadeEstoque = it.quantidade ?: 0
-            itemPromocional = it.itemPromocional ?: false
+            itemPromocional = it.itemPromocional?.equals("SIM") ?: false
         } ?: run {
             existeProduto = false
             Toast.makeText(
@@ -293,7 +293,7 @@ fun Screen(
                 valorCusto = valorCusto,
                 valorRevenda = valorRevenda,
                 tamanho = tamanho.numero,
-                itemPromocional = if (itemPromocional) ItemPromocional.SIM.name else ItemPromocional.NAO.name,
+                itemPromocional = if (itemPromocional) "SIM" else "NAO",
                 idLoja = loja.id,
                 quantidade = quantidade
             )
@@ -314,7 +314,6 @@ fun Screen(
 
             updateObjToVar(modelo.nome, cor.nome, tamanho.numero)
 
-            errorMessage = contexto.getString(R.string.produto_salvo_com_sucesso)
             showSucessoDialog = true
             existeProduto = true
         } catch (e: ApiException) {
@@ -378,6 +377,7 @@ fun Screen(
                 recusarTexto = "",
                 corBtn = Color(0xFF355070)
             )
+            showSucessoDialog = true
         }catch (e: NetworkException) {
             Log.e("NovoProdutoDialog", "NetworkException: ${e.message}")
             existeProduto = false
@@ -895,7 +895,7 @@ fun Screen(
                                                             )
 
                                                             // Sucesso - mostrar modal de sucesso
-                                                            errorMessage = contexto.getString(R.string.produto_atualizado_sucesso)
+                                                            confirmarTitulo = contexto.getString(R.string.produto_atualizado_sucesso)
                                                             imgCasoDeErro = R.mipmap.ic_sucesso
                                                             showSucessoDialog = true
                                                         } catch (e: ApiException) {
@@ -1027,7 +1027,7 @@ fun Screen(
 
     if (showSucessoDialog) {
         SucessoDialog(
-            titulo = errorMessage,
+            titulo = confirmarTitulo,
             onDismiss = {
                 showSucessoDialog = false
 //                onDismissRequest()
