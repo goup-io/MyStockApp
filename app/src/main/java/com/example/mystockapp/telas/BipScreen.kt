@@ -300,7 +300,7 @@ fun Screen(
             Log.e("NovoProdutoDialog", "OBJETO DE INPUT: ${gson.toJson(objeto)}")
             val response = produtoService.createProduto(objeto)
 
-            confirmarTitulo = R.string.produto_salvo_com_sucesso.toString()
+            confirmarTitulo = "Produto salvo com sucesso"
             imgCasoDeErro = R.mipmap.ic_sucesso
 
 //            handleAbrirModalConfirm(
@@ -314,28 +314,26 @@ fun Screen(
 
             updateObjToVar(modelo.nome, cor.nome, tamanho.numero)
 
+            confirmarTitulo = "Produto salvo com sucesso"
+            imgCasoDeErro = R.mipmap.ic_sucesso
             showSucessoDialog = true
+            showConfirmDialog = false
+            viewModel.buscarEtpPorCodigo(objeto.codigo)
             existeProduto = true
         } catch (e: ApiException) {
             existeProduto = false
+            showConfirmDialog = false
             Log.e("NovoProdutoDialog", "ApiException: ${e.message}")
             val errorMessages = mutableListOf<String>()
 
-            Log.d("NovoProdutoDialog", "API Response - TUDOLOGO: ${e.message}")
-
             val jsonObject = JSONObject(e.message)
-            // Verifique se existe a chave "errors"
-            if (jsonObject.has("errors")) {
-                val errorsObject = jsonObject.getJSONObject("errors")
 
-                // Itere sobre as chaves no objeto "errors" e pegue os valores
-                errorsObject.keys().forEach { key ->
-                    // Tente pegar a mensagem de erro de forma segura
-                    val errorMessage = errorsObject.optString(key, null)
-                    if (errorMessage != null) {
-                        errorMessages.add(errorMessage)
-                    }
-                }
+            if (jsonObject.get("message") != "" || jsonObject.get("message") != null) {
+                errorMessages.add(jsonObject.get("message").toString())
+                imgCasoDeErro = R.mipmap.ic_excluir
+            } else {
+                errorMessages.add("Erro inesperado, tente novamente")
+                imgCasoDeErro = R.mipmap.ic_excluir
             }
             when (e.code) {
                 201 -> {
@@ -369,14 +367,6 @@ fun Screen(
                     Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${e.message}")
                 }
             }
-            handleAbrirModalConfirm(
-                titulo = confirmarTitulo,
-                imagemResId = R.mipmap.ic_sucesso,
-                action = { showSucessoDialog = true },
-                confirmarTexto = "Ok",
-                recusarTexto = "",
-                corBtn = Color(0xFF355070)
-            )
             showSucessoDialog = true
         }catch (e: NetworkException) {
             Log.e("NovoProdutoDialog", "NetworkException: ${e.message}")
@@ -903,6 +893,7 @@ fun Screen(
                                                                 "AtualizarProduto",
                                                                 "ApiException: ${e.message}"
                                                             )
+                                                            confirmarTitulo = "Erro ao atualizar produto"
                                                             errorMessage =
                                                                 contexto.getString(R.string.erro_atualizar_produto)
                                                             imgCasoDeErro =
@@ -913,11 +904,13 @@ fun Screen(
                                                                 "AtualizarProduto",
                                                                 "NetworkException: ${e.message}"
                                                             )
+                                                            confirmarTitulo = "Erro ao atualizar produto, verifique a rede!"
                                                             errorMessage =
                                                                 contexto.getString(R.string.erro_conexao)
                                                             imgCasoDeErro = R.mipmap.ic_excluir
                                                             showError = true
                                                         } catch (e: Exception) {
+                                                            confirmarTitulo = "Erro ao atualizar produto"
                                                             Log.e(
                                                                 "AtualizarProduto",
                                                                 "Exception: ${e.message}"

@@ -159,24 +159,16 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                 corBtn = Color(0xFF355070)
             )
         } catch (e: ApiException) {
-            Log.e("NovoProdutoDialog", "ApiException: ${e.message}")
             val errorMessages = mutableListOf<String>()
 
-            Log.d("NovoProdutoDialog", "API Response - TUDOLOGO: ${e.message}")
-
             val jsonObject = JSONObject(e.message)
-            // Verifique se existe a chave "errors"
-            if (jsonObject.has("errors")) {
-                val errorsObject = jsonObject.getJSONObject("errors")
 
-                // Itere sobre as chaves no objeto "errors" e pegue os valores
-                errorsObject.keys().forEach { key ->
-                    // Tente pegar a mensagem de erro de forma segura
-                    val errorMessage = errorsObject.optString(key, null)
-                    if (errorMessage != null) {
-                        errorMessages.add(errorMessage)
-                    }
-                }
+            if (jsonObject.get("message") != "" || jsonObject.get("message") != null) {
+                errorMessages.add(jsonObject.get("message").toString())
+                imgCasoDeErro = R.mipmap.ic_excluir
+            } else {
+                errorMessages.add("Erro inesperado, tente novamente")
+                imgCasoDeErro = R.mipmap.ic_excluir
             }
             when (e.code) {
                 201 -> {
@@ -206,6 +198,10 @@ fun NovoProdutoDialog(onDismissRequest: () -> Unit, context: Context = androidx.
                 }
 
                 else -> {
+                    errorMessage = "Erro inesperado, tente novamente"
+                    confirmarTitulo =
+                        "Erro inesperado, tente novamente ou entre em contato com o suporte"
+                    imgCasoDeErro = R.mipmap.ic_excluir
                     Log.e("NovoProdutoDialog", "Erro ao salvar produto: ${e.message}")
                 }
             }
