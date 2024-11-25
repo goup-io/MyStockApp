@@ -227,6 +227,9 @@ fun Screen(
             quantidadeEstoque = 0
             itemPromocional = false
             quantidadeVenda = 0
+            modeloObj = Modelo(-1, "", "", "")
+            tamanhoObj = Tamanho(-1, -1)
+            corObj = Cor(-1, "")
         }
     }
 
