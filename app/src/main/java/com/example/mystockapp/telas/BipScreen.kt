@@ -854,13 +854,21 @@ fun Screen(
                                 onClick = {
                                     // Validação dos campos
                                     if (codigo.isEmpty() || nome.isEmpty() || modelo.isEmpty() || cor.isEmpty() ||
-                                        precoCusto <= 0.0 || precoRevenda <= 0.0 || tamanho <= 0 || quantidadeEstoque <= 0
+                                        precoCusto < 0.1 || precoRevenda < 0.1 || tamanho <= 0 || quantidadeEstoque <= 0
                                     ) {
                                         Toast.makeText(
                                             contexto,
                                             contexto.getString(R.string.preencha_todos_os_campos),
                                             Toast.LENGTH_SHORT
                                         ).show()
+
+                                        if (precoCusto < 0.1 || precoRevenda < 0.1) {
+                                            Toast.makeText(
+                                                contexto,
+                                                contexto.getString(R.string.preco_minimo),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     } else {
                                         // Criando o objeto de edição
                                         val produtoEditDto = ProdutoEdit(

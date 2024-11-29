@@ -188,5 +188,6 @@
     <string name="erro_atualizar_produto">Ocorreu um erro ao atualizar produto.</string>
     <string name="erro_conexao">Ocorreu um erro de conexão.</string>
     <string name="produto_atualizado_sucesso">Produto atualizado sucesso!</string>
+    <string name="preco_minimo">O preço de custo e revenda deve ser maior ou igual á R$ 0,10</string>
 
 </resources>
