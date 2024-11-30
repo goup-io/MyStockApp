@@ -673,6 +673,7 @@ fun Screen(
                                                 isNumeric = true
                                             )
                                         }
+
                                         InfoTextField(
                                             label = contexto.getString(R.string.quantidade_est),
                                             value = quantidadeEstoque.toString(),
